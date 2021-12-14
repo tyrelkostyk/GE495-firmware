@@ -5,10 +5,12 @@
 
 #include "defs.h"
 
+// Initialization steps go in here
 void setup()
 {
 }
 
+// Repeated routines (e.g. comms polling) go in here
 void loop()
 {
 }
