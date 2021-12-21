@@ -4,6 +4,7 @@
 // Leave undefined in the compiler if not compiling to an Arduino target
 #ifdef ARDUINO
 #include <Arduino.h>
+#include <SoftwareSerial.h>
 #endif  // ARDUINO
 
 #include "defs.h"
