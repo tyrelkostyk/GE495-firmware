@@ -2,10 +2,12 @@
 // Contains the entrypoint for the software including setup and the main loop.
 
 // Leave undefined in the compiler if not compiling to an Arduino target
-#ifdef ARDUINO
+#ifdef _ARDUINO
 #include <Arduino.h>
 #include <SoftwareSerial.h>
-#endif  // ARDUINO
+#endif  // _ARDUINO
+
+#include "Serial_CAN_Module.h"
 
 #include "defs.h"
 
@@ -37,8 +39,7 @@ int main(void)
 
     setup();
 
-    while (1)
-    {
+    while (1) {
         loop();
     }
     

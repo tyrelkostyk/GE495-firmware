@@ -22,7 +22,8 @@ dry:
 	@arduino-cli compile \
 	  --build-path $(OBJDIR) \
 	  -b $(DEVICE) \
-	  --build-property build.extra_flags=-DARDUINO \
+	  --warnings default \
+	  --build-property build.extra_flags=-D_ARDUINO \
 	  $(MAIN)
 	
 # Remove build artifacts and compiled binaries
