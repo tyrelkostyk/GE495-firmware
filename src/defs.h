@@ -15,7 +15,8 @@
 #define CAN_TX 5
 
 void CANSetup (void);
-void CANSend(uint32_t id, uint8_t ext, uint8_t rtr_bit, uint8_t length, const uint8_t *data);
+void CANSend (uint32_t id, uint8_t ext, uint8_t rtr, uint8_t length, const uint8_t *data);
+uint8_t CANReceive (uint32_t *id, uint8_t *buffer);
 
 /*********
 * SERIAL *
