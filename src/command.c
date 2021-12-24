@@ -7,18 +7,18 @@
  * Sends a command to the next upstream device.
  * @return void
  */
-void cmdSendUpstream(void)
+void cmdSendUpstream(command_t *command)
 {
-
+    CANSend(UP, command->id, CAN_FRAME_EXT, 0x00, command->length, command->data);
 }
 
 /**
  * Receives a command from the next downstream device.
  * @return void
  */
-void cmdReceiveDownstream(void)
+command_t *cmdReceiveDownstream(void)
 {
-
+    
 }
 
 /**

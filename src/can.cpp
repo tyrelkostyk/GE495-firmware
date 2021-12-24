@@ -4,7 +4,8 @@
 #ifdef _ARDUINO
 #include "Serial_CAN_Module.h"
 
-Serial_CAN can;
+Serial_CAN can_up;
+Serial_CAN can_down;
 #endif
 
 #include "defs.h"
@@ -16,12 +17,14 @@ Serial_CAN can;
 void CANSetup(void)
 {
 #ifdef Arduino_h
-    can.begin(CAN_TX, CAN_RX, CAN_BAUDRATE);
+    can_up.begin(CAN_UP_TX, CAN_UP_RX, CAN_BAUDRATE);
+    can_down.begin(CAN_DOWN_TX, CAN_DOWN_RX, CAN_BAUDRATE);
 #endif
 }
 
 /**
  * Sends a message with specified ID and length to the CAN controller to be transmitted.
+ * @param can_dir_t direction Whether to send upstream or downstream
  * @param uint32_t id The identifier for the message (29 bits in J1939)
  * @param uint8_t ext Set to 0x01 for extended frame, 0x00 for standard frame
  * @param uint8_t rtr Set to 0x01 for Remote Transmission Requests (broadcast)
@@ -29,10 +32,13 @@ void CANSetup(void)
  * @param uint8_t *data Array of data bytes (doesn't have to NULL-terminate)
  * @return void
  */
-void CANSend(uint32_t id, uint8_t ext, uint8_t rtr, uint8_t length, const uint8_t *data)
+void CANSend(can_dir_t direction, uint32_t id, uint8_t ext, uint8_t rtr, uint8_t length, const uint8_t *data)
 {
 #ifdef Arduino_h
-    can.send(id, ext, rtr, length, data);
+    if (direction == UP)
+        can_up.send(id, ext, rtr, length, data);
+    else if (direction == DOWN)
+        can_down.send(id, ext, rtr, length, data);
 #endif
 }
 
@@ -43,7 +49,12 @@ void CANSend(uint32_t id, uint8_t ext, uint8_t rtr, uint8_t length, const uint8_
  * @param uint8_t *buffer Buffer to which the received message data will be written
  * @return 0x01 if there is data to read, 0x00 otherwise
  */
-uint8_t CANReceive(uint32_t *id, uint8_t *buffer)
+uint8_t CANReceive(can_dir_t direction, uint32_t *id, uint8_t *buffer)
 {
-    return can.recv(id, buffer);
+#ifdef Arduino_h
+    if (direction == UP)
+        return can_up.recv(id, buffer);
+    else if (direction == DOWN)
+        return can_down.recv(id, buffer);
+#endif
 }
