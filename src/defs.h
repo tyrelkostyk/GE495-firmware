@@ -6,7 +6,26 @@
 
 #include <stdint.h>
 
-/* COMMAND (CMD) */
+/******
+* CAN *
+******/
+
+#define CAN_BAUDRATE 9600
+#define CAN_RX 4
+#define CAN_TX 5
+
+void CANSetup (void);
+void CANSend(uint32_t id, uint8_t ext, uint8_t rtr_bit, uint8_t length, const uint8_t *data);
+
+/*********
+* SERIAL *
+*********/
+
+#define SER_BAUDRATE 115200
+
+/****************
+* COMMAND (CMD) *
+****************/
 
 typedef struct _command_t {
     uint32_t id;  // TODO: What is the actual size required for this?

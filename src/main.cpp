@@ -5,9 +5,8 @@
 #ifdef _ARDUINO
 #include <Arduino.h>
 #include <SoftwareSerial.h>
-#endif  // _ARDUINO
 
-#include "Serial_CAN_Module.h"
+#endif  // _ARDUINO
 
 #include "defs.h"
 
@@ -15,7 +14,9 @@
 void setup()
 {
 #ifdef Arduino_h
-    pinMode(LED_BUILTIN, OUTPUT);
+    Serial.begin(SER_BAUDRATE);
+    CANSetup();
+    Serial.println("ARDUINO: Completed setup");
 #endif
 }
 
@@ -23,10 +24,7 @@ void setup()
 void loop()
 {
 #ifdef Arduino_h
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(1000);
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(1000);
+
 #endif
 }
 
