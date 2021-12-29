@@ -2,8 +2,9 @@
 // Contains functions for parsing and carrying out commands received from downstream sources including ECU.
 
 #ifdef _ARDUINO
-#include <string.h>
 #endif  // _ARDUINO
+
+#include <string.h>
 
 #include "defs.h"
 
