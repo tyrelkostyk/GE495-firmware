@@ -45,6 +45,42 @@ uint8_t cmdReceiveDownstream(command_t *command)
  */
 void cmdParse(command_t *command)
 {
+    // TODO Implement this properly
+    // What to do here:
+    //  - read command->id
+    //  - determine if the PGN matches one that is useful for this device
+    //  - if it is, convert command->data appropriately and call the right function
 
+    uint32_t pgn = command->id & 0x3ffff00;  // J1939 parameter group number (PGN) should be id[25:8]
+    switch (pgn) {
+        case PGN_TARE_START: {
+
+            break;
+        }
+        case PGN_TARE_STEP1: {
+
+            break;
+        }
+        case PGN_TARE_STEP2: {
+
+            break;
+        }
+        case PGN_TARE_FINISH: {
+
+            break;
+        }
+        case PGN_CALIBRATE_START: {
+
+            break;
+        }
+        case PGN_CALIBRATE_FINISH: {
+
+            break;
+        }
+        default: {
+
+        }
+    }
+    debugPrintLine("Parsed a command!");
 }
 

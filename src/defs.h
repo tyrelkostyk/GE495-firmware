@@ -6,6 +6,13 @@
 
 #include <stdint.h>
 
+/********
+* DEBUG *
+********/
+
+void debugPrint(const char *message);
+void debugPrintLine(const char *message);
+
 /******
 * CAN *
 ******/
@@ -50,5 +57,14 @@ typedef struct _command_t {
 void cmdSendUpstream (command_t *command);
 uint8_t cmdReceiveDownstream (command_t *command);
 void cmdParse (command_t *command);
+
+// TODO These will definitely have to change
+#define PGN_TARE_START  0x01
+#define PGN_TARE_STEP1  0x02
+#define PGN_TARE_STEP2  0x03
+#define PGN_TARE_FINISH 0x04
+
+#define PGN_CALIBRATE_START  0x05
+#define PGN_CALIBRATE_FINISH 0x06
 
 #endif  // DEFS_H

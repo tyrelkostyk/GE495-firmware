@@ -27,6 +27,8 @@ void loop()
 {
 #ifdef Arduino_h
     // Poll for commands and respond accordingly
+    // If a command is received from downstream (ECU-side) immediately forward upstream
+    // Then check to see if the command requires any action from this device
     if (cmdReceiveDownstream(&currentCommand)) {
         cmdSendUpstream(&currentCommand);
         cmdParse(&currentCommand);

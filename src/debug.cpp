@@ -12,7 +12,7 @@
  * @param char *message The string to be debug-printed.
  * @return void
  */
-void debugPrint(char *message)
+void debugPrint(const char *message)
 {
 #ifdef Arduino_h
     Serial.print(message);
@@ -24,7 +24,7 @@ void debugPrint(char *message)
  * @param char *message The string to be debug-printed.
  * @return void
  */
-void debugPrintLine(char *message)
+void debugPrintLine(const char *message)
 {
 #ifdef Arduino_h
     Serial.println(message);
