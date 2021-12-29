@@ -1,6 +1,10 @@
 // command.c
 // Contains functions for parsing and carrying out commands received from downstream sources including ECU.
 
+#ifdef _ARDUINO
+#include <string.h>
+#endif  // _ARDUINO
+
 #include "defs.h"
 
 /**
@@ -14,11 +18,23 @@ void cmdSendUpstream(command_t *command)
 
 /**
  * Receives a command from the next downstream device.
- * @return void
+ * @param command_t *command Pointer to the command structure to populate with received CAN data
+ * @return 0x01 on a successful receive, 0x00 otherwise
  */
-command_t *cmdReceiveDownstream(void)
+uint8_t cmdReceiveDownstream(command_t *command)
 {
-    
+    uint8_t received;
+
+    uint32_t id;
+    uint8_t data[CAN_DATA_LEN_MAX];
+
+    if (received = CANReceive(DOWN, &id, data)) {
+        command->id = id;
+        command->length = CAN_DATA_LEN_MAX;  // TODO Is there a way to determine the actual length?
+        memcpy(command->data, data, CAN_DATA_LEN_MAX);
+    }
+
+    return received;
 }
 
 /**

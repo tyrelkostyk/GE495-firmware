@@ -5,10 +5,12 @@
 #ifdef _ARDUINO
 #include <Arduino.h>
 #include <SoftwareSerial.h>
-
 #endif  // _ARDUINO
 
 #include "defs.h"
+
+// The last command received from downstream
+command_t currentCommand;
 
 // Initialization steps go in here
 void setup()
@@ -24,7 +26,11 @@ void setup()
 void loop()
 {
 #ifdef Arduino_h
-
+    // Poll for commands and respond accordingly
+    if (cmdReceiveDownstream(&currentCommand)) {
+        cmdSendUpstream(&currentCommand);
+        cmdParse(&currentCommand);
+    }
 #endif
 }
 

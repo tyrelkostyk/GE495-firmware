@@ -19,6 +19,8 @@
 #define CAN_FRAME_STD 0x00
 #define CAN_FRAME_EXT 0x01
 
+#define CAN_DATA_LEN_MAX 8
+
 // Enum for determining which CAN unit is desired (upstream or downstream)
 typedef enum {
     UP,
@@ -42,11 +44,11 @@ uint8_t CANReceive (can_dir_t direction, uint32_t *id, uint8_t *buffer);
 typedef struct _command_t {
     uint32_t id;
     uint8_t length;
-    uint8_t *data;
+    uint8_t data[CAN_DATA_LEN_MAX];
 } command_t;
 
 void cmdSendUpstream (command_t *command);
-command_t *cmdReceiveDownstream (void);
+uint8_t cmdReceiveDownstream (command_t *command);
 void cmdParse (command_t *command);
 
 #endif  // DEFS_H

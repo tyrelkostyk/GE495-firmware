@@ -4,8 +4,8 @@
 #ifdef _ARDUINO
 #include "Serial_CAN_Module.h"
 
-Serial_CAN can_up;
-Serial_CAN can_down;
+Serial_CAN canUp;
+Serial_CAN canDown;
 #endif
 
 #include "defs.h"
@@ -17,8 +17,8 @@ Serial_CAN can_down;
 void CANSetup(void)
 {
 #ifdef Arduino_h
-    can_up.begin(CAN_UP_TX, CAN_UP_RX, CAN_BAUDRATE);
-    can_down.begin(CAN_DOWN_TX, CAN_DOWN_RX, CAN_BAUDRATE);
+    canUp.begin(CAN_UP_TX, CAN_UP_RX, CAN_BAUDRATE);
+    canDown.begin(CAN_DOWN_TX, CAN_DOWN_RX, CAN_BAUDRATE);
 #endif
 }
 
@@ -36,9 +36,9 @@ void CANSend(can_dir_t direction, uint32_t id, uint8_t ext, uint8_t rtr, uint8_t
 {
 #ifdef Arduino_h
     if (direction == UP)
-        can_up.send(id, ext, rtr, length, data);
+        canUp.send(id, ext, rtr, length, data);
     else if (direction == DOWN)
-        can_down.send(id, ext, rtr, length, data);
+        canDown.send(id, ext, rtr, length, data);
 #endif
 }
 
@@ -53,8 +53,8 @@ uint8_t CANReceive(can_dir_t direction, uint32_t *id, uint8_t *buffer)
 {
 #ifdef Arduino_h
     if (direction == UP)
-        return can_up.recv(id, buffer);
+        return canUp.recv(id, buffer);
     else if (direction == DOWN)
-        return can_down.recv(id, buffer);
+        return canDown.recv(id, buffer);
 #endif
 }
