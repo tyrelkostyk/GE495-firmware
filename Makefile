@@ -14,7 +14,7 @@ arduino: dry
 	@arduino-cli upload \
 	  --input-dir $(OBJDIR) \
 	  -p $(PORT) \
-	  -b $(DEVICE)$(1) \
+	  -b $(DEVICE) \
 	  $(MAIN)
 
 # Just compile (no upload)
@@ -26,8 +26,16 @@ dry:
 	  --build-property build.extra_flags=-D_ARDUINO \
 	  $(MAIN)
 
+# Compile and upload to the Arduino in DEBUG mode
+debug: dry-dbg
+	@arduino-cli upload \
+	  --input-dir $(OBJDIR) \
+	  -p $(PORT) \
+	  -b $(DEVICE) \
+	  $(MAIN)
+
 # Just compile (no upload) in DEBUG mode
-debug:
+dry-dbg:
 	@arduino-cli compile \
 	  --build-path $(OBJDIR) \
 	  -b $(DEVICE) \
