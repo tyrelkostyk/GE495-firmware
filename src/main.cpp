@@ -10,7 +10,10 @@
 #include "defs.h"
 
 // The last command received from downstream
-command_t currentCommand;
+message_t currentCommand;
+
+// The last update received from upstream
+message_t currentUpdate;
 
 // Initialization steps go in here
 void setup()
@@ -30,6 +33,7 @@ void loop()
     // In debug mode, wait for specific test inputs
     debugScan();
 #else
+    
     // Poll for commands and respond accordingly
     // If a command is received from downstream (ECU-side) immediately forward upstream
     // Then check to see if the command requires any action from this device
@@ -37,6 +41,15 @@ void loop()
         cmdSendUpstream(&currentCommand);
         cmdParse(&currentCommand);
     }
+
+    // Poll for updates and respond accordingly
+    // If an update is received from upstream, handle (e.g. provide modifications)
+    // Then forward the modified message downstream
+    if (updateReceiveUpstream(&currentUpdate)) {
+        updateHandle(&currentUpdate);
+        updateSendDownstream(&currentUpdate);
+    }
+
 #endif  // _DEBUG
 #endif  // Arduino_h
 }

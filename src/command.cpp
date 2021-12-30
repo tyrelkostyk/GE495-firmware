@@ -9,20 +9,30 @@
 #include "defs.h"
 
 /**
+ * Extracts and returns the PGN from a CAN message structure
+ * @param message_t *message The message from which to get the PGN
+ * @return uint32_t
+ */
+uint32_t cmdPGNFromMessage(message_t *message)
+{
+    return (message->id & 0x3ffff00) >> 8;  // J1939 parameter group number (PGN) should be id[25:8]
+}
+
+/**
  * Sends a command to the next upstream device.
  * @return void
  */
-void cmdSendUpstream(command_t *command)
+void cmdSendUpstream(message_t *command)
 {
     CANSend(UP, command->id, CAN_FRAME_EXT, 0x00, command->length, command->data);
 }
 
 /**
  * Receives a command from the next downstream device.
- * @param command_t *command Pointer to the command structure to populate with received CAN data
+ * @param message_t *command Pointer to the message structure to populate with received CAN data
  * @return 0x01 on a successful receive, 0x00 otherwise
  */
-uint8_t cmdReceiveDownstream(command_t *command)
+uint8_t cmdReceiveDownstream(message_t *command)
 {
     uint8_t received;
 
@@ -40,10 +50,10 @@ uint8_t cmdReceiveDownstream(command_t *command)
 
 /**
  * Parses a command to determine if it should execute on this device.
- * @param command_t *command The command to be parsed
+ * @param message_t *command The command to be parsed
  * @return void
  */
-void cmdParse(command_t *command)
+void cmdParse(message_t *command)
 {
     // TODO Implement this properly
     // What to do here:

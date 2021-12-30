@@ -66,7 +66,7 @@ void debugScan(void)
  */
 void debugHandshake(void)
 {
-    command_t command;
+    message_t *command;
     command->id = 0;
     command->length = 0;
     memset(command->data, 0, CAN_DATA_LEN_MAX);  // Just to be safe

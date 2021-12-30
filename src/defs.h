@@ -15,6 +15,7 @@
 void debugPrint(const char *message);
 void debugPrintLine(const char *message);
 uint32_t debugReadLine(char *buffer);
+void debugHandshake(void);
 
 /******
 * CAN *
@@ -37,6 +38,12 @@ typedef enum {
     DOWN
 } can_dir_t;
 
+typedef struct _message_t {
+    uint32_t id;
+    uint8_t length;
+    uint8_t data[CAN_DATA_LEN_MAX];
+} message_t;
+
 void CANSetup (void);
 void CANSend (can_dir_t direction, uint32_t id, uint8_t ext, uint8_t rtr, uint8_t length, const uint8_t *data);
 uint8_t CANReceive (can_dir_t direction, uint32_t *id, uint8_t *buffer);
@@ -51,15 +58,9 @@ uint8_t CANReceive (can_dir_t direction, uint32_t *id, uint8_t *buffer);
 * COMMAND (CMD) *
 ****************/
 
-typedef struct _command_t {
-    uint32_t id;
-    uint8_t length;
-    uint8_t data[CAN_DATA_LEN_MAX];
-} command_t;
-
-void cmdSendUpstream (command_t *command);
-uint8_t cmdReceiveDownstream (command_t *command);
-void cmdParse (command_t *command);
+void cmdSendUpstream (message_t *command);
+uint8_t cmdReceiveDownstream (message_t *command);
+void cmdParse (message_t *command);
 
 // TODO These will definitely have to change
 
@@ -72,5 +73,16 @@ void cmdParse (command_t *command);
 
 #define PGN_CALIBRATE_START  0x05
 #define PGN_CALIBRATE_FINISH 0x06
+
+/*********
+* UPDATE *
+*********/
+
+// TODO Deprecated?
+#define UPDATE_MASS_LEN_MAX 8
+
+uint8_t updateReceiveUpstream(message_t *update);
+void updateSendDownstream(message_t *update);
+void updateHandle(message_t *update);
 
 #endif  // DEFS_H
