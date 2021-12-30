@@ -25,7 +25,16 @@ dry:
 	  --warnings default \
 	  --build-property build.extra_flags=-D_ARDUINO \
 	  $(MAIN)
-	
+
+# Just compile (no upload) in DEBUG mode
+debug:
+	@arduino-cli compile \
+	  --build-path $(OBJDIR) \
+	  -b $(DEVICE) \
+	  --warnings default \
+	  --build-property build.extra_flags="-D_ARDUINO -D_DEBUG" \
+	  $(MAIN)
+
 # Remove build artifacts and compiled binaries
 clean:
 	rm -rf $(OBJDIR)/*

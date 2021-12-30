@@ -15,6 +15,7 @@
 void debugPrint(const char *message);
 void debugPrintLine(const char *message);
 uint32_t debugReadLine(char *buffer);
+void debugScan(void);
 void debugHandshake(void);
 
 /******

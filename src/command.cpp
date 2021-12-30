@@ -13,7 +13,7 @@
  * @param message_t *message The message from which to get the PGN
  * @return uint32_t
  */
-uint32_t cmdPGNFromMessage(message_t *message)
+inline uint32_t cmdPGNFromMessage(message_t *message)
 {
     return (message->id & 0x3ffff00) >> 8;  // J1939 parameter group number (PGN) should be id[25:8]
 }
@@ -61,7 +61,7 @@ void cmdParse(message_t *command)
     //  - determine if the PGN matches one that is useful for this device
     //  - if it is, convert command->data appropriately and call the right function
 
-    uint32_t pgn = command->id & 0x3ffff00;  // J1939 parameter group number (PGN) should be id[25:8]
+    uint32_t pgn = cmdPGNFromMessage(command);
     switch (pgn) {
         case PGN_DEBUG_HANDSHAKE: {
             
