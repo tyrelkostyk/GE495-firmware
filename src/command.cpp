@@ -53,6 +53,10 @@ void cmdParse(command_t *command)
 
     uint32_t pgn = command->id & 0x3ffff00;  // J1939 parameter group number (PGN) should be id[25:8]
     switch (pgn) {
+        case PGN_DEBUG_HANDSHAKE: {
+            
+            break;
+        }
         case PGN_TARE_START: {
 
             break;
