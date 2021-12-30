@@ -44,3 +44,32 @@ uint32_t debugReadLine(char *buffer)
     return Serial.readBytesUntil('\n', buffer, DEBUG_INPUT_LEN_MAX);
 #endif
 }
+
+/**
+ * Scans the debug input line for a debug command and executes it if valid.
+ * @return void
+ */
+void debugScan(void)
+{
+    char buffer[DEBUG_INPUT_LEN_MAX+1];
+    if (!debugReadLine(buffer))
+        return;
+    
+    if (strncmp(buffer, "HANDSHAKE", 9) == 0) {
+        debugHandshake();
+    }
+}
+
+/**
+ * Executes a test handshake from this device to the next upstream device.
+ * @return void
+ */
+void debugHandshake(void)
+{
+    command_t command;
+    command->id = 0;
+    command->length = 0;
+    memset(command->data, 0, CAN_DATA_LEN_MAX);  // Just to be safe
+
+    cmdSendUpstream(command);
+}

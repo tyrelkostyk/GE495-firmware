@@ -26,6 +26,10 @@ void setup()
 void loop()
 {
 #ifdef Arduino_h
+#ifdef _DEBUG
+    // In debug mode, wait for specific test inputs
+    debugScan();
+#else
     // Poll for commands and respond accordingly
     // If a command is received from downstream (ECU-side) immediately forward upstream
     // Then check to see if the command requires any action from this device
@@ -33,7 +37,8 @@ void loop()
         cmdSendUpstream(&currentCommand);
         cmdParse(&currentCommand);
     }
-#endif
+#endif  // _DEBUG
+#endif  // Arduino_h
 }
 
 // It's important that main be wrapped in this, otherwise it interferes with
