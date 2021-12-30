@@ -30,10 +30,10 @@ void loop()
 {
 #ifdef Arduino_h
 
-#ifdef _DEBUG
+#ifdef _DBG
     // In debug mode, wait for specific test inputs
     debugScan();
-#endif  // _DEBUG
+#endif  // _DBG
     
     // Poll for commands and respond accordingly
     // If a command is received from downstream (ECU-side) immediately forward upstream

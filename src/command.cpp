@@ -24,6 +24,9 @@ inline uint32_t cmdPGNFromMessage(message_t *message)
  */
 void cmdSendUpstream(message_t *command)
 {
+#ifdef _DBG
+    debugPrintLine("Command sent!");
+#endif  // _DBG
     CANSend(UP, command->id, CAN_FRAME_EXT, 0x00, command->length, command->data);
 }
 
@@ -34,6 +37,9 @@ void cmdSendUpstream(message_t *command)
  */
 uint8_t cmdReceiveDownstream(message_t *command)
 {
+#ifdef _DBG
+    debugPrintLine("Command received!");
+#endif  // _DBG
     uint8_t received;
 
     uint32_t id;
@@ -64,7 +70,7 @@ void cmdParse(message_t *command)
     uint32_t pgn = cmdPGNFromMessage(command);
     switch (pgn) {
         case PGN_DEBUG_HANDSHAKE: {
-            
+            updateSendDownstream(command);  // Just send the message right back
             break;
         }
         case PGN_TARE_START: {
@@ -95,6 +101,9 @@ void cmdParse(message_t *command)
 
         }
     }
+
+#ifdef _DBG
     debugPrintLine("Parsed a command!");
+#endif  // _DBG
 }
 

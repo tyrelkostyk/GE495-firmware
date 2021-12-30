@@ -15,6 +15,11 @@
  */
 uint8_t updateReceiveUpstream(message_t *update)
 {
+
+#ifdef _DBG
+    debugPrintLine("Update received!");
+#endif  // _DBG
+
     uint8_t received;
 
     uint32_t id;
@@ -35,6 +40,10 @@ uint8_t updateReceiveUpstream(message_t *update)
  */
 void updateSendDownstream(message_t *update)
 {
+#ifdef _DBG
+    debugPrintLine("Update sent!");
+#endif  // _DBG
+
     CANSend(DOWN, update->id, CAN_FRAME_EXT, 0x00, update->length, update->data);
 }
 
@@ -49,5 +58,8 @@ void updateHandle(message_t *update)
     //  - inject mass data for this node
     //  - increment origin field by 1
     //  - ???
+#ifdef _DBG
+    debugPrintLine("Update handled!");
+#endif  // _DBG
 }
 

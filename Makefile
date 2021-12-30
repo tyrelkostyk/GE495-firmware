@@ -32,7 +32,7 @@ debug:
 	  --build-path $(OBJDIR) \
 	  -b $(DEVICE) \
 	  --warnings default \
-	  --build-property build.extra_flags="-D_ARDUINO -D_DEBUG" \
+	  --build-property build.extra_flags="-D_ARDUINO -D_DBG" \
 	  $(MAIN)
 
 # Remove build artifacts and compiled binaries
