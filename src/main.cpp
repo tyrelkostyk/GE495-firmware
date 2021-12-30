@@ -21,7 +21,9 @@ void setup()
 #ifdef Arduino_h
     Serial.begin(SER_BAUDRATE);
     CANSetup();
-    Serial.println("ARDUINO: Completed setup");
+#ifdef _DBG
+    debugPrintLine("ARDUINO: Completed setup");
+#endif  // _DBG
 #endif
 }
 
@@ -33,6 +35,7 @@ void loop()
 #ifdef _DBG
     // In debug mode, wait for specific test inputs
     debugScan();
+    debugPrintLine("ARDUINO: Debug scan");
 #endif  // _DBG
     
     // Poll for commands and respond accordingly

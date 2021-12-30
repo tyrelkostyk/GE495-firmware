@@ -2,6 +2,7 @@
 // Contains functions for communicating with a debugging device via serial or JTAG.
 
 #ifdef _ARDUINO
+#include <Arduino.h>
 #include <SoftwareSerial.h>
 #endif
 
@@ -30,7 +31,7 @@ void debugPrintLine(const char *message)
 {
 #ifdef Arduino_h
     Serial.println(message);
-#endif
+#endif  // Arduino_h
 }
 
 /**
@@ -57,6 +58,8 @@ void debugScan(void)
     
     if (strncmp(buffer, "HANDSHAKE", 9) == 0) {
         debugHandshake();
+    } else {
+        debugPrintLine("Unrecognized debug command!");
     }
 }
 

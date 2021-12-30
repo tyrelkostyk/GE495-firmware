@@ -2,6 +2,7 @@
 // Contains functions for receiving and forwarding messages received from upstream sources.
 
 #ifdef _ARDUINO
+#include <Arduino.h>
 #endif  // _ARDUINO
 
 #include <string.h>
@@ -16,16 +17,16 @@
 uint8_t updateReceiveUpstream(message_t *update)
 {
 
-#ifdef _DBG
-    debugPrintLine("Update received!");
-#endif  // _DBG
-
     uint8_t received;
 
     uint32_t id;
     uint8_t data[CAN_DATA_LEN_MAX];
 
     if ((received = CANReceive(UP, &id, data)) != 0x00) {
+#ifdef _DBG
+        debugPrintLine("Update received!");
+#endif  // _DBG
+
         update->id = id;
         memcpy(update->data, data, CAN_DATA_LEN_MAX);
     }

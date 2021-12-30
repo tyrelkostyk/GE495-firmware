@@ -2,6 +2,7 @@
 // Contains low-level CAN-specific communication functions, including configuration.
 
 #ifdef _ARDUINO
+#include <Arduino.h>
 #include "Serial_CAN_Module.h"
 
 Serial_CAN canUp;
