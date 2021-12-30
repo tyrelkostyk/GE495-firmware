@@ -20,7 +20,7 @@ uint8_t updateReceiveUpstream(message_t *update)
     uint32_t id;
     uint8_t data[CAN_DATA_LEN_MAX];
 
-    if (received = CANReceive(UP, &id, data)) {
+    if ((received = CANReceive(UP, &id, data)) != 0x00) {
         update->id = id;
         memcpy(update->data, data, CAN_DATA_LEN_MAX);
     }
@@ -30,6 +30,7 @@ uint8_t updateReceiveUpstream(message_t *update)
 
 /**
  * Sends an update to the next downstream device.
+ * @param message_t *update The message structure to transmit downstream
  * @return void
  */
 void updateSendDownstream(message_t *update)
@@ -44,6 +45,9 @@ void updateSendDownstream(message_t *update)
  */
 void updateHandle(message_t *update)
 {
-
+    // TODO here:
+    //  - inject mass data for this node
+    //  - increment origin field by 1
+    //  - ???
 }
 
