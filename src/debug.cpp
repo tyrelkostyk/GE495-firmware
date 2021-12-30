@@ -5,6 +5,8 @@
 #include <SoftwareSerial.h>
 #endif
 
+#include <string.h>
+
 #include "defs.h"
 
 /**
@@ -31,3 +33,14 @@ void debugPrintLine(const char *message)
 #endif
 }
 
+/**
+ * Reads a newline-terminated string from the debugger.
+ * @param char *buffer The buffer to read the serial text stream into.
+ * @return 0 in the event of a serial timeout, number of characters read otherwise.
+ */
+uint32_t debugReadLine(char *buffer)
+{
+#ifdef Arduino_h
+    return Serial.readBytesUntil('\n', buffer, DEBUG_INPUT_LEN_MAX);
+#endif
+}

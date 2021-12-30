@@ -10,8 +10,11 @@
 * DEBUG *
 ********/
 
+#define DEBUG_INPUT_LEN_MAX (1<<7)
+
 void debugPrint(const char *message);
 void debugPrintLine(const char *message);
+uint32_t debugReadLine(char *buffer);
 
 /******
 * CAN *
