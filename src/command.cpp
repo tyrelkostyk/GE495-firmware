@@ -25,7 +25,7 @@ inline uint32_t cmdPGNFromMessage(message_t *message)
 void cmdSendUpstream(message_t *command)
 {
 #ifdef _DBG
-    debugPrintLine("Command sent!");
+    debugPrintLine("Sent command!");
 #endif  // _DBG
     CANSend(UP, command->id, CAN_FRAME_EXT, 0x00, command->length, command->data);
 }
@@ -44,7 +44,7 @@ uint8_t cmdReceiveDownstream(message_t *command)
 
     if ((received = CANReceive(DOWN, &id, data)) != 0x00) {
 #ifdef _DBG
-        debugPrintLine("Command received!");
+        debugPrintLine("Received command!");
 #endif  // _DBG
         command->id = id;
         command->length = CAN_DATA_LEN_MAX;  // TODO Is there a way to determine the actual length?

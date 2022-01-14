@@ -20,11 +20,14 @@ void setup()
 {
 #ifdef Arduino_h
     Serial.begin(SER_BAUDRATE);
+#ifdef _DBG
+    debugPrintLine("ARDUINO: Started setup");
+#endif  // _DBG
     CANSetup();
 #ifdef _DBG
     debugPrintLine("ARDUINO: Completed setup");
 #endif  // _DBG
-#endif
+#endif  // Arduino_h
 }
 
 // Repeated routines (e.g. comms polling) go in here

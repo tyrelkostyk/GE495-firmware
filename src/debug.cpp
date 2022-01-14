@@ -10,6 +10,9 @@
 
 #include "defs.h"
 
+extern message_t currentCommand;
+extern message_t currentUpdate;
+
 /**
  * Sends a string message to the debugger, with NO newline appended.
  * @param char *message The string to be debug-printed.
@@ -69,11 +72,10 @@ void debugScan(void)
  */
 void debugHandshake(void)
 {
-    message_t *command;
-    command->id = 0;
-    command->length = 0;
-    memset(command->data, 0, CAN_DATA_LEN_MAX);  // Just to be safe
+    currentCommand.id = 0;
+    currentCommand.length = 0;
+    memset(currentCommand.data, 0, CAN_DATA_LEN_MAX);  // Just to be safe
 
-    cmdSendUpstream(command);
+    cmdSendUpstream(&currentCommand);
 }
 

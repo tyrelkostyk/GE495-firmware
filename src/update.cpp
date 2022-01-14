@@ -24,7 +24,7 @@ uint8_t updateReceiveUpstream(message_t *update)
 
     if ((received = CANReceive(UP, &id, data)) != 0x00) {
 #ifdef _DBG
-        debugPrintLine("Update received!");
+        debugPrintLine("Received update!");
 #endif  // _DBG
 
         update->id = id;
@@ -42,7 +42,7 @@ uint8_t updateReceiveUpstream(message_t *update)
 void updateSendDownstream(message_t *update)
 {
 #ifdef _DBG
-    debugPrintLine("Update sent!");
+    debugPrintLine("Sent update!");
 #endif  // _DBG
 
     CANSend(DOWN, update->id, CAN_FRAME_EXT, 0x00, update->length, update->data);
