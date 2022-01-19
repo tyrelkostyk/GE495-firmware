@@ -5,6 +5,20 @@
 #include <Arduino.h>
 #include "Serial_CAN_Module.h"
 
+uint32_t rx_mask[4] = {
+    0x1, 0x0,
+    0x1, 0x0
+};
+
+uint32_t rx_filter[12] = {
+    0x1, 0xffffffff,
+    0x1, 0xffffffff,
+    0x1, 0xffffffff,
+    0x1, 0xffffffff,
+    0x1, 0xffffffff,
+    0x1, 0xffffffff
+};
+
 Serial_CAN canUp;
 Serial_CAN canDown;
 #endif
@@ -20,6 +34,32 @@ void CANSetup(void)
 #ifdef Arduino_h
     canUp.begin(CAN_UP_TX, CAN_UP_RX, CAN_BAUDRATE);
     canDown.begin(CAN_DOWN_TX, CAN_DOWN_RX, CAN_BAUDRATE);
+
+    debugPrintLine("Resetting upstream...");
+    canUp.factorySetting();
+    debugPrintLine("Resetting downstream...");
+    canDown.factorySetting();
+
+    debugPrintLine("Setting upstream mask...");
+    if (!canUp.setMask(rx_mask)) {
+        debugPrintLine("Upstream mask not set");
+    }
+
+    debugPrintLine("Setting downstream mask...");
+    if (!canDown.setMask(rx_mask)) {
+        debugPrintLine("Downstream mask not set");
+    }
+
+    debugPrintLine("Setting upstream filter...");
+    if (!canUp.setFilt(rx_filter)) {
+        debugPrintLine("Upstream filter not set");
+    }
+
+    debugPrintLine("Setting downstream filter...");
+    if (!canDown.setFilt(rx_filter)) {
+        debugPrintLine("Downstream filter not set");
+    }
+
 #endif
 }
 

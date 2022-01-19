@@ -20,6 +20,7 @@ void setup()
 {
 #ifdef Arduino_h
     Serial.begin(SER_BAUDRATE);
+    while (!Serial);
 #ifdef _DBG
     debugPrintLine("ARDUINO: Started setup");
 #endif  // _DBG
