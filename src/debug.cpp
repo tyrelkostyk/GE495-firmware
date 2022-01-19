@@ -59,7 +59,7 @@ void debugScan(void)
     if (!debugReadLine(buffer))
         return;
     
-    if (strncmp(buffer, "HANDSHAKE", 9) == 0) {
+    if (strncmp(buffer, "1", 1) == 0) {
         debugHandshake();
     } else {
         debugPrintLine("Unrecognized debug command!");
