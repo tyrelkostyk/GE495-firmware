@@ -5,6 +5,8 @@
 #ifdef _ARDUINO
 #include <Arduino.h>
 #include <SoftwareSerial.h>
+
+extern SoftwareSerial serUp, serDown;
 #endif  // _ARDUINO
 
 #include "defs.h"
@@ -45,6 +47,7 @@ void loop()
     // Poll for commands and respond accordingly
     // If a command is received from downstream (ECU-side) immediately forward upstream
     // Then check to see if the command requires any action from this device
+    serDown.listen();
     if (cmdReceiveDownstream(&currentCommand)) {
         cmdSendUpstream(&currentCommand);
         cmdParse(&currentCommand);
@@ -53,6 +56,7 @@ void loop()
     // Poll for updates and respond accordingly
     // If an update is received from upstream, handle (e.g. provide modifications)
     // Then forward the modified message downstream
+    serUp.listen();
     if (updateReceiveUpstream(&currentUpdate)) {
         updateHandle(&currentUpdate);
         updateSendDownstream(&currentUpdate);

@@ -1,8 +1,11 @@
 // can.c
 // Contains low-level CAN-specific communication functions, including configuration.
 
+#include "defs.h"
+
 #ifdef _ARDUINO
 #include <Arduino.h>
+#include <SoftwareSerial.h>
 #include "Serial_CAN_Module.h"
 
 uint32_t rx_mask[4] = {
@@ -21,9 +24,10 @@ uint32_t rx_filter[12] = {
 
 Serial_CAN canUp;
 Serial_CAN canDown;
-#endif
 
-#include "defs.h"
+SoftwareSerial serUp = SoftwareSerial(CAN_UP_RX, CAN_UP_TX);
+SoftwareSerial serDown = SoftwareSerial(CAN_DOWN_RX, CAN_DOWN_TX);
+#endif
 
 /**
  * Performs initialization and configuration for the CAN communication system.
@@ -32,29 +36,30 @@ Serial_CAN canDown;
 void CANSetup(void)
 {
 #ifdef Arduino_h
-    canUp.begin(CAN_UP_TX, CAN_UP_RX, CAN_BAUDRATE);
-    canDown.begin(CAN_DOWN_TX, CAN_DOWN_RX, CAN_BAUDRATE);
+    serUp.begin(CAN_BAUDRATE);
+    serDown.begin(CAN_BAUDRATE);
+    canUp.begin(serUp, CAN_BAUDRATE);
+    canDown.begin(serDown, CAN_BAUDRATE);
 
+    serUp.listen();
     debugPrintLine("Resetting upstream...");
     canUp.factorySetting();
-    debugPrintLine("Resetting downstream...");
-    canDown.factorySetting();
-
     debugPrintLine("Setting upstream mask...");
     if (!canUp.setMask(rx_mask)) {
         debugPrintLine("Upstream mask not set");
     }
-
-    debugPrintLine("Setting downstream mask...");
-    if (!canDown.setMask(rx_mask)) {
-        debugPrintLine("Downstream mask not set");
-    }
-
     debugPrintLine("Setting upstream filter...");
     if (!canUp.setFilt(rx_filter)) {
         debugPrintLine("Upstream filter not set");
     }
 
+    serDown.listen();
+    debugPrintLine("Resetting downstream...");
+    canDown.factorySetting();
+    debugPrintLine("Setting downstream mask...");
+    if (!canDown.setMask(rx_mask)) {
+        debugPrintLine("Downstream mask not set");
+    }
     debugPrintLine("Setting downstream filter...");
     if (!canDown.setFilt(rx_filter)) {
         debugPrintLine("Downstream filter not set");
