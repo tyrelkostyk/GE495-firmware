@@ -17,19 +17,22 @@ message_t currentCommand;
 // The last update received from upstream
 message_t currentUpdate;
 
+#ifdef Arduino_h
+// Tracker for time elapsed on a given SoftwareSerial port
+uint32_t prevTime;
+#endif  // Arduino_h
+
 // Initialization steps go in here
 void setup()
 {
 #ifdef Arduino_h
     Serial.begin(SER_BAUDRATE);
+    Serial.setTimeout(250);
     while (!Serial);
-#ifdef _DBG
     debugPrintLine("ARDUINO: Started setup");
-#endif  // _DBG
     CANSetup();
-#ifdef _DBG
     debugPrintLine("ARDUINO: Completed setup");
-#endif  // _DBG
+    prevTime = millis();
 #endif  // Arduino_h
 }
 
@@ -43,24 +46,39 @@ void loop()
     debugScan();
     debugPrintLine("ARDUINO: Debug scan");
 #endif  // _DBG
+
+    if (millis() - prevTime > 250) {
+        prevTime = millis();
+        if (serUp.isListening()) {
+            debugPrintLine("Listening down");
+            serDown.listen();
+        } else {
+            debugPrintLine("Listening up");
+            serUp.listen();
+        }
+    }
     
     // Poll for commands and respond accordingly
     // If a command is received from downstream (ECU-side) immediately forward upstream
     // Then check to see if the command requires any action from this device
-    serDown.listen();
+    // serDown.listen();
+    // debugPrintLine("ARDUINO: Listening down...");
     if (cmdReceiveDownstream(&currentCommand)) {
         cmdSendUpstream(&currentCommand);
         cmdParse(&currentCommand);
     }
+    // delay(1000);
 
     // Poll for updates and respond accordingly
     // If an update is received from upstream, handle (e.g. provide modifications)
     // Then forward the modified message downstream
-    serUp.listen();
+    // serUp.listen();
+    // debugPrintLine("ARDUINO: Listening up...");
     if (updateReceiveUpstream(&currentUpdate)) {
         updateHandle(&currentUpdate);
         updateSendDownstream(&currentUpdate);
     }
+    // delay(500);
 
 #endif  // Arduino_h
 }
