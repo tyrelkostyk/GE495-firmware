@@ -4,9 +4,11 @@
 // Leave undefined in the compiler if not compiling to an Arduino target
 #ifdef _ARDUINO
 #include <Arduino.h>
+#include <AltSoftSerial.h>
 #include <SoftwareSerial.h>
 
-extern SoftwareSerial serUp, serDown;
+extern SoftwareSerial serUp;
+extern AltSoftSerial serDown;
 #endif  // _ARDUINO
 
 #include "defs.h"
@@ -19,7 +21,7 @@ message_t currentUpdate;
 
 #ifdef Arduino_h
 // Tracker for time elapsed on a given SoftwareSerial port
-uint32_t prevTime;
+// uint32_t prevTime;
 #endif  // Arduino_h
 
 // Initialization steps go in here
@@ -32,7 +34,7 @@ void setup()
     debugPrintLine("ARDUINO: Started setup");
     CANSetup();
     debugPrintLine("ARDUINO: Completed setup");
-    prevTime = millis();
+    // prevTime = millis();
 #endif  // Arduino_h
 }
 
@@ -47,38 +49,32 @@ void loop()
     debugPrintLine("ARDUINO: Debug scan");
 #endif  // _DBG
 
-    if (millis() - prevTime > 250) {
-        prevTime = millis();
-        if (serUp.isListening()) {
-            debugPrintLine("Listening down");
-            serDown.listen();
-        } else {
-            debugPrintLine("Listening up");
-            serUp.listen();
-        }
-    }
+    // if (millis() - prevTime > 250) {
+    //     prevTime = millis();
+    //     if (serUp.isListening()) {
+    //         debugPrintLine("Listening down");
+    //         serDown.listen();
+    //     } else {
+    //         debugPrintLine("Listening up");
+    //         serUp.listen();
+    //     }
+    // }
     
     // Poll for commands and respond accordingly
     // If a command is received from downstream (ECU-side) immediately forward upstream
     // Then check to see if the command requires any action from this device
-    // serDown.listen();
-    // debugPrintLine("ARDUINO: Listening down...");
     if (cmdReceiveDownstream(&currentCommand)) {
         cmdSendUpstream(&currentCommand);
         cmdParse(&currentCommand);
     }
-    // delay(1000);
 
     // Poll for updates and respond accordingly
     // If an update is received from upstream, handle (e.g. provide modifications)
     // Then forward the modified message downstream
-    // serUp.listen();
-    // debugPrintLine("ARDUINO: Listening up...");
     if (updateReceiveUpstream(&currentUpdate)) {
         updateHandle(&currentUpdate);
         updateSendDownstream(&currentUpdate);
     }
-    // delay(500);
 
 #endif  // Arduino_h
 }

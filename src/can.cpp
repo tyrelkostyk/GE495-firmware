@@ -5,6 +5,7 @@
 
 #ifdef _ARDUINO
 #include <Arduino.h>
+#include <AltSoftSerial.h>
 #include <SoftwareSerial.h>
 #include "Serial_CAN_Module.h"
 
@@ -26,7 +27,7 @@ Serial_CAN canUp;
 Serial_CAN canDown;
 
 SoftwareSerial serUp = SoftwareSerial(CAN_UP_RX, CAN_UP_TX);
-SoftwareSerial serDown = SoftwareSerial(CAN_DOWN_RX, CAN_DOWN_TX);
+AltSoftSerial serDown;
 #endif
 
 /**
@@ -41,9 +42,6 @@ void CANSetup(void)
     canUp.begin(serUp, CAN_BAUDRATE);
     canDown.begin(serDown, CAN_BAUDRATE);
 
-    serUp.listen();
-    debugPrintLine("Resetting upstream...");
-    canUp.factorySetting();
     debugPrintLine("Setting upstream mask...");
     if (!canUp.setMask(rx_mask)) {
         debugPrintLine("Upstream mask not set");
@@ -53,9 +51,6 @@ void CANSetup(void)
         debugPrintLine("Upstream filter not set");
     }
 
-    serDown.listen();
-    debugPrintLine("Resetting downstream...");
-    canDown.factorySetting();
     debugPrintLine("Setting downstream mask...");
     if (!canDown.setMask(rx_mask)) {
         debugPrintLine("Downstream mask not set");

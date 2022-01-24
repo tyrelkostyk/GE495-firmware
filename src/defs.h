@@ -25,8 +25,10 @@ void debugHandshake(void);
 #define CAN_BAUDRATE 9600
 #define CAN_UP_TX 4
 #define CAN_UP_RX 5
-#define CAN_DOWN_TX 6
-#define CAN_DOWN_RX 7
+
+// Downstream CAN for Arduino now uses AltSoftSerial which requires RX 8, TX 9
+// #define CAN_DOWN_TX 6
+// #define CAN_DOWN_RX 7
 
 #define CAN_FRAME_STD 0x00
 #define CAN_FRAME_EXT 0x01
