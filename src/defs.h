@@ -25,8 +25,10 @@ void debugHandshake(void);
 #define CAN_BAUDRATE 9600
 #define CAN_UP_TX 4
 #define CAN_UP_RX 5
-#define CAN_DOWN_TX 6
-#define CAN_DOWN_RX 7
+
+// Downstream CAN for Arduino now uses AltSoftSerial which requires RX 8, TX 9
+// #define CAN_DOWN_TX 6
+// #define CAN_DOWN_RX 7
 
 #define CAN_FRAME_STD 0x00
 #define CAN_FRAME_EXT 0x01
@@ -65,15 +67,15 @@ void cmdParse (message_t *command);
 
 // TODO These will definitely have to change
 
-#define PGN_DEBUG_HANDSHAKE 0x00
+#define PGN_DEBUG_HANDSHAKE 0x01
 
-#define PGN_TARE_START  0x01
-#define PGN_TARE_STEP1  0x02
-#define PGN_TARE_STEP2  0x03
-#define PGN_TARE_FINISH 0x04
+#define PGN_TARE_START  0x02
+#define PGN_TARE_STEP1  0x03
+#define PGN_TARE_STEP2  0x04
+#define PGN_TARE_FINISH 0x05
 
-#define PGN_CALIBRATE_START  0x05
-#define PGN_CALIBRATE_FINISH 0x06
+#define PGN_CALIBRATE_START  0x06
+#define PGN_CALIBRATE_FINISH 0x07
 
 /*********
 * UPDATE *

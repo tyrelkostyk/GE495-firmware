@@ -20,9 +20,12 @@ extern message_t currentUpdate;
  */
 void debugPrint(const char *message)
 {
+#ifdef _DBG
 #ifdef Arduino_h
     Serial.print(message);
-#endif
+
+#endif  // Arduino_h
+#endif  // _DBG
 }
 
 /**
@@ -32,9 +35,11 @@ void debugPrint(const char *message)
  */
 void debugPrintLine(const char *message)
 {
+#ifdef _DBG
 #ifdef Arduino_h
     Serial.println(message);
 #endif  // Arduino_h
+#endif  // _DBG
 }
 
 /**
@@ -44,9 +49,11 @@ void debugPrintLine(const char *message)
  */
 uint32_t debugReadLine(char *buffer)
 {
+#ifdef _DBG
 #ifdef Arduino_h
     return Serial.readBytesUntil('\n', buffer, DEBUG_INPUT_LEN_MAX);
-#endif
+#endif  // Arduino_h
+#endif  // _DBG
 }
 
 /**
@@ -59,7 +66,7 @@ void debugScan(void)
     if (!debugReadLine(buffer))
         return;
     
-    if (strncmp(buffer, "HANDSHAKE", 9) == 0) {
+    if (strncmp(buffer, "1", 1) == 0) {
         debugHandshake();
     } else {
         debugPrintLine("Unrecognized debug command!");
@@ -72,9 +79,9 @@ void debugScan(void)
  */
 void debugHandshake(void)
 {
-    currentCommand.id = 0;
-    currentCommand.length = 0;
-    memset(currentCommand.data, 0, CAN_DATA_LEN_MAX);  // Just to be safe
+    currentCommand.id = 1<<8;
+    currentCommand.length = CAN_DATA_LEN_MAX;
+    memset(currentCommand.data, 2, CAN_DATA_LEN_MAX);  // Just to be safe
 
     cmdSendUpstream(&currentCommand);
 }

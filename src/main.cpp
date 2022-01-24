@@ -4,7 +4,11 @@
 // Leave undefined in the compiler if not compiling to an Arduino target
 #ifdef _ARDUINO
 #include <Arduino.h>
+#include <AltSoftSerial.h>
 #include <SoftwareSerial.h>
+
+extern SoftwareSerial serUp;
+extern AltSoftSerial serDown;
 #endif  // _ARDUINO
 
 #include "defs.h"
@@ -15,18 +19,22 @@ message_t currentCommand;
 // The last update received from upstream
 message_t currentUpdate;
 
+#ifdef Arduino_h
+// Tracker for time elapsed on a given SoftwareSerial port
+// uint32_t prevTime;
+#endif  // Arduino_h
+
 // Initialization steps go in here
 void setup()
 {
 #ifdef Arduino_h
     Serial.begin(SER_BAUDRATE);
-#ifdef _DBG
+    Serial.setTimeout(250);
+    while (!Serial);
     debugPrintLine("ARDUINO: Started setup");
-#endif  // _DBG
     CANSetup();
-#ifdef _DBG
     debugPrintLine("ARDUINO: Completed setup");
-#endif  // _DBG
+    // prevTime = millis();
 #endif  // Arduino_h
 }
 
@@ -40,6 +48,17 @@ void loop()
     debugScan();
     debugPrintLine("ARDUINO: Debug scan");
 #endif  // _DBG
+
+    // if (millis() - prevTime > 250) {
+    //     prevTime = millis();
+    //     if (serUp.isListening()) {
+    //         debugPrintLine("Listening down");
+    //         serDown.listen();
+    //     } else {
+    //         debugPrintLine("Listening up");
+    //         serUp.listen();
+    //     }
+    // }
     
     // Poll for commands and respond accordingly
     // If a command is received from downstream (ECU-side) immediately forward upstream

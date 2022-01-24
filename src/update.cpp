@@ -23,10 +23,7 @@ uint8_t updateReceiveUpstream(message_t *update)
     uint8_t data[CAN_DATA_LEN_MAX];
 
     if ((received = CANReceive(UP, &id, data)) != 0x00) {
-#ifdef _DBG
         debugPrintLine("Received update!");
-#endif  // _DBG
-
         update->id = id;
         memcpy(update->data, data, CAN_DATA_LEN_MAX);
     }
@@ -41,10 +38,7 @@ uint8_t updateReceiveUpstream(message_t *update)
  */
 void updateSendDownstream(message_t *update)
 {
-#ifdef _DBG
     debugPrintLine("Sent update!");
-#endif  // _DBG
-
     CANSend(DOWN, update->id, CAN_FRAME_EXT, 0x00, update->length, update->data);
 }
 
@@ -59,8 +53,6 @@ void updateHandle(message_t *update)
     //  - inject mass data for this node
     //  - increment origin field by 1
     //  - ???
-#ifdef _DBG
     debugPrintLine("Update handled!");
-#endif  // _DBG
 }
 
