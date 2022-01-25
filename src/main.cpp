@@ -19,9 +19,11 @@ message_t currentCommand;
 // The last update received from upstream
 message_t currentUpdate;
 
+extern uint8_t tankID;
+
 #ifdef Arduino_h
 // Tracker for time elapsed on a given SoftwareSerial port
-// uint32_t prevTime;
+uint32_t prevUpdateTime;
 #endif  // Arduino_h
 
 // Initialization steps go in here
@@ -34,7 +36,15 @@ void setup()
     debugPrintLine("ARDUINO: Started setup");
     CANSetup();
     debugPrintLine("ARDUINO: Completed setup");
-    // prevTime = millis();
+
+#ifdef _DBG
+    debugPrint("Tank ID: ");
+    char tb[8];
+    itoa(tankID, tb, 16);
+    debugPrintLine(tb);
+#endif  // _DBG
+
+    prevUpdateTime = millis();
 #endif  // Arduino_h
 }
 
@@ -49,16 +59,11 @@ void loop()
     debugPrintLine("ARDUINO: Debug scan");
 #endif  // _DBG
 
-    // if (millis() - prevTime > 250) {
-    //     prevTime = millis();
-    //     if (serUp.isListening()) {
-    //         debugPrintLine("Listening down");
-    //         serDown.listen();
-    //     } else {
-    //         debugPrintLine("Listening up");
-    //         serUp.listen();
-    //     }
-    // }
+    if (millis() - prevUpdateTime > UPDATE_DELAY_MS) {
+        prevUpdateTime = millis();
+        updateLoadCurrentData(&currentUpdate);
+        updateSendDownstream(&currentUpdate);
+    }
     
     // Poll for commands and respond accordingly
     // If a command is received from downstream (ECU-side) immediately forward upstream
@@ -72,6 +77,14 @@ void loop()
     // If an update is received from upstream, handle (e.g. provide modifications)
     // Then forward the modified message downstream
     if (updateReceiveUpstream(&currentUpdate)) {
+
+#ifdef _DBG
+        debugPrint("Tank ID: ");
+        char tb[8];
+        itoa(tankID, tb, 16);
+        debugPrintLine(tb);
+#endif  // _DBG
+
         updateHandle(&currentUpdate);
         updateSendDownstream(&currentUpdate);
     }

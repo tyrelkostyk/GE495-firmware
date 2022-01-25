@@ -8,6 +8,8 @@
 
 #include "defs.h"
 
+extern message_t currentUpdate;
+
 /**
  * Extracts and returns the PGN from a CAN message structure
  * @param message_t *message The message from which to get the PGN
@@ -66,7 +68,8 @@ void cmdParse(message_t *command)
     uint32_t pgn = cmdPGNFromMessage(command);
     switch (pgn) {
         case PGN_DEBUG_HANDSHAKE: {
-            updateSendDownstream(command);  // Just send the message right back
+            updateLoadCurrentData(&currentUpdate);
+            updateSendDownstream(&currentUpdate);  // Just send the message right back
             break;
         }
         case PGN_TARE_START: {
