@@ -14,6 +14,7 @@
 
 void debugPrint(const char *message);
 void debugPrintLine(const char *message);
+void debugPrintNumber(uint32_t num);
 uint32_t debugReadLine(char *buffer);
 void debugScan(void);
 void debugHandshake(void);
@@ -83,6 +84,7 @@ void cmdParse (message_t *command);
 
 // TODO Deprecated?
 #define UPDATE_MASS_LEN_MAX 8
+#define UPDATE_DELAY_MS 1000
 
 uint8_t updateReceiveUpstream(message_t *update);
 void updateSendDownstream(message_t *update);
@@ -96,5 +98,11 @@ void updateLoadCurrentData(message_t *update);
 #define MASS_NUM_BYTES 4
 
 void massGetCurrent(uint8_t *buffer);
+
+/*******
+* TANK *
+*******/
+
+void tankRefreshID(uint8_t refID);
 
 #endif  // DEFS_H

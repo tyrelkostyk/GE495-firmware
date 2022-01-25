@@ -13,6 +13,8 @@
 extern message_t currentCommand;
 extern message_t currentUpdate;
 
+extern uint32_t currentMass;
+
 /**
  * Sends a string message to the debugger, with NO newline appended.
  * @param char *message The string to be debug-printed.
@@ -24,6 +26,15 @@ void debugPrint(const char *message)
 #ifdef Arduino_h
     Serial.print(message);
 
+#endif  // Arduino_h
+#endif  // _DBG
+}
+
+void debugPrintNumber(uint32_t num)
+{
+#ifdef _DBG
+#ifdef Arduino_h
+    Serial.print(num, HEX);
 #endif  // Arduino_h
 #endif  // _DBG
 }

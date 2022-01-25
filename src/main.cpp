@@ -19,6 +19,8 @@ message_t currentCommand;
 // The last update received from upstream
 message_t currentUpdate;
 
+extern uint8_t tankID;
+
 #ifdef Arduino_h
 // Tracker for time elapsed on a given SoftwareSerial port
 uint32_t prevUpdateTime;
@@ -34,6 +36,14 @@ void setup()
     debugPrintLine("ARDUINO: Started setup");
     CANSetup();
     debugPrintLine("ARDUINO: Completed setup");
+
+#ifdef _DBG
+    debugPrint("Tank ID: ");
+    char tb[8];
+    itoa(tankID, tb, 16);
+    debugPrintLine(tb);
+#endif  // _DBG
+
     prevUpdateTime = millis();
 #endif  // Arduino_h
 }
@@ -49,7 +59,7 @@ void loop()
     debugPrintLine("ARDUINO: Debug scan");
 #endif  // _DBG
 
-    if (millis() - prevUpdateTime > 200) {
+    if (millis() - prevUpdateTime > UPDATE_DELAY_MS) {
         prevUpdateTime = millis();
         updateLoadCurrentData(&currentUpdate);
         updateSendDownstream(&currentUpdate);
@@ -67,6 +77,14 @@ void loop()
     // If an update is received from upstream, handle (e.g. provide modifications)
     // Then forward the modified message downstream
     if (updateReceiveUpstream(&currentUpdate)) {
+
+#ifdef _DBG
+        debugPrint("Tank ID: ");
+        char tb[8];
+        itoa(tankID, tb, 16);
+        debugPrintLine(tb);
+#endif  // _DBG
+
         updateHandle(&currentUpdate);
         updateSendDownstream(&currentUpdate);
     }
