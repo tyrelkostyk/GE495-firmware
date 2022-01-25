@@ -56,3 +56,20 @@ void updateHandle(message_t *update)
     debugPrintLine("Update handled!");
 }
 
+/**
+ * Inserts current data from mass module into a new update message.
+ * @param message_t *update The message structure to be reset and modified
+ * @return void
+ */
+void updateLoadCurrentData(message_t *update)
+{
+    uint8_t mass[MASS_NUM_BYTES];
+
+    update->id = 0x0;
+    update->length = CAN_DATA_LEN_MAX;
+    memset(update->data, 0, CAN_DATA_LEN_MAX);
+    massGetCurrent(mass);
+    memcpy((uint8_t *)(&update->data[CAN_DATA_LEN_MAX-MASS_NUM_BYTES]), 
+           (uint8_t *)mass, MASS_NUM_BYTES);
+}
+

@@ -87,5 +87,14 @@ void cmdParse (message_t *command);
 uint8_t updateReceiveUpstream(message_t *update);
 void updateSendDownstream(message_t *update);
 void updateHandle(message_t *update);
+void updateLoadCurrentData(message_t *update);
+
+/*******
+* MASS *
+*******/
+
+#define MASS_NUM_BYTES 4
+
+void massGetCurrent(uint8_t *buffer);
 
 #endif  // DEFS_H

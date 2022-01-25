@@ -21,7 +21,7 @@ message_t currentUpdate;
 
 #ifdef Arduino_h
 // Tracker for time elapsed on a given SoftwareSerial port
-// uint32_t prevTime;
+uint32_t prevUpdateTime;
 #endif  // Arduino_h
 
 // Initialization steps go in here
@@ -34,7 +34,7 @@ void setup()
     debugPrintLine("ARDUINO: Started setup");
     CANSetup();
     debugPrintLine("ARDUINO: Completed setup");
-    // prevTime = millis();
+    prevUpdateTime = millis();
 #endif  // Arduino_h
 }
 
@@ -49,16 +49,11 @@ void loop()
     debugPrintLine("ARDUINO: Debug scan");
 #endif  // _DBG
 
-    // if (millis() - prevTime > 250) {
-    //     prevTime = millis();
-    //     if (serUp.isListening()) {
-    //         debugPrintLine("Listening down");
-    //         serDown.listen();
-    //     } else {
-    //         debugPrintLine("Listening up");
-    //         serUp.listen();
-    //     }
-    // }
+    if (millis() - prevUpdateTime > 200) {
+        prevUpdateTime = millis();
+        updateLoadCurrentData(&currentUpdate);
+        updateSendDownstream(&currentUpdate);
+    }
     
     // Poll for commands and respond accordingly
     // If a command is received from downstream (ECU-side) immediately forward upstream
