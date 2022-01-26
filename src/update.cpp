@@ -9,17 +9,15 @@
 
 #include "defs.h"
 
-extern uint8_t tankID;
-
 /**
  * Retrieves a tank ID from the data field of a message instance.
  * @param message_t *message The message structure from which to extract the tank ID
  * @return uint8_t The tank ID number from the message
  */
-inline uint8_t updateTankIDFromMessage(message_t *message)
+void updateMessageTankID(message_t *message)
 {
     // Little-endian data transmission means ID will be at the end
-    return message->data[CAN_DATA_LEN_MAX-1];  
+    ++(message->data[CAN_DATA_LEN_MAX-1]);
 }
 
 /**
@@ -63,14 +61,14 @@ void updateSendDownstream(message_t *update)
  */
 void updateHandle(message_t *update)
 {
-    uint8_t handledTankID = updateTankIDFromMessage(update);
+    updateMessageTankID(update);
 
 #ifdef _DBG
     char number[8];
-    itoa(handledTankID, number, 16);
-    tankRefreshID(handledTankID);
-    debugPrint("Update handled! ");
-    debugPrintLine(number);
+    itoa(update->data[CAN_DATA_LEN_MAX-1], number, 16);
+    debugPrint("Update handled -- (ID now ");
+    debugPrint(number);
+    debugPrintLine(")");
 #endif  // _DBG
 
 }
@@ -89,6 +87,6 @@ void updateLoadCurrentData(message_t *update)
     memset(update->data, 0, CAN_DATA_LEN_MAX);
     massGetCurrent(mass);
     memcpy((uint8_t *)(&update->data), (uint8_t *)mass, MASS_NUM_BYTES);
-    update->data[CAN_DATA_LEN_MAX-1] = tankID;
+    update->data[CAN_DATA_LEN_MAX-1] = 0x00;
 }
 
