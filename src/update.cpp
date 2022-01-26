@@ -14,7 +14,7 @@
  * @param message_t *message The message structure from which to extract the tank ID
  * @return uint8_t The tank ID number from the message
  */
-void updateMessageTankID(message_t *message)
+inline void updateMessageTankID(message_t *message)
 {
     // Little-endian data transmission means ID will be at the end
     ++(message->data[CAN_DATA_LEN_MAX-1]);
@@ -22,7 +22,7 @@ void updateMessageTankID(message_t *message)
 
 /**
  * Receives an update from the next upstream device.
- * @param message_t *update Pointer to the message structure to populate with the received CAN data
+ * @param message_t *update The message structure to populate with the received CAN data
  * @return 0x01 on a successful receive, 0x00 otherwise
  */
 uint8_t updateReceiveUpstream(message_t *update)
@@ -36,7 +36,6 @@ uint8_t updateReceiveUpstream(message_t *update)
     if ((received = CANReceive(UP, &id, data)) != 0x00) {
         debugPrintLine("Received update!");
         update->id = id;
-        update->length = CAN_DATA_LEN_MAX;
         memcpy(update->data, data, CAN_DATA_LEN_MAX);
     }
 
@@ -46,20 +45,24 @@ uint8_t updateReceiveUpstream(message_t *update)
 /**
  * Sends an update to the next downstream device.
  * @param message_t *update The message structure to transmit downstream
- * @return void
+ * @return OK on successful transmission, ERR otherwise
  */
-void updateSendDownstream(message_t *update)
+uint8_t updateSendDownstream(message_t *update)
 {
-    CANSend(DOWN, update->id, CAN_FRAME_EXT, 0x00, update->length, update->data);
+    if (CANSend(DOWN, update->id, CAN_FRAME_EXT, 0x00, CAN_DATA_LEN_MAX, 
+                update->data) != OK) {
+        return ERR;
+    }
     debugPrintLine("Sent update!");
+    return OK;
 }
 
 /**
  * Handles the modification of updates with tagging and mass data.
  * @param message_t *update The update to be modified
- * @return void
+ * @return OK on a successful handling, ERR if an error occurs
  */
-void updateHandle(message_t *update)
+uint8_t updateHandle(message_t *update)
 {
     updateMessageTankID(update);
 
@@ -71,22 +74,28 @@ void updateHandle(message_t *update)
     debugPrintLine(")");
 #endif  // _DBG
 
+    return OK;
 }
 
 /**
  * Inserts current data from mass module into a new update message.
  * @param message_t *update The message structure to be reset and modified
- * @return void
+ * @return OK or ERR
  */
-void updateLoadCurrentData(message_t *update)
+uint8_t updateLoadCurrentData(message_t *update)
 {
     uint8_t mass[MASS_NUM_BYTES];
 
-    update->id = 0x0;
-    update->length = CAN_DATA_LEN_MAX;
-    memset(update->data, 0, CAN_DATA_LEN_MAX);
+    update->id = 0x0;  // TODO Set the PGN correctly
+    if (memset(update->data, 0, CAN_DATA_LEN_MAX) == NULL)
+        return ERR;
+
     massGetCurrent(mass);
-    memcpy((uint8_t *)(&update->data), (uint8_t *)mass, MASS_NUM_BYTES);
+    if (memcpy((uint8_t *)(&update->data), (uint8_t *)mass, MASS_NUM_BYTES) == NULL)
+        return ERR;
+
     update->data[CAN_DATA_LEN_MAX-1] = 0x00;
+
+    return OK;
 }
 

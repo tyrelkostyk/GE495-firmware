@@ -6,6 +6,12 @@
 
 #include <stdint.h>
 
+#define OK  0x01
+#define ERR 0x00
+#define NOP 0xff
+
+typedef struct _message_t message_t;
+
 /********
 * DEBUG *
 ********/
@@ -16,8 +22,8 @@ void debugPrint(const char *message);
 void debugPrintLine(const char *message);
 void debugPrintNumber(uint32_t num);
 uint32_t debugReadLine(char *buffer);
-void debugScan(void);
-void debugHandshake(void);
+void debugScan(message_t *command);
+uint8_t debugHandshake(message_t *command);
 
 /******
 * CAN *
@@ -44,12 +50,13 @@ typedef enum {
 
 typedef struct _message_t {
     uint32_t id;
-    uint8_t length;
+    // uint8_t length;  // Unnecessary
     uint8_t data[CAN_DATA_LEN_MAX];
 } message_t;
 
-void CANSetup (void);
-void CANSend (can_dir_t direction, uint32_t id, uint8_t ext, uint8_t rtr, uint8_t length, const uint8_t *data);
+uint8_t CANSetup (void);
+uint8_t CANSend (can_dir_t direction, uint32_t id, uint8_t ext, uint8_t rtr, 
+                 uint8_t length, const uint8_t *data);
 uint8_t CANReceive (can_dir_t direction, uint32_t *id, uint8_t *buffer);
 
 /*********
@@ -62,9 +69,9 @@ uint8_t CANReceive (can_dir_t direction, uint32_t *id, uint8_t *buffer);
 * COMMAND (CMD) *
 ****************/
 
-void cmdSendUpstream (message_t *command);
+uint8_t cmdSendUpstream (message_t *command);
 uint8_t cmdReceiveDownstream (message_t *command);
-void cmdParse (message_t *command);
+uint8_t cmdParse (message_t *command);
 
 // TODO These will definitely have to change
 
@@ -87,9 +94,9 @@ void cmdParse (message_t *command);
 #define UPDATE_DELAY_MS 1000
 
 uint8_t updateReceiveUpstream(message_t *update);
-void updateSendDownstream(message_t *update);
-void updateHandle(message_t *update);
-void updateLoadCurrentData(message_t *update);
+uint8_t updateSendDownstream(message_t *update);
+uint8_t updateHandle(message_t *update);
+uint8_t updateLoadCurrentData(message_t *update);
 
 /*******
 * MASS *
@@ -103,6 +110,6 @@ void massGetCurrent(uint8_t *buffer);
 * TANK *
 *******/
 
-void tankRefreshID(uint8_t refID);
+// void tankRefreshID(uint8_t refID);  // Deprecated (for now?)
 
 #endif  // DEFS_H

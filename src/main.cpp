@@ -32,9 +32,11 @@ void setup()
     Serial.begin(SER_BAUDRATE);
     Serial.setTimeout(250);
     while (!Serial);
-    CANSetup();
     prevUpdateTime = millis();
-    debugPrintLine("ARDUINO: Completed setup");
+    if (CANSetup() != OK)
+        debugPrintLine("ARDUINO: Setup encountered a recoverable issue");
+    else
+        debugPrintLine("ARDUINO: Completed setup");
 #endif  // Arduino_h
 }
 
@@ -45,7 +47,7 @@ void loop()
 
 #ifdef _DBG
     // In debug mode, wait for specific test inputs
-    debugScan();
+    debugScan(&currentCommand);
     debugPrintLine("ARDUINO: Debug scan");
 #endif  // _DBG
 

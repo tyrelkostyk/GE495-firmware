@@ -5,6 +5,11 @@
 
 uint32_t currentMass;
 
+/**
+ * Retrieves the value of the current mass (processed)
+ * @param uint8_t *buffer The buffer to place the mass readings into
+ * @return void
+ */
 void massGetCurrent(uint8_t *buffer)
 {
     // Split 32-bit number into 8-bit chunks, little-endian
