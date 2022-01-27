@@ -32,10 +32,12 @@ AltSoftSerial serDown;
 
 /**
  * Performs initialization and configuration for the CAN communication system.
- * @return void
+ * @return OK on successful setup, ERR if anything has not initialized correctly
  */
-void CANSetup(void)
+uint8_t CANSetup(void)
 {
+    uint8_t setupStatus = OK;
+
 #ifdef Arduino_h
     serUp.begin(CAN_BAUDRATE);
     serDown.begin(CAN_BAUDRATE);
@@ -44,23 +46,31 @@ void CANSetup(void)
 
     debugPrintLine("Setting upstream mask...");
     if (!canUp.setMask(rx_mask)) {
-        debugPrintLine("Upstream mask not set");
-    }
-    debugPrintLine("Setting upstream filter...");
-    if (!canUp.setFilt(rx_filter)) {
-        debugPrintLine("Upstream filter not set");
+        debugPrintLine("Upstream mask not set, skipping upstream filter...");
+        setupStatus = ERR;
+    } else {
+        debugPrintLine("Setting upstream filter...");
+        if (!canUp.setFilt(rx_filter)) {
+            debugPrintLine("Upstream filter not set");
+            setupStatus = ERR;
+        }
     }
 
     debugPrintLine("Setting downstream mask...");
     if (!canDown.setMask(rx_mask)) {
-        debugPrintLine("Downstream mask not set");
-    }
-    debugPrintLine("Setting downstream filter...");
-    if (!canDown.setFilt(rx_filter)) {
-        debugPrintLine("Downstream filter not set");
+        debugPrintLine("Downstream mask not set, skipping downstream filter...");
+        setupStatus = ERR;
+    } else {
+        debugPrintLine("Setting downstream filter...");
+        if (!canDown.setFilt(rx_filter)) {
+            debugPrintLine("Downstream filter not set");
+            setupStatus = ERR;
+        }
     }
 
 #endif
+    
+    return setupStatus;
 }
 
 /**
@@ -71,15 +81,15 @@ void CANSetup(void)
  * @param uint8_t rtr Set to 0x01 for Remote Transmission Requests (broadcast)
  * @param uint8_t length Length of the data message in bytes
  * @param uint8_t *data Array of data bytes (doesn't have to NULL-terminate)
- * @return void
+ * @return OK on success, ERR otherwise
  */
-void CANSend(can_dir_t direction, uint32_t id, uint8_t ext, uint8_t rtr, uint8_t length, const uint8_t *data)
+uint8_t CANSend(can_dir_t direction, uint32_t id, uint8_t ext, uint8_t rtr, uint8_t length, const uint8_t *data)
 {
 #ifdef Arduino_h
     if (direction == UP)
-        canUp.send(id, ext, rtr, length, data);
+        return canUp.send(id, ext, rtr, length, data);
     else if (direction == DOWN)
-        canDown.send(id, ext, rtr, length, data);
+        return canDown.send(id, ext, rtr, length, data);
 #endif
 }
 
@@ -88,14 +98,17 @@ void CANSend(can_dir_t direction, uint32_t id, uint8_t ext, uint8_t rtr, uint8_t
  * into the specified buffer.
  * @param uint32_t *id Address to store the message identifier (29 bits in J1939)
  * @param uint8_t *buffer Buffer to which the received message data will be written
- * @return 0x01 if there is data to read, 0x00 otherwise
+ * @return OK if there is data to read, NOP otherwise
  */
 uint8_t CANReceive(can_dir_t direction, uint32_t *id, uint8_t *buffer)
 {
+    uint8_t received;
 #ifdef Arduino_h
     if (direction == UP)
-        return canUp.recv(id, buffer);
+        received = canUp.recv(id, buffer);
     else if (direction == DOWN)
-        return canDown.recv(id, buffer);
+        received = canDown.recv(id, buffer);
 #endif
+    return received ? OK : NOP;
 }
+

@@ -22,12 +22,15 @@ inline uint32_t cmdPGNFromMessage(message_t *message)
 
 /**
  * Sends a command to the next upstream device.
- * @return void
+ * @return OK if the command was sent successfully, ERR otherwise
  */
-void cmdSendUpstream(message_t *command)
+uint8_t cmdSendUpstream(message_t *command)
 {
+    if (CANSend(UP, command->id, CAN_FRAME_EXT, 0x00, CAN_DATA_LEN_MAX, 
+                command->data) != OK)
+        return ERR;
     debugPrintLine("Sent command!");
-    CANSend(UP, command->id, CAN_FRAME_EXT, 0x00, command->length, command->data);
+    return OK;
 }
 
 /**
@@ -45,7 +48,6 @@ uint8_t cmdReceiveDownstream(message_t *command)
     if ((received = CANReceive(DOWN, &id, data)) != 0x00) {
         debugPrintLine("Received command!");
         command->id = id;
-        command->length = CAN_DATA_LEN_MAX;  // TODO Is there a way to determine the actual length?
         memcpy(command->data, data, CAN_DATA_LEN_MAX);
     }
 
@@ -55,9 +57,9 @@ uint8_t cmdReceiveDownstream(message_t *command)
 /**
  * Parses a command to determine if it should execute on this device.
  * @param message_t *command The command to be parsed
- * @return void
+ * @return OK if there were no problems parsing the command, ERR otherwise
  */
-void cmdParse(message_t *command)
+uint8_t cmdParse(message_t *command)
 {
     // TODO Implement this properly
     // What to do here:
@@ -97,10 +99,12 @@ void cmdParse(message_t *command)
             break;
         }
         default: {
-
+            // Unrecognized command
+            return ERR;
         }
     }
 
     debugPrintLine("Parsed a command!");
+    return OK;
 }
 

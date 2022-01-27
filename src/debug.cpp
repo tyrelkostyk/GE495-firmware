@@ -71,14 +71,14 @@ uint32_t debugReadLine(char *buffer)
  * Scans the debug input line for a debug command and executes it if valid.
  * @return void
  */
-void debugScan(void)
+void debugScan(message_t *command)
 {
     char buffer[DEBUG_INPUT_LEN_MAX+1];
     if (!debugReadLine(buffer))
         return;
     
     if (strncmp(buffer, "1", 1) == 0) {
-        debugHandshake();
+        debugHandshake(command);
     } else {
         debugPrintLine("Unrecognized debug command!");
     }
@@ -88,12 +88,11 @@ void debugScan(void)
  * Executes a test handshake from this device to the next upstream device.
  * @return void
  */
-void debugHandshake(void)
+uint8_t debugHandshake(message_t *command)
 {
-    currentCommand.id = 1<<8;
-    currentCommand.length = CAN_DATA_LEN_MAX;
-    memset(currentCommand.data, 2, CAN_DATA_LEN_MAX);  // Just to be safe
+    command->id = 1<<8;
+    memset(command->data, 2, CAN_DATA_LEN_MAX);  // Just to be safe
 
-    cmdSendUpstream(&currentCommand);
+    cmdSendUpstream(command);
 }
 
