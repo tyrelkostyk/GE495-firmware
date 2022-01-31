@@ -18,3 +18,9 @@ void massGetCurrent(uint8_t *buffer)
     }
 }
 
+void massRead(void)
+{
+#ifdef Arduino_h
+    currentMass = analogRead(ARDUINO_MASS_PIN);
+#endif  // Arduino_h
+}
