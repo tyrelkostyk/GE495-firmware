@@ -103,8 +103,11 @@ uint8_t updateLoadCurrentData(message_t *update);
 *******/
 
 #define MASS_NUM_BYTES 4
+#define ARDUINO_MASS_PIN A4
+#define SAMPLE_DELAY_MS 250
 
 void massGetCurrent(uint8_t *buffer);
+void massRead(void);
 
 /*******
 * TANK *

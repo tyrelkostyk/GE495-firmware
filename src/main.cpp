@@ -22,17 +22,20 @@ message_t currentUpdate;
 #ifdef Arduino_h
 // Tracker for time elapsed on a given SoftwareSerial port
 uint32_t prevUpdateTime;
+uint32_t prevSampleTime;
 #endif  // Arduino_h
 
 // Initialization steps go in here
 void setup()
 {
 #ifdef Arduino_h
+    pinMode(ARDUINO_MASS_PIN, INPUT);
     debugPrintLine("ARDUINO: Started setup");
     Serial.begin(SER_BAUDRATE);
     Serial.setTimeout(250);
     while (!Serial);
     prevUpdateTime = millis();
+    prevSampleTime = millis();
     if (CANSetup() != OK)
         debugPrintLine("ARDUINO: Setup encountered a recoverable issue");
     else
@@ -55,6 +58,11 @@ void loop()
         prevUpdateTime = millis();
         updateLoadCurrentData(&currentUpdate);
         updateSendDownstream(&currentUpdate);
+    }
+
+    if (millis() - prevSampleTime > SAMPLE_DELAY_MS) {
+        prevSampleTime = millis();
+        massRead();
     }
     
     // Poll for commands and respond accordingly

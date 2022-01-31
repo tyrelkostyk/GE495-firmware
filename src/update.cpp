@@ -67,10 +67,18 @@ uint8_t updateHandle(message_t *update)
     updateMessageTankID(update);
 
 #ifdef _DBG
-    char number[8];
-    itoa(update->data[CAN_DATA_LEN_MAX-1], number, 16);
+    char id[8];
+    char mass[CAN_DATA_LEN_MAX-1][8];
+
+    itoa(update->data[CAN_DATA_LEN_MAX-1], id, 16);
     debugPrint("Update handled -- (ID now ");
-    debugPrint(number);
+    debugPrint(id);
+    debugPrint(", Mass: ");
+    for (int i = 0; i < CAN_DATA_LEN_MAX-1; i++) {
+        itoa(update->data[i], mass[i], 16);
+        debugPrint(mass[i]);
+        debugPrint(" ");
+    }
     debugPrintLine(")");
 #endif  // _DBG
 
