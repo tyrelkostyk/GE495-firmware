@@ -31,6 +31,13 @@
 # Outputs (general)
 build/
 
+# Config stuff
+src/ASF/
+Debug/
+*.atsln
+*.xml
+*.cproj
+
 # Executables
 *.exe
 *.out
