@@ -15,7 +15,18 @@ The `arduino` branch is the trunk for all "model" code used in early prototyping
 1. Download and install [Microchip Studio](https://www.microchip.com/en-us/tools-resources/develop/microchip-studio). In the installation process select the AVR and SAM architectures.
 2. Clone this repository (`git clone git@github.com:tyrelkostyk/GE495-firmware`).
 3. Make a working branch off of `main` (or a secondary trunk if one exists).
-4. Open the project solution in Microchip Studio.
+4. Open Microchip Studio and create a new project solution.
+5. Enter the project details in the dialog:
+    - Select the **GCC C ASF Board Project** type
+    - Give the project a name (name is unimportant)
+    - Set the location to the root of the local Git repository for the project
+    - Select **Create new solution** and **deselect** Create directory for solution
+    - Press OK
+6. In the Board Selection dialog, search for and select **ATSAM4E8E** in the list, then press OK.
+7. After the project and solution have generated, close the solution using the File menu, browse to the repository folder, and **move** (or cut-paste) all of the contents of the `<project-name>` directory to the root repository folder. The result should be a merging of the two `src` folders, and the `.atsln` and `.cproj` and `.xml` files should all be in the root folder, along with an empty folder named `Debug`.
+8. In Microchip Studio, browse for and open the newly-moved solution file `<project-name>.atsln`.
+9. In the ASF menu (a few spaces to the right of the File menu), open the ASF Wizard. Ensure that the correct project is selected in the dropdown. Refer to [MODULES.md](MODULES.md) for an up-to-date list of which modules to select. Select each required module one at a time from the left column (don't expand them with the arrows) and press **Add**. When finished, press **Apply** and close the Wizard.
+10. Done!
 
 ## Authors
 - [Tyrel Kostyk](https://github.com/tyrelkostyk)
