@@ -28,6 +28,9 @@
 *.so.*
 *.dylib
 
+# Outputs (general)
+build/
+
 # Executables
 *.exe
 *.out
@@ -50,3 +53,7 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Misc
+tags
+*.swp
