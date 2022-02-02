@@ -30,11 +30,35 @@
  */
 #include <asf.h>
 
+extern can_mb_conf_t can_mbox_up_rx, can_mbox_up_tx;
+extern can_mb_conf_t can_mbox_down_rx, can_mbox_down_tx;
+
+uint32_t systemClk;
+
 int main (void)
 {
-	/* Insert system clock initialization code here (sysclk_init()). */
+	// Initialize system clock
+	sysclk_init();
 
+	/* Board initialization should include the following:
+	    - clock config
+		- timer config
+		- peripheral config
+		- CAN settings
+		- TWI settings
+		- GPIO settings
+	*/
 	board_init();
 
-	/* Insert application code here, after the board has been initialized. */
+	while (1) {
+		// Check to see if it's time to sample the ADC output
+		
+		// Check if it's time to send an update
+		
+		// Poll for commands from downstream and respond accordingly
+		
+		// Poll for updates from upstream and respond accordingly
+		
+	}
+	
 }

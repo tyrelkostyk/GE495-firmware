@@ -37,6 +37,8 @@ Debug/
 *.atsln
 *.xml
 *.cproj
+.vs/
+.vscode/
 
 # Executables
 *.exe
