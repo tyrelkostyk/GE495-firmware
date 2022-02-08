@@ -63,7 +63,7 @@ uint8_t CANSetup(void)
 	return 1;
 }
 
-uint32_t CANSend(Can *direction, uint32_t id, uint8_t length, const uint8_t *data)
+uint8_t CANSend(Can *direction, uint32_t id, uint8_t length, const uint8_t *data)
 {
 	can_mb_conf_t *mbox;
 	switch (direction) {
