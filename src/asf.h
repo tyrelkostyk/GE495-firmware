@@ -74,6 +74,10 @@
 // From module: PIO - Parallel Input/Output Controller
 #include <pio.h>
 
+// From module: PMC - Power Management Controller
+#include <pmc.h>
+#include <sleep.h>
+
 // From module: Part identification macros
 #include <parts.h>
 
@@ -82,6 +86,12 @@
 
 // From module: SAM4E startup code
 #include <exceptions.h>
+
+// From module: System Clock Control - SAM4E implementation
+#include <sysclk.h>
+
+// From module: TC - Timer Counter
+#include <tc.h>
 
 // From module: TWI - Two-wire Interface
 #include <twi.h>
