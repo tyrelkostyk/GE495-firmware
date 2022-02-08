@@ -33,25 +33,25 @@ uint8_t CANSetup(void)
 	can_reset_all_mailbox(TBD_CAN_DOWN);
 	can_reset_all_mailbox(TBD_CAN_UP);
 	
-	can_mbox_down_tx.ul_mb_idx = 0;
+	can_mbox_down_tx.ul_mb_idx = TBD_CAN_TX_IDX;
 	can_mbox_down_tx.uc_obj_type = CAN_MB_TX_MODE;
 	can_mbox_down_tx.ul_id_msk = CAN_MAM_MIDvA_Msk | CAN_MAM_MIDvB_Msk;  // Extended ID
 	can_mbox_down_tx.ul_id = CAN_MID_MIDvA(TBD_CAN_DOWN_ADDR);  // TODO: Find proper masks for these
 	can_mailbox_init(TBD_CAN_DOWN, &can_mbox_down_tx);
 	
-	can_mbox_down_rx.ul_mb_idx = 1;
+	can_mbox_down_rx.ul_mb_idx = TBD_CAN_RX_IDX;
 	can_mbox_down_rx.uc_obj_type = CAN_MB_RX_MODE;  // Receive, no overwrite
 	can_mbox_down_rx.ul_id_msk = CAN_MAM_MIDvA_Msk | CAN_MAM_MIDvB_Msk;  // Extended ID
 	can_mbox_down_rx.ul_id = CAN_MID_MIDvA(TBD_CAN_DOWN_ADDR);  // TODO: Find proper masks for these
 	can_mailbox_init(TBD_CAN_DOWN, &can_mbox_down_rx);
 	
-	can_mbox_up_tx.ul_mb_idx = 0;
+	can_mbox_up_tx.ul_mb_idx = TBD_CAN_TX_IDX;
 	can_mbox_up_tx.uc_obj_type = CAN_MB_TX_MODE;
 	can_mbox_up_tx.ul_id_msk = CAN_MAM_MIDvA_Msk | CAN_MAM_MIDvB_Msk;  // Extended ID
 	can_mbox_up_tx.ul_id = CAN_MID_MIDvA(TBD_CAN_UP_ADDR);  // TODO: Find proper masks for these
 	can_mailbox_init(TBD_CAN_UP, &can_mbox_up_tx);
 	
-	can_mbox_up_rx.ul_mb_idx = 1;
+	can_mbox_up_rx.ul_mb_idx = TBD_CAN_RX_IDX;
 	can_mbox_up_rx.uc_obj_type = CAN_MB_RX_MODE;
 	can_mbox_up_rx.ul_id_msk = CAN_MAM_MIDvA_Msk | CAN_MAM_MIDvB_Msk;  // Extended ID
 	can_mbox_up_rx.ul_id = CAN_MID_MIDvA(TBD_CAN_UP_ADDR);  // TODO: Find proper masks for these
@@ -93,4 +93,39 @@ uint8_t CANSend(Can *direction, uint32_t id, uint8_t length, const uint8_t *data
 		return 0;
 	}
 
+}
+
+uint8_t CANReceive(Can *direction, uint32_t *id, uint8_t **data)
+{
+	can_mb_conf_t *mbox;
+	switch (direction) {
+		case (TBD_CAN_UP):
+			mbox = can_mbox_up_rx;
+			break;
+		case (TBD_CAN_DOWN):
+			mbox = can_mbox_down_rx;
+			break;
+		default:
+			return 0;
+	}
+	
+	if (!(can_mailbox_get_status(direction, TBD_CAN_RX_IDX) & CAN_MSR_MRDY))
+		return 0;
+	
+	uint32_t status;
+	if ((status = can_mailbox_read(direction, mbox)) & CAN_MAILBOX_TRANSFER_OK) {
+		// Successful read
+		*id = mbox->ul_id;  // TODO does this need to be converted using CAN_MID_MIDvA/B?
+		for (int i = 0; i < mbox->uc_length; i++) {
+			*data[i] = mbox->ul_datal & (0xff << 8*i);
+			*data[i+4] = mbox->ul_datah & (0xff << 8*i);
+		}
+		return 1;
+	} else if (status & CAN_MAILBOX_RX_NEED_RD_AGAIN) {
+		// TODO Not sure what to do here - this indicates that a message was ignored or overridden
+		return 0;  // For now
+	}
+
+	return 0;
+	
 }

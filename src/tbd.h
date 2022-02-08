@@ -17,6 +17,9 @@
 #define TBD_CAN_DOWN CAN0
 #define TBD_CAN_UP   CAN1
 
+#define TBD_CAN_TX_IDX (0)
+#define TBD_CAN_RX_IDX (1)
+
 #define TBD_CAN_DOWN_ADDR (0x01)
 #define TBD_CAN_UP_ADDR   (0x02)
 
