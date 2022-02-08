@@ -17,8 +17,8 @@
 #define TBD_CAN_DOWN CAN0
 #define TBD_CAN_UP   CAN1
 
-#define TBD_CAN_DOWN_ADDR 0x01
-#define TBD_CAN_UP_ADDR   0x02
+#define TBD_CAN_DOWN_ADDR (0x01)
+#define TBD_CAN_UP_ADDR   (0x02)
 
 uint8_t CANSetup(void);
 

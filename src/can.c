@@ -56,6 +56,41 @@ uint8_t CANSetup(void)
 	can_mbox_up_rx.ul_id_msk = CAN_MAM_MIDvA_Msk | CAN_MAM_MIDvB_Msk;  // Extended ID
 	can_mbox_up_rx.ul_id = CAN_MID_MIDvA(TBD_CAN_UP_ADDR);  // TODO: Find proper masks for these
 	can_mailbox_init(TBD_CAN_UP, &can_mbox_up_rx);
+
+	// TODO can_enable_interrupt(...)
+	// TODO NVIC_EnableIRQ(...)
 	
 	return 1;
+}
+
+uint32_t CANSend(Can *direction, uint32_t id, uint8_t length, const uint8_t *data)
+{
+	can_mb_conf_t *mbox;
+	switch (direction) {
+		case (TBD_CAN_UP):
+			mbox = can_mbox_up_tx;
+			break;
+		case (TBD_CAN_DOWN):
+			mbox = can_mbox_down_tx;
+			break;
+		default:
+			return 0;
+	}
+
+	mbox->ul_id = CAN_MID_MIDvA(id) | CAN_MID_MIDvB(id);
+	for (int i = 0; i < 4; i++) {
+		mbox->ul_datal |= data[i] << (8*i);
+		mbox->ul_datah |= data[i+4] << (8*i);
+	}
+	mbox->uc_length = length;
+
+	uint32_t status;
+	while ((status = can_mailbox_write(direction, mbox)) != CAN_MAILBOX_TRANSFER_OK) { }
+	if (status == CAN_MAILBOX_TRANSFER_OK) {
+		can_mailbox_send_transfer_cmd(direction, mbox);
+		return 1;
+	} else {
+		return 0;
+	}
+
 }
