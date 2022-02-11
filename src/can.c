@@ -57,10 +57,11 @@ uint8_t CANSetup(void)
 	can_mbox_up_rx.ul_id = CAN_MID_MIDvA(TBD_CAN_UP_ADDR);  // TODO: Find proper masks for these
 	can_mailbox_init(TBD_CAN_UP, &can_mbox_up_rx);
 
-	// TODO can_enable_interrupt(...)
 	can_enable_interrupt(TBD_CAN_UP, 0);
 	can_enable_interrupt(TBD_CAN_DOWN, 0);
-	// TODO NVIC_EnableIRQ(...)
+
+	NVIC_EnableIRQ(CAN0_IRQn);
+	NVIC_EnableIRQ(CAN1_IRQn);
 	
 	return 1;
 }
