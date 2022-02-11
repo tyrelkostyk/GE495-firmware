@@ -58,20 +58,25 @@ uint8_t CANSetup(void)
 	can_mailbox_init(TBD_CAN_UP, &can_mbox_up_rx);
 
 	// TODO can_enable_interrupt(...)
+	can_enable_interrupt(TBD_CAN_UP, 0);
+	can_enable_interrupt(TBD_CAN_DOWN, 0);
 	// TODO NVIC_EnableIRQ(...)
 	
 	return 1;
 }
 
-uint8_t CANSend(Can *direction, uint32_t id, uint8_t length, const uint8_t *data)
+uint8_t CANSend(direction_t direction, uint32_t id, uint8_t length, const uint8_t *data)
 {
+	Can *can_module;
 	can_mb_conf_t *mbox;
 	switch (direction) {
-		case (TBD_CAN_UP):
-			mbox = can_mbox_up_tx;
+		case (Up):
+			can_module = TBD_CAN_UP;
+			mbox = &can_mbox_up_tx;
 			break;
-		case (TBD_CAN_DOWN):
-			mbox = can_mbox_down_tx;
+		case (Down):
+			can_module = TBD_CAN_DOWN;
+			mbox = &can_mbox_down_tx;
 			break;
 		default:
 			return 0;
@@ -85,9 +90,9 @@ uint8_t CANSend(Can *direction, uint32_t id, uint8_t length, const uint8_t *data
 	mbox->uc_length = length;
 
 	uint32_t status;
-	while ((status = can_mailbox_write(direction, mbox)) != CAN_MAILBOX_TRANSFER_OK) { }
+	while ((status = can_mailbox_write(can_module, mbox)) != CAN_MAILBOX_TRANSFER_OK) { }
 	if (status == CAN_MAILBOX_TRANSFER_OK) {
-		can_mailbox_send_transfer_cmd(direction, mbox);
+		can_mailbox_send_transfer_cmd(can_module, mbox);
 		return 1;
 	} else {
 		return 0;
@@ -95,25 +100,28 @@ uint8_t CANSend(Can *direction, uint32_t id, uint8_t length, const uint8_t *data
 
 }
 
-uint8_t CANReceive(Can *direction, uint32_t *id, uint8_t **data)
+uint8_t CANReceive(direction_t direction, uint32_t *id, uint8_t **data)
 {
+	Can *can_module;
 	can_mb_conf_t *mbox;
 	switch (direction) {
-		case (TBD_CAN_UP):
-			mbox = can_mbox_up_rx;
+		case (Up):
+			can_module = TBD_CAN_UP;
+			mbox = &can_mbox_up_rx;
 			break;
-		case (TBD_CAN_DOWN):
-			mbox = can_mbox_down_rx;
+		case (Down):
+			can_module = TBD_CAN_DOWN;
+			mbox = &can_mbox_down_rx;
 			break;
 		default:
 			return 0;
 	}
 	
-	if (!(can_mailbox_get_status(direction, TBD_CAN_RX_IDX) & CAN_MSR_MRDY))
+	if (!(can_mailbox_get_status(can_module, TBD_CAN_RX_IDX) & CAN_MSR_MRDY))
 		return 0;
 	
 	uint32_t status;
-	if ((status = can_mailbox_read(direction, mbox)) & CAN_MAILBOX_TRANSFER_OK) {
+	if ((status = can_mailbox_read(can_module, mbox)) & CAN_MAILBOX_TRANSFER_OK) {
 		// Successful read
 		*id = mbox->ul_id;  // TODO does this need to be converted using CAN_MID_MIDvA/B?
 		for (int i = 0; i < mbox->uc_length; i++) {

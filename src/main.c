@@ -48,6 +48,7 @@ int main (void)
 		- TWI settings
 		- GPIO settings
 	*/
+	systemClk = sysclk_get_main_hz();
 	board_init();
 
 	while (1) {
