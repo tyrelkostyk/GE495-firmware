@@ -35,6 +35,11 @@ extern can_mb_conf_t can_mbox_down_rx, can_mbox_down_tx;
 
 uint32_t systemClk;
 
+message_t currentCommand;
+message_t currentUpdate;
+
+uint8_t x = 0;
+
 int main (void)
 {
 	// Initialize system clock
@@ -57,8 +62,14 @@ int main (void)
 		// Check if it's time to send an update
 		
 		// Poll for commands from downstream and respond accordingly
+		if ((CANReceive(Down, &currentCommand.id, &currentCommand.data)) != 0) {
+			x++;
+		}
 		
 		// Poll for updates from upstream and respond accordingly
+		if ((CANReceive(Up, &currentUpdate.id, &currentUpdate.data)) != 0) {
+			x--;
+		}
 		
 	}
 	

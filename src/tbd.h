@@ -11,6 +11,11 @@
 
 #include <stdint.h>
 
+typedef struct {
+	uint32_t id;
+	uint8_t data[8];
+} message_t;
+
 /*** CAN ***/
 #define TBD_CAN_BAUD CAN_BPS_500K
 
