@@ -12,10 +12,39 @@
 
 extern uint32_t systemClk;
 
+volatile uint32_t g_can_up_receive_status = 0;
+volatile uint32_t g_can_down_receive_status = 0;
+
 can_mb_conf_t can_mbox_down_tx;
 can_mb_conf_t can_mbox_down_rx;
 can_mb_conf_t can_mbox_up_tx;
 can_mb_conf_t can_mbox_up_rx;
+
+// Downstream
+void CAN0_Handler(void)
+{
+	uint32_t status;
+	status = can_mailbox_get_status(CAN0, TBD_CAN_RX_IDX);
+	if ((status & CAN_MSR_MRDY) == CAN_MSR_MRDY) {
+		can_mbox_up_rx.ul_mb_idx = TBD_CAN_RX_IDX;  // I don't know why or even if this is important
+		can_mbox_up_rx.ul_status = status;
+		can_mailbox_read(CAN0, &can_mbox_up_rx);
+		g_can_down_receive_status = 1;
+	}
+}
+
+// Upstream
+void CAN1_Handler(void)
+{
+	uint32_t status;
+	status = can_mailbox_get_status(CAN1, TBD_CAN_RX_IDX);
+	if ((status & CAN_MSR_MRDY) == CAN_MSR_MRDY) {
+		can_mbox_up_rx.ul_mb_idx = TBD_CAN_RX_IDX;  // I don't know why or even if this is important
+		can_mbox_up_rx.ul_status = status;
+		can_mailbox_read(CAN1, &can_mbox_up_rx);
+		g_can_up_receive_status = 1;
+	}
+}
 
 uint8_t CANSetup(void)
 {
@@ -24,12 +53,6 @@ uint8_t CANSetup(void)
 	pmc_enable_periph_clk(ID_CAN0);
 	pmc_enable_periph_clk(ID_CAN1);
 	
-	NVIC_EnableIRQ(CAN0_IRQn);
-	NVIC_EnableIRQ(CAN1_IRQn);
-	
-	can_enable_interrupt(TBD_CAN_UP, (1<<TBD_CAN_RX_IDX));
-	can_enable_interrupt(TBD_CAN_DOWN, (1<<TBD_CAN_RX_IDX));
-
 	// If either call to can_init() fails, there is a bigger problem with the config
 	// or with the device itself and we need to abort
 	if (!can_init(TBD_CAN_DOWN, systemClk, TBD_CAN_BAUD))
@@ -48,7 +71,7 @@ uint8_t CANSetup(void)
 	can_mailbox_init(TBD_CAN_DOWN, &can_mbox_down_tx);
 	
 	can_mbox_down_rx.ul_mb_idx = TBD_CAN_RX_IDX;
-	can_mbox_down_rx.uc_obj_type = CAN_MB_RX_MODE;  // Receive, no overwrite
+	can_mbox_down_rx.uc_obj_type = CAN_MB_RX_OVER_WR_MODE;  // Receive, and overwrite
 	can_mbox_down_rx.uc_id_ver = 1;  // Extended ID
 	can_mbox_down_rx.ul_id_msk = 0;  // Accept all incoming IDs
 	can_mbox_down_rx.ul_id = CAN_MID_MIDvA(TBD_CAN_DOWN_ADDR);  // TODO: Find proper masks for these
@@ -62,11 +85,16 @@ uint8_t CANSetup(void)
 	can_mailbox_init(TBD_CAN_UP, &can_mbox_up_tx);
 	
 	can_mbox_up_rx.ul_mb_idx = TBD_CAN_RX_IDX;
-	can_mbox_up_rx.uc_obj_type = CAN_MB_RX_MODE;
+	can_mbox_up_rx.uc_obj_type = CAN_MB_RX_OVER_WR_MODE;
 	can_mbox_up_rx.uc_id_ver = 1;  // Extended ID
 	can_mbox_up_rx.ul_id_msk = 0;  // Accept all incoming IDs
 	can_mbox_up_rx.ul_id = CAN_MID_MIDvA(TBD_CAN_UP_ADDR);  // TODO: Find proper masks for these
 	can_mailbox_init(TBD_CAN_UP, &can_mbox_up_rx);
+
+	NVIC_EnableIRQ(CAN0_IRQn);
+	NVIC_EnableIRQ(CAN1_IRQn);
+	can_enable_interrupt(TBD_CAN_UP, (1<<TBD_CAN_RX_IDX));
+	can_enable_interrupt(TBD_CAN_DOWN, (1<<TBD_CAN_RX_IDX));
 
 	return 1;
 }

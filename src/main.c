@@ -59,9 +59,9 @@ int main (void)
 
 //#if BOARD == SAM4E_XPLAINED_PRO
 	ioport_set_pin_mode(PIN_CAN1_RX_IDX, PIN_CAN1_RX_FLAGS);
-	ioport_disable_pin(PIN_CAN1_RX_IDX);
+	// ioport_disable_pin(PIN_CAN1_RX_IDX);
 	ioport_set_pin_mode(PIN_CAN1_TX_IDX, PIN_CAN1_TX_FLAGS);
-	ioport_disable_pin(PIN_CAN1_TX_IDX);
+	// ioport_disable_pin(PIN_CAN1_TX_IDX);
 
 	/* Configure the transiver1 RS & EN pins. */
 	ioport_set_pin_dir(PIN_CAN1_TR_RS_IDX, IOPORT_DIR_OUTPUT);
@@ -80,14 +80,15 @@ int main (void)
 		// Check if it's time to send an update
 		
 		// Poll for commands from downstream and respond accordingly
-		if ((CANReceive(Down, &currentCommand.id, (uint8_t **)&currentCommand.data)) != 0) {
+		// if ((CANReceive(Down, &currentCommand.id, (uint8_t **)&currentCommand.data)) != 0) {
 			x++;
-		}
+			if (x % 19 == 17) x += 3;
+		// }
 		
 		// Poll for updates from upstream and respond accordingly
-		if ((CANReceive(Up, &currentUpdate.id, (uint8_t **)&currentUpdate.data)) != 0) {
-			x--;
-		}
+		// if ((CANReceive(Up, &currentUpdate.id, (uint8_t **)&currentUpdate.data)) != 0) {
+		// 	x--;
+		// }
 		
 	}
 	
