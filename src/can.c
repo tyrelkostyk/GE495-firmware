@@ -134,7 +134,7 @@ uint8_t CANSend(direction_t direction, uint32_t id, uint8_t length, const uint8_
 
 }
 
-uint8_t CANReceive(direction_t direction, uint32_t *id, uint8_t **data)
+uint8_t CANReceive(direction_t direction, uint32_t *id, uint8_t *length, uint8_t **data)
 {
 	Can *can_module;
 	can_mb_conf_t *mbox;
@@ -158,6 +158,7 @@ uint8_t CANReceive(direction_t direction, uint32_t *id, uint8_t **data)
 	if ((status = can_mailbox_read(can_module, mbox)) == CAN_MAILBOX_TRANSFER_OK) {
 		// Successful read
 		*id = mbox->ul_id;  // TODO does this need to be converted using CAN_MID_MIDvA/B?
+		*length = mbox->uc_length;
 		for (int i = 0; i < mbox->uc_length; i++) {
 			*data[i] = mbox->ul_datal & (0xff << 8*i);
 			*data[i+4] = mbox->ul_datah & (0xff << 8*i);

@@ -80,15 +80,15 @@ int main (void)
 		// Check if it's time to send an update
 		
 		// Poll for commands from downstream and respond accordingly
-		// if ((CANReceive(Down, &currentCommand.id, (uint8_t **)&currentCommand.data)) != 0) {
-			x++;
-			if (x % 19 == 17) x += 3;
-		// }
+		if (cmdReceiveDownstream(&currentCommand) != 0) {
+			cmdSendUpstream(&currentCommand);
+			// Execute command on this node
+		}
 		
 		// Poll for updates from upstream and respond accordingly
-		// if ((CANReceive(Up, &currentUpdate.id, (uint8_t **)&currentUpdate.data)) != 0) {
-		// 	x--;
-		// }
+		if ((CANReceive(Up, &currentUpdate.id, (uint8_t **)&currentUpdate.data)) != 0) {
+			x--;
+		}
 		
 	}
 	

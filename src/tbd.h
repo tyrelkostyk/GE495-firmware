@@ -13,6 +13,7 @@
 
 typedef struct {
 	uint32_t id;
+	uint8_t length;
 	uint8_t data[8];
 } message_t;
 
@@ -36,5 +37,8 @@ uint8_t CANSetup(void);
 uint8_t CANSend(direction_t direction, uint32_t id, uint8_t length, const uint8_t *data);
 uint8_t CANReceive(direction_t direction, uint32_t *id, uint8_t **data);
 
+/*** Command ***/
+uint8_t cmdSendUpstream(message_t *command);
+uint8_t cmdReceiveDownstream(message_t *command);
 
 #endif /* TBD_H_ */
