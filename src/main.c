@@ -81,8 +81,12 @@ int main (void)
 		
 		// Poll for commands from downstream and respond accordingly
 		if (cmdReceiveDownstream(&currentCommand) != 0) {
-			cmdSendUpstream(&currentCommand);
-			// Execute command on this node
+			if (!cmdSendUpstream(&currentCommand)) {
+				// Something went wrong with the transmission
+			}
+			if (!cmdHandle(&currentCommand)) {
+				// Something went wrong with the handling of this command
+			}
 		}
 		
 		// Poll for updates from upstream and respond accordingly
