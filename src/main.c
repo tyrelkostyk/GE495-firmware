@@ -82,7 +82,7 @@ int main (void)
 		// Poll for commands from downstream and respond accordingly
 		if (cmdReceiveDownstream(&currentCommand) != 0) {
 			if (!cmdSendUpstream(&currentCommand)) {
-				// Something went wrong with the transmission
+				// Something went wrong with the transmission of the command
 			}
 			if (!cmdHandle(&currentCommand)) {
 				// Something went wrong with the handling of this command
@@ -90,8 +90,13 @@ int main (void)
 		}
 		
 		// Poll for updates from upstream and respond accordingly
-		if ((CANReceive(Up, &currentUpdate.id, (uint8_t **)&currentUpdate.data)) != 0) {
-			x--;
+		if (updateReceiveUpstream(&currentUpdate) != 0) {
+			if (!updateHandle(&currentUpdate)) {
+				// Something went wrong with the update handling
+			}
+			if (!updateSendDownstream(&currentUpdate)) {
+				// Something went wrong with the transmission of the update
+			}
 		}
 		
 	}
