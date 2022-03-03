@@ -34,9 +34,6 @@ build/
 # Config stuff
 src/ASF/
 Debug/
-*.atsln
-*.xml
-*.cproj
 .vs/
 .vscode/
 
