@@ -6,3 +6,4 @@
 - PMC - Power Management Controller (driver)
 - TC - Timer Counter (driver)
 - TWI - Two-wire Interface (driver)
+- IOPORT
