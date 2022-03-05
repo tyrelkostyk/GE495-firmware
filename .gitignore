@@ -32,8 +32,8 @@
 build/
 
 # Config stuff
-src/ASF/
 Debug/
+Release/
 .vs/
 .vscode/
 
