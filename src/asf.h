@@ -59,14 +59,14 @@
 #include <compiler.h>
 #include <status_codes.h>
 
-// From module: Common build items for user board support templates
-#include <user_board.h>
-
 // From module: GPIO - General purpose Input/Output
 #include <gpio.h>
 
 // From module: Generic board support
 #include <board.h>
+
+// From module: IOPORT - General purpose I/O service
+#include <ioport.h>
 
 // From module: Interrupt management - SAM implementation
 #include <interrupt.h>
@@ -83,6 +83,9 @@
 
 // From module: SAM FPU driver
 #include <fpu.h>
+
+// From module: SAM4E XPRO LED support enabled
+#include <led.h>
 
 // From module: SAM4E startup code
 #include <exceptions.h>
