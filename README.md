@@ -5,9 +5,13 @@
 This project contains the firmware for a specific digitizer prototype to be used in Bourgault air seeder carts, converting analog load cell signals into digital representations to be transmitted to a tractor's ECU.
 
 ## Branches
-There are two primary branches: `main` and `arduino`.
+There are thee primary branches: `sam4e16-xplained`, `sam4e8e`, and `arduino`.
 
-The `main` branch is the trunk for all "production" code that will be run on the **ATSAM4E8E** microcontroller at the heart of the digitizer.
+The `sam4e16-xplained` branch is the trunk for all development code that will be run on the **ATSAM4E16** evaluation kit.
+
+The `sam4e8e` branch is the trunk for all production code that will be run on the **ATSAM4E8E** microcontroller at the heart of the digitizer.
+
+Note that the `main` branch should generally not be used.
 
 The `arduino` branch is the trunk for all "model" code used in early prototyping and configuration validation. The Arduino setup represents a proof-of-concept for the idea on a large scale without getting too deep into the specifics of low-level device code.
 
