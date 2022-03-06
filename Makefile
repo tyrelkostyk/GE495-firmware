@@ -1,4 +1,4 @@
-.PHONY: arduino clean dry
+.PHONY: all arduino clean dry
 
 SRCDIR=./src
 OBJDIR=./build
@@ -8,6 +8,8 @@ PORT=/dev/ttyUSB0
 CPU=atmega328old
 
 DEVICE=arduino:avr:nano:cpu=$(CPU)
+
+all: arduino
 
 # Compile and upload to the Arduino
 arduino: dry

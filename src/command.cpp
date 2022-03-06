@@ -1,12 +1,9 @@
 // command.c
 // Contains functions for parsing and carrying out commands received from downstream sources including ECU.
 
-#ifdef _ARDUINO
-#endif  // _ARDUINO
+#include "defs.h"
 
 #include <string.h>
-
-#include "defs.h"
 
 extern message_t currentUpdate;
 
@@ -26,10 +23,9 @@ inline uint32_t cmdPGNFromMessage(message_t *message)
  */
 uint8_t cmdSendUpstream(message_t *command)
 {
-    if (CANSend(UP, command->id, CAN_FRAME_EXT, 0x00, CAN_DATA_LEN_MAX, 
-                command->data) != OK)
+    if (CANSend(UP, &command->id, CAN_FRAME_EXT, 0x00, CAN_DATA_LEN_MAX,
+                (uint8_t **)&command->data) != OK)
         return ERR;
-    debugPrintLine("Sent command!");
     return OK;
 }
 
@@ -45,8 +41,7 @@ uint8_t cmdReceiveDownstream(message_t *command)
     uint32_t id;
     uint8_t data[CAN_DATA_LEN_MAX];
 
-    if ((received = CANReceive(DOWN, &id, data)) != 0x00) {
-        debugPrintLine("Received command!");
+    if ((received = CANReceive(DOWN, &id, (uint8_t **)&data)) != NOP) {
         command->id = id;
         memcpy(command->data, data, CAN_DATA_LEN_MAX);
     }
@@ -70,7 +65,6 @@ uint8_t cmdParse(message_t *command)
     uint32_t pgn = cmdPGNFromMessage(command);
     switch (pgn) {
         case PGN_DEBUG_HANDSHAKE: {
-            updateLoadCurrentData(&currentUpdate);
             updateSendDownstream(&currentUpdate);  // Just send the message right back
             break;
         }
@@ -104,7 +98,6 @@ uint8_t cmdParse(message_t *command)
         }
     }
 
-    debugPrintLine("Parsed a command!");
     return OK;
 }
 
