@@ -71,7 +71,7 @@ int main (void)
 //#endif
 
 	systemClk = sysclk_get_main_hz();
-	cpuClk = sysclk_get_main_hz();
+	cpuClk = sysclk_get_cpu_hz();
 
 	// initialize the board settings
 	board_init();

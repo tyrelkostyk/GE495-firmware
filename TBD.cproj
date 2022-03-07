@@ -991,6 +991,9 @@
     <None Include="src\ASF\thirdparty\CMSIS\Include\cmsis_gcc.h">
       <SubType>compile</SubType>
     </None>
+    <Compile Include="src\delay.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\main.c">
       <SubType>compile</SubType>
     </Compile>

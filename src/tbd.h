@@ -60,6 +60,8 @@ int32_t adcReadSmooth(void);
 
 /*** GENERAL ***/
 #define LOAD_CELLS_PER_TANK	3
+void delayInit(void);
+void delayFor(uint32_t us);
 
 
 #endif /* TBD_H_ */
