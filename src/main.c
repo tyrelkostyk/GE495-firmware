@@ -36,11 +36,11 @@
 extern can_mb_conf_t can_mbox_up_rx, can_mbox_up_tx;
 extern can_mb_conf_t can_mbox_down_rx, can_mbox_down_tx;
 
-uint32_t systemClk;
-uint32_t cpuClk;
+uint32_t systemClk = 0;
+uint32_t cpuClk = 0;
 
-message_t currentCommand;
-message_t currentUpdate;
+message_t currentCommand = { 0 };
+message_t currentUpdate = { 0 };
 
 uint8_t x = 0;
 
