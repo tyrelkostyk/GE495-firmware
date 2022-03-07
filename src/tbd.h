@@ -3,7 +3,7 @@
  *
  * Created: 2022-02-01 18:42:16
  *  Author: Jeremy
- */ 
+ */
 
 
 #ifndef TBD_H_
@@ -65,6 +65,7 @@ void adcInit(void);
 int32_t adcReadAllChannels(void);
 int32_t adcReadAllSmooth(void);
 int32_t adcReadChannelSmooth(adcChannel_t channel);
+int32_t adcReadAllChannels(void);
 
 
 /*** CALIBRATION ***/

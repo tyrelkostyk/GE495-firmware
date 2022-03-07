@@ -75,7 +75,11 @@ int main (void)
 		// TODO: Check to see if it's time to sample the ADC output
 
 		// Sample ADC output
-		int32_t data = adcReadAllSmooth();
+		int32_t data = adcReadAllChannels(void);
+		printf("%d\n", data)
+
+		/*** CALIBRATION ***/
+
 
 		// TODO: Check if it's time to send an update
 
