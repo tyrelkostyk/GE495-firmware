@@ -14,6 +14,7 @@
 ***************************************************************************************************/
 
 #define US_PER_S	(1000000)
+#define SCALE		(4)
 
 static uint32_t cpuClockFrequency = 0;
 
@@ -30,7 +31,7 @@ void delayInit(void)
 
 void delayFor(uint32_t us)
 {	
-	uint32_t clockCycles = (cpuClockFrequency / US_PER_S) * us;
+	uint32_t clockCycles = ((cpuClockFrequency / US_PER_S) * us) / SCALE;
 	for (uint32_t i = 0; i < clockCycles; i++) {
 		__asm__ __volatile__("");
 	}
