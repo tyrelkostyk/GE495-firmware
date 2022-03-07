@@ -73,14 +73,23 @@ int main (void)
 	systemClk = sysclk_get_main_hz();
 	cpuClk = sysclk_get_main_hz();
 
+	// initialize the board settings
 	board_init();
 
+	// initialize the CAN peripheral
 	CANSetup();
 
+	// initialize the ADC
+	adcInit();
+
 	while (1) {
-		// Check to see if it's time to sample the ADC output
+
+		// TODO: Check to see if it's time to sample the ADC output
 		
-		// Check if it's time to send an update
+		// Sample ADC output
+		adcReadSmooth();
+		
+		// TODO: Check if it's time to send an update
 		
 		// Poll for commands from downstream and respond accordingly
 		if (cmdReceiveDownstream(&currentCommand) != 0) {
