@@ -65,7 +65,6 @@ void adcInit(void);
 int32_t adcReadAllChannels(void);
 int32_t adcReadAllSmooth(void);
 int32_t adcReadChannelSmooth(adcChannel_t channel);
-int32_t adcReadAllChannels(void);
 
 
 /*** CALIBRATION ***/

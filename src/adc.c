@@ -19,6 +19,8 @@
 #define ADC_POWER_ON_SEQUENCE_DELAY_US	100
 
 #define ADC_READ_SIZE_BITS	24
+#define ADC_DATA_MAX_VALUE_MASK		((1 << ADC_READ_SIZE_BITS) - 1)
+#define ADC_BIT_MAX_VALUE_MASK		(1)
 
 
 #if (BOARD==SAM4E_XPLAINED_PRO)
@@ -130,7 +132,7 @@ void adcInit(void)
  */
 int32_t adcReadAllSmooth(void)
 {
-	uint32_t dataTotal = 0;
+	int32_t dataTotal = 0;
 	for (uint8_t i = 0; i < ADC_SMOOTH_SAMPLE_SIZE; i++)
 	{
 		dataTotal += adcReadAllChannels();
@@ -224,22 +226,31 @@ static uint8_t adcReadBit(void)
  */
 static int32_t adcReadChannel(adcChannel_t channel)
 {
+	int32_t data = 0;
+	int32_t bit = 0;
+
 	adcSelectChannel(channel);
 
 	// TODO: delay ?
-
-	int32_t data = 0;
+	
 	// wait for data line to go low then high then low again
 	while (adcReadBit() == 0){};
 	while (adcReadBit() == 1){};
 
-	for (int i = ADC_READ_SIZE_BITS - 1; i>=0; i--) {
-		int32_t bit = adcReadBit();
+	for (int i = ADC_READ_SIZE_BITS - 1; i>=0; i--)
+	{
+		// read the bit
+		bit = adcReadBit() & ADC_BIT_MAX_VALUE_MASK;
+		
+		// first bit is the sign bit, so it gets subtracted
 		if (i == ADC_READ_SIZE_BITS - 1)
-			data = data - (bit << i); // get signed output
+			data = (data - (bit << i)) & ADC_DATA_MAX_VALUE_MASK;
+
+		// all other bits get treated normally
 		else
-			data = data + (bit << i);
+			data = (data + (bit << i)) & ADC_DATA_MAX_VALUE_MASK;
 	}
+	
 	// one additional SCLK ensures that the DRDY/DOUT line stays high after data
 	// is received
 	adcApplySclk();
