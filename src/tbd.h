@@ -54,8 +54,26 @@ uint8_t cmdHandle(message_t *command);
 
 
 /*** ADC ***/
+typedef enum _adcChannel_t {
+	adcChannelZero	= 0,
+	adcChannelOne	= 1,
+	adcChannelTwo	= 2,
+	adcChannelThree = 3,
+} adcChannel_t;
+
 void adcInit(void);
-int32_t adcReadSmooth(void);
+int32_t adcReadAllChannels(void);
+int32_t adcReadAllSmooth(void);
+int32_t adcReadChannelSmooth(adcChannel_t channel);
+
+
+/*** CALIBRATION ***/
+int32_t calibrationOffset(adcChannel_t channel);
+void calibrationTare(adcChannel_t channel, int32_t offset);
+void calibrationTareAllLoadCells(void);
+void calibrationObtainMassOne(double mass);
+void calibrationObtainMassTwo(double mass);
+void calibrationGetConversionFactor(double mass1, int32_t voltage1, double mass2, int32_t voltage2);
 
 
 /*** GENERAL ***/
