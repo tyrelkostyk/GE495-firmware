@@ -10,6 +10,8 @@
 #define ERR 0x00
 #define NOP 0xff
 
+uint16_t crc16MCRFXX(uint16_t crc, uint8_t *data, uint8_t len);
+
 /******
 * CAN *
 ******/
@@ -47,6 +49,22 @@ uint8_t CANReceive (can_dir_t direction, uint32_t *id, uint8_t **buffer);
 *********/
 
 #define SER_BAUDRATE (115200)
+
+/*
+ * Telemetry:
+ * uint8_t  tankID;
+ * uint32_t mass;
+ * uint16_t crc;
+ * uint8_t  null;
+*/
+
+/*
+ * Command:
+ * uint8_t  commandType;
+ * float    argument;
+ * uint16_t crc;
+ * uint8_t  null;
+*/
 
 /****************
 * COMMAND (CMD) *
