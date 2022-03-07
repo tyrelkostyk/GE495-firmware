@@ -37,6 +37,7 @@ extern can_mb_conf_t can_mbox_up_rx, can_mbox_up_tx;
 extern can_mb_conf_t can_mbox_down_rx, can_mbox_down_tx;
 
 uint32_t systemClk;
+uint32_t cpuClk;
 
 message_t currentCommand;
 message_t currentUpdate;
@@ -70,6 +71,8 @@ int main (void)
 //#endif
 
 	systemClk = sysclk_get_main_hz();
+	cpuClk = sysclk_get_main_hz();
+
 	board_init();
 
 	CANSetup();
