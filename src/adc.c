@@ -15,6 +15,9 @@
 
 #define ADC_POWER_ON_SEQUENCE_DELAY_US	100
 
+#define ADC_READ_SIZE_BITS	24
+
+
 typedef enum _adcSpeed_t {
 	adcSpeedSlow = 0,
 	adcSpeedFast = 1,
@@ -80,19 +83,14 @@ void adcInit()
 
 	// TODO: initialize digital pins used to control the ADC
 		
-	// TODO: initialize ADC Speed
-    adcSetSpeed(0);
+	// initialize ADC Speed
+    adcSetSpeed(adcSpeedSlow);
 
-	// TODO: initialize ADC Gain
+	// initialize ADC Gain
+	adcSetGain(adcGain128);
 	
-	// TODO: initialize ADC MUX
-
-    pinMode(DATA_PIN, INPUT);
-    pinMode(CLOCK_PIN, OUTPUT);
-    pinMode(POWER_PIN, OUTPUT);
-    pinMode(MUX_PIN0, OUTPUT);
-    pinMode(MUX_PIN1, OUTPUT);
-    Serial.println("\nSetup Started");
+	// initialize ADC MUX
+	adcSelectChannel(adcChannelZero);
 
 	// power on the ADC
     adcPowerOn();
@@ -151,9 +149,9 @@ static int32_t adcReadChannel(void)
 	while (adcReadBit() == 0){};
 	while (adcReadBit() == 1){};
   
-	for (int i = NUM_ADC_BITS - 1; i>=0; i--) {
+	for (int i = ADC_READ_SIZE_BITS - 1; i>=0; i--) {
 		int32_t bit = adcReadBit();
-		if (i == NUM_ADC_BITS - 1) 
+		if (i == ADC_READ_SIZE_BITS - 1) 
 			data = data - (bit << i); // get signed output
 		else
 			data = data + (bit << i);
