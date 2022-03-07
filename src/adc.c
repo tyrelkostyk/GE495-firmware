@@ -32,17 +32,17 @@
 #define ADC_SCLK_PIN			PIO_PA4		// EXT1 PIN 12
 
 #define ADC_PWDN_PIN_BANK		PIOA
-#define ADC_PWDN_PIN			PIO_PA24	// EXT1 (PE0 used by LCD)
+#define ADC_PWDN_PIN			PIO_PA24	// EXT1 PIN5 (PE0 used by LCD)
 #define ADC_MUX0_PIN_BANK		PIOE
 #define ADC_MUX0_PIN			PIO_PE1		// EXT3 PIN9
 #define ADC_MUX1_PIN_BANK		PIOE
 #define ADC_MUX1_PIN			PIO_PE2		// EXT2 PIN5
 #define ADC_SPEED_PIN_BANK		PIOA
-#define ADC_SPEED_PIN			PIO_PA25	// EXT1 (PE3 used by LCD)
+#define ADC_SPEED_PIN			PIO_PA25	// EXT1 PIN6 (PE3 used by LCD)
 #define ADC_GAIN0_PIN_BANK		PIOA
-#define ADC_GAIN0_PIN			PIO_PA15	// EXT1 (PE5 used by LCD)
+#define ADC_GAIN0_PIN			PIO_PA15	// EXT1 PIN7 (PE5 used by LCD)
 #define ADC_GAIN1_PIN_BANK		PIOA
-#define ADC_GAIN1_PIN			PIO_PA16	// EXT1 (PE4 used by LCD)
+#define ADC_GAIN1_PIN			PIO_PA16	// EXT1 PIN8 (PE4 used by LCD)
 
 #else // (BOARD==SAM4E_XPLAINED_PRO)
 
