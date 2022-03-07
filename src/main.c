@@ -76,7 +76,7 @@ int main (void)
 
 		// Sample ADC output
 		int32_t data = adcReadAllChannels(void);
-		printf("%d\n", data)
+		printf("%d\n", data);
 
 		/*** CALIBRATION ***/
 
