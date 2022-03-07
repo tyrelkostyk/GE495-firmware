@@ -13,6 +13,7 @@
 #define ADC_RESET_PWDN_DELAY_MS			100
 #define ADC_OFFSET_CALIBRATION_DELAY_MS	802
 
+#define ADC_SCLK_EDGE_DELAY_US			1
 #define ADC_POWER_ON_SEQUENCE_DELAY_US	100
 
 #define ADC_READ_SIZE_BITS	24
@@ -62,13 +63,13 @@ uint32_t prevUpdateTime;
 
 static void adcApplySclk(void);
 static uint8_t adcReadBit(void);
-static int32_t adcReadChannel(void)
+static int32_t adcReadChannel(void);
 static int32_t adcReadAllChannels(void);
-static int32_t adcReadSmooth(void);
 static int32_t adcReadAndCalibrate(void);
 
 static void adcSelectChannel(adcChannel_t channel);
 static void adcSetSpeed(adcSpeed_t sampleSpeed);
+static void adcSetGain(adcGain_t gain);
 
 static void adcPowerOn(void);
 static void adcReset(void);
@@ -78,7 +79,7 @@ static void adcReset(void);
                                              PUBLIC API
 ***************************************************************************************************/
 
-void adcInit()
+void adcInit(void)
 {
 
 	// TODO: initialize digital pins used to control the ADC
@@ -112,13 +113,40 @@ void adcInit()
 }
 
 
+/**
+ * Take mass measurements from all three load cells and averages them
+ * @return The average of the raw measurements
+ */
+int32_t adcReadSmooth(void)
+{
+	uint32_t data_total = 0;
+	for (uint8_t i = 0; i < ADC_SMOOTH_SAMPLE_SIZE; i++)
+	{
+		data_total += adcReadAllChannels();
+	}
+
+	return data_total / ADC_SMOOTH_SAMPLE_SIZE;
+}
+
+
 /***************************************************************************************************
                                           PRIVATE FUNCTIONS
 ***************************************************************************************************/
 
 static void adcApplySclk(void)
 {
+	//digitalWrite(CLOCK_PIN, HIGH);
+	//delayMicroseconds(ADC_SCLK_EDGE_DELAY_US);
+	//digitalWrite(CLOCK_PIN, LOW);
+	//delayMicroseconds(ADC_SCLK_EDGE_DELAY_US);
+
 	// TODO: set SCLK (pin PA3) high (for the rising edge)
+
+	// TODO: delay
+
+	// TODO: set SCLK (pin PA3) low
+
+	// TODO: delay
 
 }
 
@@ -129,12 +157,15 @@ static void adcApplySclk(void)
 static uint8_t adcReadBit(void)
 {
 	//return digitalRead(DATA_PIN);
+
+	uint8_t bit = 0;
   
-	// set SCLK high
+	// Apply SCLK rising edge
 	adcApplySclk();
 
 	// TODO: read a single bit from the ADC
 	
+	return bit;
 }
 
 
@@ -197,23 +228,6 @@ static int32_t adcReadAllChannels(void)
 
 
 /**
- * Take mass measurements from all three load cells and averages them
- * @param N the amount of measurements to make
- * @return The average of N raw measurements
- */
-static int32_t adcReadSmooth(void)
-{
-	uint32_t data_total = 0;
-	for (uint8_t i = 0; i < ADC_SMOOTH_SAMPLE_SIZE; i++)
-	{
-		data_total += adcReadAllChannels();
-	}
-
-	return data_total / ADC_SMOOTH_SAMPLE_SIZE;
-}
-
-
-/**
  * Picks which input to retrieve data from
  * @param uint8_t muxSelect The input port to receive data from
  */
@@ -229,17 +243,17 @@ static void adcSelectChannel(adcChannel_t channel)
 		// TODO: write to MUX pin 1
 		break;
 
-	case (adcChannelZero):
+	case (adcChannelOne):
 		// TODO: write to MUX pin 0
 		// TODO: write to MUX pin 1
 		break;
 	
-	case (adcChannelZero):
+	case (adcChannelTwo):
 		// TODO: write to MUX pin 0
 		// TODO: write to MUX pin 1
 		break;
 	
-	case (adcChannelZero):
+	case (adcChannelThree):
 		// TODO: write to MUX pin 0
 		// TODO: write to MUX pin 1
 		break;
