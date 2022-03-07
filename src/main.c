@@ -73,32 +73,32 @@ int main (void)
 	while (1) {
 
 		// TODO: Check to see if it's time to sample the ADC output
-		
+
 		// Sample ADC output
-		adcReadAllSmooth();
-		
+		int32_t data = adcReadAllSmooth();
+
 		// TODO: Check if it's time to send an update
-		
+
 		// Poll for commands from downstream and respond accordingly
-		if (cmdReceiveDownstream(&currentCommand) != 0) {
-			if (!cmdSendUpstream(&currentCommand)) {
-				// Something went wrong with the transmission of the command
-			}
-			if (!cmdHandle(&currentCommand)) {
-				// Something went wrong with the handling of this command
-			}
-		}
-		
-		// Poll for updates from upstream and respond accordingly
-		if (updateReceiveUpstream(&currentUpdate) != 0) {
-			if (!updateHandle(&currentUpdate)) {
-				// Something went wrong with the update handling
-			}
-			if (!updateSendDownstream(&currentUpdate)) {
-				// Something went wrong with the transmission of the update
-			}
-		}
-		
+		// if (cmdReceiveDownstream(&currentCommand) != 0) {
+		// 	if (!cmdSendUpstream(&currentCommand)) {
+		// 		// Something went wrong with the transmission of the command
+		// 	}
+		// 	if (!cmdHandle(&currentCommand)) {
+		// 		// Something went wrong with the handling of this command
+		// 	}
+		// }
+		//
+		// // Poll for updates from upstream and respond accordingly
+		// if (updateReceiveUpstream(&currentUpdate) != 0) {
+		// 	if (!updateHandle(&currentUpdate)) {
+		// 		// Something went wrong with the update handling
+		// 	}
+		// 	if (!updateSendDownstream(&currentUpdate)) {
+		// 		// Something went wrong with the transmission of the update
+		// 	}
+		// }
+
 	}
-	
+
 }

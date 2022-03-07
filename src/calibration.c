@@ -10,13 +10,13 @@
 
 static int32_t channelOffset[LOAD_CELLS_PER_TANK] = { 0 };
 
-static double voltageToMassFactor = 1;
-static double mass1 = 0.0;
-static double mass2 = 0.0;
+static float voltageToMassFactor = 1;
+static float mass1 = 0.0;
+static float mass2 = 0.0;
 static int32_t voltage1 = 0;
 static int32_t voltage2 = 0;
 
-static uint8_t offsetFlag = 0;
+// static uint8_t offsetFlag = 0;
 
 
 /***************************************************************************************************

@@ -109,18 +109,18 @@ void adcInit(void)
 {
 	// initialize the digital pins used to control the ADC
 	adcInitPins();
-	
+
 	// initialize ADC Speed
-    adcSetSpeed(adcSpeedSlow);
+  adcSetSpeed(adcSpeedSlow);
 
 	// initialize ADC Gain
 	adcSetGain(adcGain128);
-	
+
 	// initialize ADC MUX
 	adcSelectChannel(adcChannelZero);
 
 	// power on the ADC
-    adcPowerOn();
+  adcPowerOn();
 }
 
 
@@ -149,12 +149,12 @@ int32_t adcReadAllSmooth(void)
 int32_t adcReadChannelSmooth(adcChannel_t channel)
 {
 	int32_t dataTotal = 0;
-	
+
 	for (uint8_t i=0; i < ADC_SMOOTH_SAMPLE_SIZE; i++)
 	{
 		dataTotal += adcReadChannel(channel);
 	}
-	
+
 	return dataTotal / ADC_SMOOTH_SAMPLE_SIZE;
 }
 
@@ -169,16 +169,16 @@ static void adcInitPins(void)
 	// Enable the clocks for these PIO banks
 	pmc_enable_periph_clk(ADC_RETRIEVAL_PIO_ID);
 	pmc_enable_periph_clk(ADC_CONTROL_PIO_ID);
-	
+
 	// Data
 	pio_set_input(ADC_DATA_PIN_BANK, ADC_DATA_PIN, PIO_PULLUP);
-	
+
 	// Clock
 	pio_set_output(ADC_SCLK_PIN_BANK, ADC_SCLK_PIN, LOW, DISABLE, DISABLE);
-	
+
 	// PWDN
 	pio_set_output(ADC_PWDN_PIN_BANK, ADC_PWDN_PIN, LOW, DISABLE, DISABLE);
-	
+
 	// Channel MUX
 	pio_set_output(ADC_MUX0_PIN_BANK, ADC_MUX0_PIN, LOW, DISABLE, DISABLE);
 	pio_set_output(ADC_MUX1_PIN_BANK, ADC_MUX1_PIN, LOW, DISABLE, DISABLE);
@@ -195,20 +195,10 @@ static void adcInitPins(void)
 
 static void adcApplySclk(void)
 {
-	//digitalWrite(CLOCK_PIN, HIGH);
-	//delayMicroseconds(ADC_SCLK_EDGE_DELAY_US);
-	//digitalWrite(CLOCK_PIN, LOW);
-	//delayMicroseconds(ADC_SCLK_EDGE_DELAY_US);
-
-	// TODO: set SCLK (pin PA3) high (for the rising edge)
-	
-
-	// TODO: delay
-
-	// TODO: set SCLK (pin PA3) low
-
-	// TODO: delay
-
+	pio_set(ADC_SCLK_PIN_BANK, ADC_SCLK_PIN);
+	delayFor(ADC_SCLK_EDGE_DELAY_US);
+	pio_clear(ADC_SCLK_PIN_BANK, ADC_SCLK_PIN);
+	delayFor(ADC_SCLK_EDGE_DELAY_US);
 }
 
 
@@ -217,37 +207,35 @@ static void adcApplySclk(void)
  */
 static uint8_t adcReadBit(void)
 {
-	//return digitalRead(DATA_PIN);
-
 	uint8_t bit = 0;
-  
+
 	// Apply SCLK rising edge
 	adcApplySclk();
 
-	// TODO: read a single bit from the ADC
-	
+	bit = pio_get(ADC_DATA_PIN_BANK, PIO_TYPE_PIO_INPUT, ADC_DATA_PIN);
+
 	return bit;
 }
 
 
 /**
- * Retrieves 24-bit ADC data. 
+ * Retrieves 24-bit ADC data.
  * @return int32_t 24-bit ADC data
  */
 static int32_t adcReadChannel(adcChannel_t channel)
 {
 	adcSelectChannel(channel);
-	
+
 	// TODO: delay ?
 
 	int32_t data = 0;
 	// wait for data line to go low then high then low again
 	while (adcReadBit() == 0){};
 	while (adcReadBit() == 1){};
-  
+
 	for (int i = ADC_READ_SIZE_BITS - 1; i>=0; i--) {
 		int32_t bit = adcReadBit();
-		if (i == ADC_READ_SIZE_BITS - 1) 
+		if (i == ADC_READ_SIZE_BITS - 1)
 			data = data - (bit << i); // get signed output
 		else
 			data = data + (bit << i);
@@ -255,22 +243,22 @@ static int32_t adcReadChannel(adcChannel_t channel)
 	// one additional SCLK ensures that the DRDY/DOUT line stays high after data
 	// is received
 	adcApplySclk();
-  
+
 	return data;
 }
 
 
 /**
- * Retrieves 24-bit ADC data and calibrates the ADC. 
+ * Retrieves 24-bit ADC data and calibrates the ADC.
  * @return int32_t 24-bit ADC data
  */
 static int32_t adcReadAndCalibrate(adcChannel_t channel)
 {
 	int32_t data = adcReadChannel(channel);
 	adcApplySclk();
-  
+
 	// TODO: delay?
-  
+
 	return data;
 }
 
@@ -308,27 +296,27 @@ static void adcSelectChannel(adcChannel_t channel)
 	switch (channel)
 	{
 	case (adcChannelZero):
-		// TODO: write to MUX pin 0		
-		// TODO: write to MUX pin 1
+		pio_clear(ADC_MUX0_PIN_BANK, ADC_MUX0_PIN);
+		pio_clear(ADC_MUX1_PIN_BANK, ADC_MUX1_PIN);
 		break;
 
 	case (adcChannelOne):
-		// TODO: write to MUX pin 0
-		// TODO: write to MUX pin 1
+		pio_set(ADC_MUX0_PIN_BANK, ADC_MUX0_PIN);
+		pio_clear(ADC_MUX1_PIN_BANK, ADC_MUX1_PIN);
 		break;
-	
+
 	case (adcChannelTwo):
-		// TODO: write to MUX pin 0
-		// TODO: write to MUX pin 1
+		pio_clear(ADC_MUX0_PIN_BANK, ADC_MUX0_PIN);
+		pio_set(ADC_MUX1_PIN_BANK, ADC_MUX1_PIN);
 		break;
-	
+
 	case (adcChannelThree):
-		// TODO: write to MUX pin 0
-		// TODO: write to MUX pin 1
+		pio_set(ADC_MUX0_PIN_BANK, ADC_MUX0_PIN);
+		pio_set(ADC_MUX1_PIN_BANK, ADC_MUX1_PIN);
 		break;
-		
+
 	default:
-		break;	
+		break;
 	}
 }
 
@@ -339,29 +327,13 @@ static void adcSelectChannel(adcChannel_t channel)
  */
 static void adcPowerOn(void)
 {
-  //delayMicroseconds(ADC_POWER_ON_SEQUENCE_DELAY_US);
-  //digitalWrite(POWER_PIN, LOW);
-  //delayMicroseconds(ADC_POWER_ON_SEQUENCE_DELAY_US);
-  //digitalWrite(POWER_PIN, HIGH);
-  //delayMicroseconds(ADC_POWER_ON_SEQUENCE_DELAY_US);
-  //digitalWrite(POWER_PIN, LOW);
-  //delayMicroseconds(ADC_POWER_ON_SEQUENCE_DELAY_US);
-  //digitalWrite(POWER_PIN, HIGH);
-  
-	// TODO: set PWDN pin low
-  
-	// TODO: delay
-  
-	// TODO: set PWDN pin high
-  
-	// TODO: delay
-  
-	// TODO: set PWDN pin low
-
-    // TODO: delay
-    
-    // TODO: set PWDN pin high
-
+	pio_clear(ADC_PWDN_PIN_BANK, ADC_PWDN_PIN);
+	delayFor(ADC_POWER_ON_SEQUENCE_DELAY_US);
+	pio_set(ADC_PWDN_PIN_BANK, ADC_PWDN_PIN);
+	delayFor(ADC_POWER_ON_SEQUENCE_DELAY_US);
+	pio_clear(ADC_PWDN_PIN_BANK, ADC_PWDN_PIN);
+	delayFor(ADC_POWER_ON_SEQUENCE_DELAY_US);
+	pio_set(ADC_PWDN_PIN_BANK, ADC_PWDN_PIN);
 }
 
 
@@ -370,25 +342,28 @@ static void adcPowerOn(void)
  */
 static void adcReset(void)
 {
+	pio_clear(ADC_PWDN_PIN_BANK, ADC_PWDN_PIN);
 
-  // TODO: set the PWDN pin low
-  
-  // TODO: delay
-  
-  // TODO: release the PWDN pin
-  
+	delayFor(ADC_POWER_ON_SEQUENCE_DELAY_US);
+
+  adcPowerOn();
 }
 
 
 /**
  * Set the ADC samples per second
- * @param sampleSpeed 0 = 10 samples/sec, 1 = 80 samples/sec
+ * @param sampleSpeed 0 (slow) = 10 samples/sec, 1 (fast) = 80 samples/sec
  */
 static void adcSetSpeed(adcSpeed_t sampleSpeed)
 {
-  //digitalWrite(SPEED_PIN, sampleSpeed);
-
-	// TODO: write (and hold) the speed pin
+	if (sampleSpeed == adcSpeedFast)
+	{
+		pio_set(ADC_SPEED_PIN_BANK, ADC_SPEED_PIN);
+	}
+	else
+	{
+		pio_clear(ADC_SPEED_PIN_BANK, ADC_SPEED_PIN);
+	}
 }
 
 
@@ -403,25 +378,25 @@ static void adcSetGain(adcGain_t gain)
 	switch (gain)
 	{
 	case (adcGain1):
-		// TODO: write to GAIN pin 0
-		// TODO: write to GAIN pin 1
+		pio_clear(ADC_GAIN0_PIN_BANK, ADC_GAIN0_PIN);
+		pio_clear(ADC_GAIN1_PIN_BANK, ADC_GAIN1_PIN);
 		break;
 
 	case (adcGain2):
-		// TODO: write to GAIN pin 0
-		// TODO: write to GAIN pin 1
+		pio_set(ADC_GAIN0_PIN_BANK, ADC_GAIN0_PIN);
+		pio_clear(ADC_GAIN1_PIN_BANK, ADC_GAIN1_PIN);
 		break;
-		
+
 	case (adcGain64):
-		// TODO: write to GAIN pin 0
-		// TODO: write to GAIN pin 1
+		pio_clear(ADC_GAIN0_PIN_BANK, ADC_GAIN0_PIN);
+		pio_set(ADC_GAIN1_PIN_BANK, ADC_GAIN1_PIN);
 		break;
-		
+
 	case (adcGain128):
-		// TODO: write to GAIN pin 0
-		// TODO: write to GAIN pin 1
+		pio_set(ADC_GAIN0_PIN_BANK, ADC_GAIN0_PIN);
+		pio_set(ADC_GAIN1_PIN_BANK, ADC_GAIN1_PIN);
 		break;
-		
+
 	default:
 		break;
 	}
