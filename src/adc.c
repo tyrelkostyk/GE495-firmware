@@ -17,10 +17,14 @@
 
 #define ADC_SCLK_EDGE_DELAY_US			1
 #define ADC_POWER_ON_SEQUENCE_DELAY_US	100
+#define ADC_MAX_BLOCKING_WAIT_US		100000 // 0.1 second
 
 #define ADC_READ_SIZE_BITS	24
 #define ADC_DATA_MAX_VALUE_MASK		((1 << ADC_READ_SIZE_BITS) - 1)
 #define ADC_BIT_MAX_VALUE_MASK		(1)
+
+#define SUCCESS				0
+#define TIMEOUT_OCCURRED	1
 
 
 #if (BOARD==SAM4E_XPLAINED_PRO)
@@ -92,6 +96,8 @@ typedef enum _adcGain_t {
 static void adcInitPins(void);
 static void adcApplySclk(void);
 static uint8_t adcReadBit(void);
+static uint8_t adcScanDataLine(void);
+static uint8_t adcWaitWhileDataLineEquals(uint8_t voltage);
 static int32_t adcReadChannel(adcChannel_t channel);
 static int32_t adcReadAndCalibrate(adcChannel_t channel);
 
@@ -113,7 +119,7 @@ void adcInit(void)
 	adcInitPins();
 
 	// initialize ADC Speed
-  adcSetSpeed(adcSpeedSlow);
+	adcSetSpeed(adcSpeedSlow);
 
 	// initialize ADC Gain
 	adcSetGain(adcGain128);
@@ -122,7 +128,7 @@ void adcInit(void)
 	adcSelectChannel(adcChannelZero);
 
 	// power on the ADC
-  adcPowerOn();
+	adcPowerOn();
 }
 
 
@@ -205,7 +211,7 @@ static void adcApplySclk(void)
 
 
 /**
- * Polls the data pin of the ADC and returns its value
+ * Applies an clock pulse, polls the data pin of the ADC and returns its value
  */
 static uint8_t adcReadBit(void)
 {
@@ -219,6 +225,28 @@ static uint8_t adcReadBit(void)
 	return bit;
 }
 
+/**
+ * Polls the data pin of the ADC and returns its value
+ */
+static uint8_t adcScanDataLine(void)
+{
+	uint8_t bit = pio_get(ADC_DATA_PIN_BANK, PIO_TYPE_PIO_INPUT, ADC_DATA_PIN);
+
+	return bit;
+}
+
+static uint8_t adcWaitWhileDataLineEquals(uint8_t voltage)
+{
+	uint16_t delayCounter = 0;
+	while (adcScanDataLine() == voltage)
+	{
+		delayFor(1);
+		delayCounter++;
+		if (delayCounter > ADC_MAX_BLOCKING_WAIT_US)
+			return TIMEOUT_OCCURRED;
+	};
+	return SUCCESS;
+}
 
 /**
  * Retrieves 24-bit ADC data.
@@ -228,14 +256,14 @@ static int32_t adcReadChannel(adcChannel_t channel)
 {
 	int32_t data = 0;
 	int32_t bit = 0;
-
+	int32_t offset = 0;
 	adcSelectChannel(channel);
-
-	// TODO: delay ?
 	
 	// wait for data line to go low then high then low again
-	while (adcReadBit() == 0){};
-	while (adcReadBit() == 1){};
+	if (adcWaitWhileDataLineEquals(0) == TIMEOUT_OCCURRED)
+		return 0;
+	if (adcWaitWhileDataLineEquals(1) == TIMEOUT_OCCURRED)
+		return 0;
 
 	for (int i = ADC_READ_SIZE_BITS - 1; i>=0; i--)
 	{
@@ -244,11 +272,12 @@ static int32_t adcReadChannel(adcChannel_t channel)
 		
 		// first bit is the sign bit, so it gets subtracted
 		if (i == ADC_READ_SIZE_BITS - 1)
-			data = (data - (bit << i)) & ADC_DATA_MAX_VALUE_MASK;
+			offset = - ((bit << i) & ADC_DATA_MAX_VALUE_MASK);
 
 		// all other bits get treated normally
 		else
-			data = (data + (bit << i)) & ADC_DATA_MAX_VALUE_MASK;
+			offset = (bit << i) & ADC_DATA_MAX_VALUE_MASK;
+		data = data + offset;
 	}
 	
 	// one additional SCLK ensures that the DRDY/DOUT line stays high after data
@@ -268,7 +297,7 @@ static int32_t adcReadAndCalibrate(adcChannel_t channel)
 	int32_t data = adcReadChannel(channel);
 	adcApplySclk();
 
-	// TODO: delay?
+	delayFor(ADC_OFFSET_CALIBRATION_DELAY_MS);
 
 	return data;
 }
@@ -301,9 +330,6 @@ int32_t adcReadAllChannels(void)
  */
 static void adcSelectChannel(adcChannel_t channel)
 {
-	//digitalWrite(MUX_PIN0, muxSelect & 1);
-	//digitalWrite(MUX_PIN1, muxSelect & 2);
-
 	switch (channel)
 	{
 	case (adcChannelZero):
@@ -384,8 +410,6 @@ static void adcSetSpeed(adcSpeed_t sampleSpeed)
  */
 static void adcSetGain(adcGain_t gain)
 {
-  //digitalWrite(SPEED_PIN, sampleSpeed);
-
 	switch (gain)
 	{
 	case (adcGain1):

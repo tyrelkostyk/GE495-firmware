@@ -14,7 +14,7 @@
 ***************************************************************************************************/
 
 #define US_PER_S	(1000000)
-#define SCALE		(4)
+#define SCALE		(13)
 
 static uint32_t cpuClockFrequency = 0;
 

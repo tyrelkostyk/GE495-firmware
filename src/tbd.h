@@ -73,7 +73,7 @@ void calibrationTare(adcChannel_t channel, int32_t offset);
 void calibrationTareAllLoadCells(void);
 void calibrationObtainMassOne(double mass);
 void calibrationObtainMassTwo(double mass);
-void calibrationGetConversionFactor(double mass1, int32_t voltage1, double mass2, int32_t voltage2);
+void calibrationGetConversionFactor();
 
 
 /*** GENERAL ***/

@@ -67,8 +67,13 @@ int main (void)
 	// initialize the CAN peripheral
 	CANSetup();
 
+	// initialize delay functionality
+	delayInit();
+
 	// initialize the ADC
 	adcInit();
+	
+
 
 	while (1) {
 
@@ -76,32 +81,30 @@ int main (void)
 
 		// Sample ADC output
 		int32_t data = adcReadAllSmooth();
-		//printf("%l\n", data);
-
+	
 		/*** CALIBRATION ***/
 
 
 		// TODO: Check if it's time to send an update
 
 		// Poll for commands from downstream and respond accordingly
-		// if (cmdReceiveDownstream(&currentCommand) != 0) {
-		// 	if (!cmdSendUpstream(&currentCommand)) {
-		// 		// Something went wrong with the transmission of the command
-		// 	}
-		// 	if (!cmdHandle(&currentCommand)) {
-		// 		// Something went wrong with the handling of this command
-		// 	}
-		// }
-		//
-		// // Poll for updates from upstream and respond accordingly
-		// if (updateReceiveUpstream(&currentUpdate) != 0) {
-		// 	if (!updateHandle(&currentUpdate)) {
-		// 		// Something went wrong with the update handling
-		// 	}
-		// 	if (!updateSendDownstream(&currentUpdate)) {
-		// 		// Something went wrong with the transmission of the update
-		// 	}
-		// }
+		if (cmdReceiveDownstream(&currentCommand) != 0) {
+			if (!cmdSendUpstream(&currentCommand)) {
+				// Something went wrong with the transmission of the command
+			}
+			if (!cmdHandle(&currentCommand)) {
+				// Something went wrong with the handling of this command
+			}
+		}
+				// Poll for updates from upstream and respond accordingly
+		if (updateReceiveUpstream(&currentUpdate) != 0) {
+			if (!updateHandle(&currentUpdate)) {
+		 		// Something went wrong with the update handling
+		 	}
+		 	if (!updateSendDownstream(&currentUpdate)) {
+		 		// Something went wrong with the transmission of the update
+		 	}
+		}
 
 	}
 

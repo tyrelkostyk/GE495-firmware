@@ -86,7 +86,7 @@ void calibrationObtainMassTwo(double mass)
  * @param mass2 The mass value for the second point of reference for calibration
  * @param voltage2 The voltage value for the second point of reference for calibration
  */
-void calibrationGetConversionFactor(double mass1, int32_t voltage1, double mass2, int32_t voltage2)
+void calibrationGetConversionFactor()
 {
 	voltageToMassFactor = (mass1 - mass2) / (voltage1 - voltage2);
 }
