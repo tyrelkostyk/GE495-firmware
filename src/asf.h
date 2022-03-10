@@ -59,6 +59,9 @@
 #include <compiler.h>
 #include <status_codes.h>
 
+// From module: Common build items for user board support templates
+#include <user_board.h>
+
 // From module: GPIO - General purpose Input/Output
 #include <gpio.h>
 
@@ -84,20 +87,11 @@
 // From module: SAM FPU driver
 #include <fpu.h>
 
-// From module: SAM4E XPRO LED support enabled
-#include <led.h>
-
 // From module: SAM4E startup code
 #include <exceptions.h>
 
 // From module: System Clock Control - SAM4E implementation
 #include <sysclk.h>
-
-// From module: TC - Timer Counter
-#include <tc.h>
-
-// From module: TWI - Two-wire Interface
-#include <twi.h>
 
 // From module: pio_handler support enabled
 #include <pio_handler.h>

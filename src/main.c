@@ -1,33 +1,8 @@
 /**
- * \file
- *
- * \brief Empty user application template
- *
+ * @file main.c
+ * Application entry point.
  */
 
-/**
- * \mainpage User Application template doxygen documentation
- *
- * \par Empty user application template
- *
- * Bare minimum empty user application template
- *
- * \par Content
- *
- * -# Include the ASF header files (through asf.h)
- * -# "Insert system clock initialization code here" comment
- * -# Minimal main function that starts with a call to board_init()
- * -# "Insert application code here" comment
- *
- */
-
-/*
- * Include header files for all drivers that have been imported from
- * Atmel Software Framework (ASF).
- */
-/*
- * Support and FAQ: visit <a href="https://www.microchip.com/support/">Microchip Support</a>
- */
 #include <asf.h>
 #include <can.h>
 #include <ioport.h>
@@ -73,6 +48,23 @@ int main (void)
 	// initialize the ADC
 	adcInit();
 	
+
+	while (1) {
+		
+		// set PA4 (SCLK) high
+		pio_set(PIOA, PIO_PA4);
+
+		// delay 2s
+		delayFor(2 * 1000 * 1000);
+		
+		// set PA4 (SCLK) low
+		pio_clear(PIOA, PIO_PA4);
+
+		// delay 2s
+		delayFor(2 * 1000 * 1000);
+		
+		
+	}
 
 
 	while (1) {

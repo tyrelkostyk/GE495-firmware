@@ -5,7 +5,7 @@
     <ProjectVersion>7.0</ProjectVersion>
     <ToolchainName>com.Atmel.ARMGCC.C</ToolchainName>
     <ProjectGuid>dce6c7e3-ee26-4d79-826b-08594b9ad897</ProjectGuid>
-    <avrdevice>ATSAM4E16E</avrdevice>
+    <avrdevice>ATSAM4E8E</avrdevice>
     <avrdeviceseries>sam4e</avrdeviceseries>
     <OutputType>Executable</OutputType>
     <Language>C</Language>
@@ -32,30 +32,25 @@
       <framework-data>
         <options>
           <option id="sam.drivers.can" value="Add" config="" content-id="Atmel.ASF" />
-          <option id="common.services.basic.gpio" value="Add" config="" content-id="Atmel.ASF" />
           <option id="common.boards" value="Add" config="" content-id="Atmel.ASF" />
+          <option id="common.services.basic.gpio" value="Add" config="" content-id="Atmel.ASF" />
           <option id="common.services.ioport" value="Add" config="" content-id="Atmel.ASF" />
+          <option id="sam.drivers.pio" value="Add" config="" content-id="Atmel.ASF" />
           <option id="sam.drivers.pmc" value="Add" config="" content-id="Atmel.ASF" />
-          <option id="sam.drivers.tc.appnote" value="Add" config="" content-id="Atmel.ASF" />
-          <option id="sam.drivers.tc" value="Add" config="" content-id="Atmel.ASF" />
-          <option id="sam.drivers.twi" value="Add" config="" content-id="Atmel.ASF" />
           <option id="common.services.basic.clock" value="Add" config="" content-id="Atmel.ASF" />
-          <option id="common.applications.user_application.xplained_pro" value="Add" config="" content-id="Atmel.ASF" />
-          <option id="sam.utils.cmsis.sam4e.source.template" value="Add" config="" content-id="Atmel.ASF" />
+          <option id="sam.utils.linker_scripts" value="Add" config="" content-id="Atmel.ASF" />
         </options>
         <configurations>
           <configuration key="config.compiler.armgcc.fpu_used" value="yes" default="yes" content-id="Atmel.ASF" />
           <configuration key="config.compiler.armgcc.printf" value="iprintf" default="iprintf" content-id="Atmel.ASF" />
           <configuration key="config.compiler.armgcc.scanf" value="iscanf" default="iscanf" content-id="Atmel.ASF" />
           <configuration key="config.sam.pio.pio_handler" value="yes" default="yes" content-id="Atmel.ASF" />
-          <configuration key="config.compiler.iarewarm.debugger.driver" value="cmsisdap" default="cmsisdap" content-id="Atmel.ASF" />
         </configurations>
         <files>
-          <file path="src/main.c" framework="" version="" source="common/applications/xplained_pro_user_application/main.c" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam/boards/sam4e_xplained_pro/init.c" framework="" version="" source="sam/boards/sam4e_xplained_pro/init.c" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam/boards/sam4e_xplained_pro/led.h" framework="" version="" source="sam/boards/sam4e_xplained_pro/led.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam/boards/sam4e_xplained_pro/sam4e_xplained_pro.h" framework="" version="" source="sam/boards/sam4e_xplained_pro/sam4e_xplained_pro.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam/utils/linker_scripts/sam4e/sam4e16/gcc/flash.ld" framework="" version="" source="sam/utils/linker_scripts/sam4e/sam4e16/gcc/flash.ld" changed="False" content-id="Atmel.ASF" />
+          <file path="src/main.c" framework="" version="" source="common/applications/user_application/main.c" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/boards/user_board/init.c" framework="" version="" source="common/boards/user_board/init.c" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/boards/user_board/user_board.h" framework="" version="" source="common/boards/user_board/user_board.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/sam/utils/linker_scripts/sam4e/sam4e8/gcc/flash.ld" framework="" version="" source="sam/utils/linker_scripts/sam4e/sam4e8/gcc/flash.ld" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/thirdparty/CMSIS/license.txt" framework="" version="" source="thirdparty/CMSIS/license.txt" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/common/boards/board.h" framework="" version="3.49.1" source="common\boards\board.h" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/sam/drivers/can/can.c" framework="" version="3.49.1" source="sam\drivers\can\can.c" changed="False" content-id="Atmel.ASF" />
@@ -66,10 +61,6 @@
           <file path="src/ASF/sam/drivers/pmc/sleep.c" framework="" version="3.49.1" source="sam\drivers\pmc\sleep.c" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/sam/drivers/pmc/pmc.h" framework="" version="3.49.1" source="sam\drivers\pmc\pmc.h" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/sam/drivers/pmc/sleep.h" framework="" version="3.49.1" source="sam\drivers\pmc\sleep.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam/drivers/tc/tc.c" framework="" version="3.49.1" source="sam\drivers\tc\tc.c" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam/drivers/tc/tc.h" framework="" version="3.49.1" source="sam\drivers\tc\tc.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/Config/conf_board.h" framework="" version="3.49.1" source="sam\drivers\tc\tc_capture_waveform_example\sam4e16e_sam4e_ek\conf_board.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam/drivers/tc/tc_capture_waveform_example/tc_capture_waveform_example.h" framework="" version="3.49.1" source="sam\drivers\tc\tc_capture_waveform_example\tc_capture_waveform_example.h" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/sam/utils/make/Makefile.sam.in" framework="" version="3.49.1" source="sam\utils\make\Makefile.sam.in" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/common/services/clock/sam4e/sysclk.c" framework="" version="3.49.1" source="common\services\clock\sam4e\sysclk.c" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/common/services/clock/sam4e/genclk.h" framework="" version="3.49.1" source="common\services\clock\sam4e\genclk.h" changed="False" content-id="Atmel.ASF" />
@@ -91,8 +82,6 @@
           <file path="src/ASF/common/utils/parts.h" framework="" version="3.49.1" source="common\utils\parts.h" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/sam/drivers/pio/pio_handler.c" framework="" version="3.49.1" source="sam\drivers\pio\pio_handler.c" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/sam/drivers/pio/pio_handler.h" framework="" version="3.49.1" source="sam\drivers\pio\pio_handler.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam/drivers/twi/twi.c" framework="" version="3.49.1" source="sam\drivers\twi\twi.c" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam/drivers/twi/twi.h" framework="" version="3.49.1" source="sam\drivers\twi\twi.h" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/sam/utils/status_codes.h" framework="" version="3.49.1" source="sam\utils\status_codes.h" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/sam/utils/compiler.h" framework="" version="3.49.1" source="sam\utils\compiler.h" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/sam/utils/header_files/io.h" framework="" version="3.49.1" source="sam\utils\header_files\io.h" changed="False" content-id="Atmel.ASF" />
@@ -205,24 +194,23 @@
           <file path="src/ASF/thirdparty/CMSIS/ATMEL-disclaimer.txt" framework="" version="3.49.1" source="thirdparty\CMSIS\ATMEL-disclaimer.txt" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/thirdparty/CMSIS/Lib/license.txt" framework="" version="3.49.1" source="thirdparty\CMSIS\Lib\license.txt" changed="False" content-id="Atmel.ASF" />
         </files>
-        <documentation help="https://asf.microchip.com/docs/3.49.1/common.applications.user_application.xplained_pro.sam4e_xplained_pro/html/index.html" />
+        <documentation help="https://asf.microchip.com/docs/3.49.1/common.applications.user_application.user_board.sam4e8e/html/index.html" />
         <offline-documentation help="" />
         <dependencies>
           <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.49.1" />
         </dependencies>
-        <project id="common.applications.user_application.xplained_pro.sam4e_xplained_pro" value="Add" config="" content-id="Atmel.ASF" />
-        <board id="board.sam4e_xplained_pro" value="Add" config="" content-id="Atmel.ASF" />
+        <project id="common.applications.user_application.user_board.sam4e8e" value="Add" config="" content-id="Atmel.ASF" />
+        <board id="board.user_board.sam4e8e" value="Add" config="" content-id="Atmel.ASF" />
       </framework-data>
     </AsfFrameworkConfig>
-    <avrtool>com.atmel.avrdbg.tool.edbg</avrtool>
-    <avrtoolserialnumber>ATML2081061800000826</avrtoolserialnumber>
+    <avrtool>com.atmel.avrdbg.tool.samice</avrtool>
+    <avrtoolserialnumber>261011134</avrtoolserialnumber>
     <avrdeviceexpectedsignature>0xA3CC0CE0</avrdeviceexpectedsignature>
     <custom>
       <ToolOptions>
         <InterfaceProperties>
         </InterfaceProperties>
-        <InterfaceName>
-        </InterfaceName>
+        <InterfaceName>SWD</InterfaceName>
       </ToolOptions>
       <ToolType>custom</ToolType>
       <ToolNumber>
@@ -233,7 +221,7 @@
     <com_atmel_avrdbg_tool_edbg>
       <ToolOptions>
         <InterfaceProperties>
-          <SwdClock>2000000</SwdClock>
+          <SwdClock>0</SwdClock>
         </InterfaceProperties>
         <InterfaceName>SWD</InterfaceName>
       </ToolOptions>
@@ -241,7 +229,28 @@
       <ToolNumber>ATML2081061800000826</ToolNumber>
       <ToolName>EDBG</ToolName>
     </com_atmel_avrdbg_tool_edbg>
-    <avrtoolinterfaceclock>2000000</avrtoolinterfaceclock>
+    <avrtoolinterfaceclock>4000000</avrtoolinterfaceclock>
+    <com_atmel_avrdbg_tool_samice>
+      <ToolOptions>
+        <InterfaceProperties>
+          <SwdClock>4000000</SwdClock>
+          <JtagEnableExtResetOnStartSession>true</JtagEnableExtResetOnStartSession>
+          <JtagInChain>false</JtagInChain>
+          <JtagDevicesBefore>0</JtagDevicesBefore>
+          <JtagDevicesAfter>0</JtagDevicesAfter>
+          <JtagInstrBitsBefore>0</JtagInstrBitsBefore>
+          <JtagInstrBitsAfter>0</JtagInstrBitsAfter>
+          <JtagSelectedDeviceIndexInChain>0</JtagSelectedDeviceIndexInChain>
+          <JtagDbgClock>4000000</JtagDbgClock>
+          <JtagDaisyChainDevices>
+          </JtagDaisyChainDevices>
+        </InterfaceProperties>
+        <InterfaceName>SWD</InterfaceName>
+      </ToolOptions>
+      <ToolType>com.atmel.avrdbg.tool.samice</ToolType>
+      <ToolNumber>261011134</ToolNumber>
+      <ToolName>J-Link</ToolName>
+    </com_atmel_avrdbg_tool_samice>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -254,8 +263,7 @@
   <armgcc.compiler.symbols.DefSymbols>
     <ListValues>
       <Value>NDEBUG</Value>
-      <Value>BOARD=SAM4E_XPLAINED_PRO</Value>
-      <Value>__SAM4E16E__</Value>
+      <Value>BOARD=USER_BOARD</Value>
       <Value>printf=iprintf</Value>
       <Value>scanf=iscanf</Value>
       <Value>ARM_MATH_CM4=true</Value>
@@ -263,20 +271,17 @@
   </armgcc.compiler.symbols.DefSymbols>
   <armgcc.compiler.directories.IncludePaths>
     <ListValues>
-      <Value>../src/ASF/sam/boards/sam4e_xplained_pro</Value>
-      <Value>../src/ASF/sam/boards</Value>
+      <Value>../src/ASF/common/boards/user_board</Value>
       <Value>../src</Value>
       <Value>../src/config</Value>
       <Value>../src/ASF/common/boards</Value>
       <Value>../src/ASF/sam/drivers/can</Value>
       <Value>../src/ASF/sam/drivers/pio</Value>
       <Value>../src/ASF/sam/drivers/pmc</Value>
-      <Value>../src/ASF/sam/drivers/tc</Value>
       <Value>../src/ASF/common/services/clock</Value>
       <Value>../src/ASF/common/services/gpio</Value>
       <Value>../src/ASF/common/services/ioport</Value>
       <Value>../src/ASF/common/utils</Value>
-      <Value>../src/ASF/sam/drivers/twi</Value>
       <Value>../src/ASF/sam/utils</Value>
       <Value>../src/ASF/sam/utils/header_files</Value>
       <Value>../src/ASF/sam/utils/fpu</Value>
@@ -304,23 +309,20 @@
     </ListValues>
   </armgcc.linker.libraries.LibrarySearchPaths>
   <armgcc.linker.optimization.GarbageCollectUnusedSections>True</armgcc.linker.optimization.GarbageCollectUnusedSections>
-  <armgcc.linker.miscellaneous.LinkerFlags>-Wl,--entry=Reset_Handler -Wl,--cref -mthumb -T../src/ASF/sam/utils/linker_scripts/sam4e/sam4e16/gcc/flash.ld</armgcc.linker.miscellaneous.LinkerFlags>
+  <armgcc.linker.miscellaneous.LinkerFlags>-Wl,--entry=Reset_Handler -Wl,--cref -mthumb -T../src/ASF/sam/utils/linker_scripts/sam4e/sam4e8/gcc/flash.ld</armgcc.linker.miscellaneous.LinkerFlags>
   <armgcc.assembler.general.IncludePaths>
     <ListValues>
-      <Value>../src/ASF/sam/boards/sam4e_xplained_pro</Value>
-      <Value>../src/ASF/sam/boards</Value>
+      <Value>../src/ASF/common/boards/user_board</Value>
       <Value>../src</Value>
       <Value>../src/config</Value>
       <Value>../src/ASF/common/boards</Value>
       <Value>../src/ASF/sam/drivers/can</Value>
       <Value>../src/ASF/sam/drivers/pio</Value>
       <Value>../src/ASF/sam/drivers/pmc</Value>
-      <Value>../src/ASF/sam/drivers/tc</Value>
       <Value>../src/ASF/common/services/clock</Value>
       <Value>../src/ASF/common/services/gpio</Value>
       <Value>../src/ASF/common/services/ioport</Value>
       <Value>../src/ASF/common/utils</Value>
-      <Value>../src/ASF/sam/drivers/twi</Value>
       <Value>../src/ASF/sam/utils</Value>
       <Value>../src/ASF/sam/utils/header_files</Value>
       <Value>../src/ASF/sam/utils/fpu</Value>
@@ -331,23 +333,20 @@
       <Value>../src/ASF/thirdparty/CMSIS/Lib/GCC</Value>
     </ListValues>
   </armgcc.assembler.general.IncludePaths>
-  <armgcc.preprocessingassembler.general.AssemblerFlags>-DARM_MATH_CM4=true -DBOARD=SAM4E_XPLAINED_PRO -D__SAM4E16E__ -Dprintf=iprintf -Dscanf=iscanf</armgcc.preprocessingassembler.general.AssemblerFlags>
+  <armgcc.preprocessingassembler.general.AssemblerFlags>-DARM_MATH_CM4=true -DBOARD=USER_BOARD -Dprintf=iprintf -Dscanf=iscanf</armgcc.preprocessingassembler.general.AssemblerFlags>
   <armgcc.preprocessingassembler.general.IncludePaths>
     <ListValues>
-      <Value>../src/ASF/sam/boards/sam4e_xplained_pro</Value>
-      <Value>../src/ASF/sam/boards</Value>
+      <Value>../src/ASF/common/boards/user_board</Value>
       <Value>../src</Value>
       <Value>../src/config</Value>
       <Value>../src/ASF/common/boards</Value>
       <Value>../src/ASF/sam/drivers/can</Value>
       <Value>../src/ASF/sam/drivers/pio</Value>
       <Value>../src/ASF/sam/drivers/pmc</Value>
-      <Value>../src/ASF/sam/drivers/tc</Value>
       <Value>../src/ASF/common/services/clock</Value>
       <Value>../src/ASF/common/services/gpio</Value>
       <Value>../src/ASF/common/services/ioport</Value>
       <Value>../src/ASF/common/utils</Value>
-      <Value>../src/ASF/sam/drivers/twi</Value>
       <Value>../src/ASF/sam/utils</Value>
       <Value>../src/ASF/sam/utils/header_files</Value>
       <Value>../src/ASF/sam/utils/fpu</Value>
@@ -372,8 +371,7 @@
   <armgcc.compiler.symbols.DefSymbols>
     <ListValues>
       <Value>DEBUG</Value>
-      <Value>BOARD=SAM4E_XPLAINED_PRO</Value>
-      <Value>__SAM4E16E__</Value>
+      <Value>BOARD=USER_BOARD</Value>
       <Value>printf=iprintf</Value>
       <Value>scanf=iscanf</Value>
       <Value>ARM_MATH_CM4=true</Value>
@@ -381,20 +379,17 @@
   </armgcc.compiler.symbols.DefSymbols>
   <armgcc.compiler.directories.IncludePaths>
     <ListValues>
-      <Value>../src/ASF/sam/boards/sam4e_xplained_pro</Value>
-      <Value>../src/ASF/sam/boards</Value>
+      <Value>../src/ASF/common/boards/user_board</Value>
       <Value>../src</Value>
       <Value>../src/config</Value>
       <Value>../src/ASF/common/boards</Value>
       <Value>../src/ASF/sam/drivers/can</Value>
       <Value>../src/ASF/sam/drivers/pio</Value>
       <Value>../src/ASF/sam/drivers/pmc</Value>
-      <Value>../src/ASF/sam/drivers/tc</Value>
       <Value>../src/ASF/common/services/clock</Value>
       <Value>../src/ASF/common/services/gpio</Value>
       <Value>../src/ASF/common/services/ioport</Value>
       <Value>../src/ASF/common/utils</Value>
-      <Value>../src/ASF/sam/drivers/twi</Value>
       <Value>../src/ASF/sam/utils</Value>
       <Value>../src/ASF/sam/utils/header_files</Value>
       <Value>../src/ASF/sam/utils/fpu</Value>
@@ -423,23 +418,20 @@
   </armgcc.linker.libraries.LibrarySearchPaths>
   <armgcc.linker.optimization.GarbageCollectUnusedSections>True</armgcc.linker.optimization.GarbageCollectUnusedSections>
   <armgcc.linker.memorysettings.ExternalRAM />
-  <armgcc.linker.miscellaneous.LinkerFlags>-Wl,--entry=Reset_Handler -Wl,--cref -mthumb -T../src/ASF/sam/utils/linker_scripts/sam4e/sam4e16/gcc/flash.ld</armgcc.linker.miscellaneous.LinkerFlags>
+  <armgcc.linker.miscellaneous.LinkerFlags>-Wl,--entry=Reset_Handler -Wl,--cref -mthumb -T../src/ASF/sam/utils/linker_scripts/sam4e/sam4e8/gcc/flash.ld</armgcc.linker.miscellaneous.LinkerFlags>
   <armgcc.assembler.general.IncludePaths>
     <ListValues>
-      <Value>../src/ASF/sam/boards/sam4e_xplained_pro</Value>
-      <Value>../src/ASF/sam/boards</Value>
+      <Value>../src/ASF/common/boards/user_board</Value>
       <Value>../src</Value>
       <Value>../src/config</Value>
       <Value>../src/ASF/common/boards</Value>
       <Value>../src/ASF/sam/drivers/can</Value>
       <Value>../src/ASF/sam/drivers/pio</Value>
       <Value>../src/ASF/sam/drivers/pmc</Value>
-      <Value>../src/ASF/sam/drivers/tc</Value>
       <Value>../src/ASF/common/services/clock</Value>
       <Value>../src/ASF/common/services/gpio</Value>
       <Value>../src/ASF/common/services/ioport</Value>
       <Value>../src/ASF/common/utils</Value>
-      <Value>../src/ASF/sam/drivers/twi</Value>
       <Value>../src/ASF/sam/utils</Value>
       <Value>../src/ASF/sam/utils/header_files</Value>
       <Value>../src/ASF/sam/utils/fpu</Value>
@@ -451,23 +443,20 @@
     </ListValues>
   </armgcc.assembler.general.IncludePaths>
   <armgcc.assembler.debugging.DebugLevel>Default (-g)</armgcc.assembler.debugging.DebugLevel>
-  <armgcc.preprocessingassembler.general.AssemblerFlags>-DARM_MATH_CM4=true -DBOARD=SAM4E_XPLAINED_PRO -D__SAM4E16E__ -Dprintf=iprintf -Dscanf=iscanf</armgcc.preprocessingassembler.general.AssemblerFlags>
+  <armgcc.preprocessingassembler.general.AssemblerFlags>-DARM_MATH_CM4=true -DBOARD=USER_BOARD -Dprintf=iprintf -Dscanf=iscanf</armgcc.preprocessingassembler.general.AssemblerFlags>
   <armgcc.preprocessingassembler.general.IncludePaths>
     <ListValues>
-      <Value>../src/ASF/sam/boards/sam4e_xplained_pro</Value>
-      <Value>../src/ASF/sam/boards</Value>
+      <Value>../src/ASF/common/boards/user_board</Value>
       <Value>../src</Value>
       <Value>../src/config</Value>
       <Value>../src/ASF/common/boards</Value>
       <Value>../src/ASF/sam/drivers/can</Value>
       <Value>../src/ASF/sam/drivers/pio</Value>
       <Value>../src/ASF/sam/drivers/pmc</Value>
-      <Value>../src/ASF/sam/drivers/tc</Value>
       <Value>../src/ASF/common/services/clock</Value>
       <Value>../src/ASF/common/services/gpio</Value>
       <Value>../src/ASF/common/services/ioport</Value>
       <Value>../src/ASF/common/utils</Value>
-      <Value>../src/ASF/sam/drivers/twi</Value>
       <Value>../src/ASF/sam/utils</Value>
       <Value>../src/ASF/sam/utils/header_files</Value>
       <Value>../src/ASF/sam/utils/fpu</Value>
@@ -498,15 +487,10 @@
     <Folder Include="src\ASF\common\utils\" />
     <Folder Include="src\ASF\common\utils\interrupt\" />
     <Folder Include="src\ASF\sam\" />
-    <Folder Include="src\ASF\sam\boards\" />
-    <Folder Include="src\ASF\sam\boards\sam4e_xplained_pro\" />
     <Folder Include="src\ASF\sam\drivers\" />
     <Folder Include="src\ASF\sam\drivers\can\" />
     <Folder Include="src\ASF\sam\drivers\pio\" />
     <Folder Include="src\ASF\sam\drivers\pmc\" />
-    <Folder Include="src\ASF\sam\drivers\tc\" />
-    <Folder Include="src\ASF\sam\drivers\tc\tc_capture_waveform_example\" />
-    <Folder Include="src\ASF\sam\drivers\twi\" />
     <Folder Include="src\ASF\sam\utils\" />
     <Folder Include="src\ASF\sam\utils\cmsis\" />
     <Folder Include="src\ASF\sam\utils\cmsis\sam4e\" />
@@ -521,8 +505,8 @@
     <Folder Include="src\ASF\sam\utils\header_files\" />
     <Folder Include="src\ASF\sam\utils\linker_scripts\" />
     <Folder Include="src\ASF\sam\utils\linker_scripts\sam4e\" />
-    <Folder Include="src\ASF\sam\utils\linker_scripts\sam4e\sam4e16\" />
-    <Folder Include="src\ASF\sam\utils\linker_scripts\sam4e\sam4e16\gcc\" />
+    <Folder Include="src\ASF\sam\utils\linker_scripts\sam4e\sam4e8\" />
+    <Folder Include="src\ASF\sam\utils\linker_scripts\sam4e\sam4e8\gcc\" />
     <Folder Include="src\ASF\sam\utils\make\" />
     <Folder Include="src\ASF\sam\utils\preprocessor\" />
     <Folder Include="src\ASF\sam\utils\syscalls\" />
@@ -535,7 +519,19 @@
     <Folder Include="src\Config\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\adc.c">
+      <SubType>compile</SubType>
+    </Compile>
     <None Include="src\ASF\common\boards\board.h">
+      <SubType>compile</SubType>
+    </None>
+    <Compile Include="src\ASF\common\boards\user_board\init.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="src\ASF\common\boards\user_board\user_board.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\sam\utils\linker_scripts\sam4e\sam4e8\gcc\flash.ld">
       <SubType>compile</SubType>
     </None>
     <None Include="src\ASF\common\services\clock\sam4e\genclk.h">
@@ -556,9 +552,6 @@
     <None Include="src\ASF\common\services\clock\pll.h">
       <SubType>compile</SubType>
     </None>
-    <Compile Include="src\adc.c">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="src\ASF\common\services\clock\sam4e\sysclk.c">
       <SubType>compile</SubType>
     </Compile>
@@ -592,18 +585,6 @@
     <None Include="src\ASF\common\utils\parts.h">
       <SubType>compile</SubType>
     </None>
-    <Compile Include="src\ASF\sam\boards\sam4e_xplained_pro\init.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="src\ASF\sam\boards\sam4e_xplained_pro\sam4e_xplained_pro.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\sam\boards\sam4e_xplained_pro\led.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\sam\utils\linker_scripts\sam4e\sam4e16\gcc\flash.ld">
-      <SubType>compile</SubType>
-    </None>
     <Compile Include="src\ASF\sam\drivers\can\can.c">
       <SubType>compile</SubType>
     </Compile>
@@ -632,48 +613,6 @@
       <SubType>compile</SubType>
     </Compile>
     <None Include="src\ASF\sam\drivers\pmc\sleep.h">
-      <SubType>compile</SubType>
-    </None>
-    <Compile Include="src\ASF\sam\drivers\tc\tc.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="src\ASF\sam\drivers\tc\tc.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\sam\utils\make\Makefile.sam.in">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\thirdparty\CMSIS\ATMEL-disclaimer.txt">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\thirdparty\CMSIS\CMSIS_END_USER_LICENCE_AGREEMENT.pdf">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\thirdparty\CMSIS\Lib\GCC\libarm_cortexM4lf_math.a">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\thirdparty\CMSIS\Lib\GCC\libarm_cortexM4lf_math_softfp.a">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\thirdparty\CMSIS\Lib\license.txt">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\thirdparty\CMSIS\README.txt">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\Config\conf_board.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\sam\drivers\tc\tc_capture_waveform_example\tc_capture_waveform_example.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\Config\conf_clock.h">
-      <SubType>compile</SubType>
-    </None>
-    <Compile Include="src\ASF\sam\drivers\twi\twi.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="src\ASF\sam\drivers\twi\twi.h">
       <SubType>compile</SubType>
     </None>
     <None Include="src\ASF\sam\utils\status_codes.h">
@@ -967,6 +906,12 @@
     <Compile Include="src\ASF\sam\utils\syscalls\gcc\syscalls.c">
       <SubType>compile</SubType>
     </Compile>
+    <None Include="src\ASF\thirdparty\CMSIS\ATMEL-disclaimer.txt">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\thirdparty\CMSIS\CMSIS_END_USER_LICENCE_AGREEMENT.pdf">
+      <SubType>compile</SubType>
+    </None>
     <None Include="src\ASF\thirdparty\CMSIS\Include\cmsis_compiler.h">
       <SubType>compile</SubType>
     </None>
@@ -994,6 +939,24 @@
     <Compile Include="src\calibration.c">
       <SubType>compile</SubType>
     </Compile>
+    <None Include="src\ASF\thirdparty\CMSIS\Lib\GCC\libarm_cortexM4lf_math.a">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\thirdparty\CMSIS\Lib\GCC\libarm_cortexM4lf_math_softfp.a">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\thirdparty\CMSIS\Lib\license.txt">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\thirdparty\CMSIS\README.txt">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\Config\conf_clock.h">
+      <SubType>compile</SubType>
+    </None>
+    <Compile Include="src\Config\conf_board.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\delay.c">
       <SubType>compile</SubType>
     </Compile>
@@ -1015,6 +978,9 @@
     <Compile Include="src\can.c">
       <SubType>compile</SubType>
     </Compile>
+    <None Include="src\ASF\sam\utils\make\Makefile.sam.in">
+      <SubType>compile</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>
