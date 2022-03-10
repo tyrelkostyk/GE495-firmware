@@ -159,6 +159,7 @@ extern "C" {
 #define SAMR21G18_MODULE           103 //!< SAMR21G18-MR210UA Module.
 #define SAMR21B18_MODULE           104 //!< SAMR21B18-MZ210PA Module.
 #define WLR089_XPLAINED_PRO        105 //!< WLR089_XPLAINED_PRO board.
+#define DIGITIZER				   201  //!< Custom Digitizer board for Bourgault Industries Inc. (Revision 1).
 //! @}
 
 /*! \name Extension Boards
@@ -388,6 +389,9 @@ extern "C" {
 #elif BOARD == USER_BOARD
 // User-reserved area: #include the header file of your board here (if any).
 #  include "user_board.h"
+#elif BOARD == DIGITIZER
+// User-reserved area: #include the header file of your board here (if any).
+#  include "digitizer.h"
 #elif BOARD == DUMMY_BOARD
 #  include "dummy/dummy_board.h"
 #elif BOARD == SAMB11ZR_SENSOR_TAG

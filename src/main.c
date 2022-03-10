@@ -47,25 +47,6 @@ int main (void)
 
 	// initialize the ADC
 	adcInit();
-	
-
-	while (1) {
-		
-		// set PA4 (SCLK) high
-		pio_set(PIOA, PIO_PA4);
-
-		// delay 2s
-		delayFor(2 * 1000 * 1000);
-		
-		// set PA4 (SCLK) low
-		pio_clear(PIOA, PIO_PA4);
-
-		// delay 2s
-		delayFor(2 * 1000 * 1000);
-		
-		
-	}
-
 
 	while (1) {
 

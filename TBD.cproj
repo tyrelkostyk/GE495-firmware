@@ -371,7 +371,7 @@
   <armgcc.compiler.symbols.DefSymbols>
     <ListValues>
       <Value>DEBUG</Value>
-      <Value>BOARD=USER_BOARD</Value>
+      <Value>BOARD=DIGITIZER</Value>
       <Value>printf=iprintf</Value>
       <Value>scanf=iscanf</Value>
       <Value>ARM_MATH_CM4=true</Value>
@@ -379,7 +379,6 @@
   </armgcc.compiler.symbols.DefSymbols>
   <armgcc.compiler.directories.IncludePaths>
     <ListValues>
-      <Value>../src/ASF/common/boards/user_board</Value>
       <Value>../src</Value>
       <Value>../src/config</Value>
       <Value>../src/ASF/common/boards</Value>
@@ -398,6 +397,7 @@
       <Value>../src/ASF/sam/utils/preprocessor</Value>
       <Value>../src/ASF/thirdparty/CMSIS/Include</Value>
       <Value>../src/ASF/thirdparty/CMSIS/Lib/GCC</Value>
+      <Value>../src/ASF/common/boards/digitizer</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
   <armgcc.compiler.optimization.OtherFlags>-fdata-sections</armgcc.compiler.optimization.OtherFlags>
@@ -476,7 +476,7 @@
     <Folder Include="src\ASF\" />
     <Folder Include="src\ASF\common\" />
     <Folder Include="src\ASF\common\boards\" />
-    <Folder Include="src\ASF\common\boards\user_board\" />
+    <Folder Include="src\ASF\common\boards\digitizer" />
     <Folder Include="src\ASF\common\services\" />
     <Folder Include="src\ASF\common\services\clock\" />
     <Folder Include="src\ASF\common\services\clock\sam4e\" />
@@ -525,10 +525,10 @@
     <None Include="src\ASF\common\boards\board.h">
       <SubType>compile</SubType>
     </None>
-    <Compile Include="src\ASF\common\boards\user_board\init.c">
+    <Compile Include="src\ASF\common\boards\digitizer\init.c">
       <SubType>compile</SubType>
     </Compile>
-    <None Include="src\ASF\common\boards\user_board\user_board.h">
+    <None Include="src\ASF\common\boards\digitizer\digitizer.h">
       <SubType>compile</SubType>
     </None>
     <None Include="src\ASF\sam\utils\linker_scripts\sam4e\sam4e8\gcc\flash.ld">

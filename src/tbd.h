@@ -10,6 +10,7 @@
 #define TBD_H_
 
 #include <stdint.h>
+#include <board.h>
 
 
 /*** CAN ***/

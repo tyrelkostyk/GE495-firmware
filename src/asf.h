@@ -60,7 +60,7 @@
 #include <status_codes.h>
 
 // From module: Common build items for user board support templates
-#include <user_board.h>
+#include <digitizer.h>
 
 // From module: GPIO - General purpose Input/Output
 #include <gpio.h>
