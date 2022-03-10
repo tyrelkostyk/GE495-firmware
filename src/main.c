@@ -36,10 +36,11 @@
 extern can_mb_conf_t can_mbox_up_rx, can_mbox_up_tx;
 extern can_mb_conf_t can_mbox_down_rx, can_mbox_down_tx;
 
-uint32_t systemClk;
+uint32_t systemClk = 0;
+uint32_t cpuClk = 0;
 
-message_t currentCommand;
-message_t currentUpdate;
+message_t currentCommand = { 0 };
+message_t currentUpdate = { 0 };
 
 uint8_t x = 0;
 
@@ -57,28 +58,35 @@ int main (void)
 		- GPIO settings
 	*/
 
-//#if BOARD == SAM4E_XPLAINED_PRO
-	ioport_set_pin_mode(PIN_CAN1_RX_IDX, PIN_CAN1_RX_FLAGS);
-	// ioport_disable_pin(PIN_CAN1_RX_IDX);
-	ioport_set_pin_mode(PIN_CAN1_TX_IDX, PIN_CAN1_TX_FLAGS);
-	// ioport_disable_pin(PIN_CAN1_TX_IDX);
-
-	/* Configure the transiver1 RS & EN pins. */
-	ioport_set_pin_dir(PIN_CAN1_TR_RS_IDX, IOPORT_DIR_OUTPUT);
-	ioport_set_pin_dir(PIN_CAN1_TR_EN_IDX, IOPORT_DIR_OUTPUT);
-
-//#endif
-
 	systemClk = sysclk_get_main_hz();
+	cpuClk = sysclk_get_cpu_hz();
+
+	// initialize the board settings
 	board_init();
 
+	// initialize the CAN peripheral
 	CANSetup();
 
+	// initialize delay functionality
+	delayInit();
+
+	// initialize the ADC
+	adcInit();
+	
+
+
 	while (1) {
-		// Check to see if it's time to sample the ADC output
-		
-		// Check if it's time to send an update
-		
+
+		// TODO: Check to see if it's time to sample the ADC output
+
+		// Sample ADC output
+		int32_t data = adcReadAllSmooth();
+	
+		/*** CALIBRATION ***/
+
+
+		// TODO: Check if it's time to send an update
+
 		// Poll for commands from downstream and respond accordingly
 		if (cmdReceiveDownstream(&currentCommand) != 0) {
 			if (!cmdSendUpstream(&currentCommand)) {
@@ -88,17 +96,16 @@ int main (void)
 				// Something went wrong with the handling of this command
 			}
 		}
-		
-		// Poll for updates from upstream and respond accordingly
+				// Poll for updates from upstream and respond accordingly
 		if (updateReceiveUpstream(&currentUpdate) != 0) {
 			if (!updateHandle(&currentUpdate)) {
-				// Something went wrong with the update handling
-			}
-			if (!updateSendDownstream(&currentUpdate)) {
-				// Something went wrong with the transmission of the update
-			}
+		 		// Something went wrong with the update handling
+		 	}
+		 	if (!updateSendDownstream(&currentUpdate)) {
+		 		// Something went wrong with the transmission of the update
+		 	}
 		}
-		
+
 	}
-	
+
 }
