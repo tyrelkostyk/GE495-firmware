@@ -10,15 +10,16 @@
 #include <asf.h>
 #include <can.h>
 
+
 extern uint32_t systemClk;
 
 volatile uint32_t g_can_up_receive_status = 0;
 volatile uint32_t g_can_down_receive_status = 0;
 
-can_mb_conf_t can_mbox_down_tx;
-can_mb_conf_t can_mbox_down_rx;
-can_mb_conf_t can_mbox_up_tx;
-can_mb_conf_t can_mbox_up_rx;
+can_mb_conf_t can_mbox_down_tx = { 0 };
+can_mb_conf_t can_mbox_down_rx = { 0 };
+can_mb_conf_t can_mbox_up_tx = { 0 };
+can_mb_conf_t can_mbox_up_rx = { 0 };
 
 // Downstream
 void CAN0_Handler(void)
@@ -62,7 +63,12 @@ uint8_t CANSetup(void)
 
 	#else // (BOARD==SAM4E_XPLAINED_PRO)
 	
-	// TODO: set CAN pin settings for SAM4E8E
+	ioport_set_pin_mode(PIN_CAN1_RX_IDX, PIN_CAN1_RX_FLAGS);
+	ioport_set_pin_mode(PIN_CAN1_TX_IDX, PIN_CAN1_TX_FLAGS);
+
+	/* Configure the transiver1 RS & EN pins. */
+	ioport_set_pin_dir(PIN_CAN1_TR_RS_IDX, IOPORT_DIR_OUTPUT);
+	ioport_set_pin_dir(PIN_CAN1_TR_EN_IDX, IOPORT_DIR_OUTPUT);
 	
 	#endif // (BOARD==SAM4E_XPLAINED_PRO)
 
