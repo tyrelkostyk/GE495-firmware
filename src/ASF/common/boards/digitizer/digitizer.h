@@ -71,10 +71,30 @@
 
 
 /***************************************************************************************************
-                                            PIN MACROS
+                                          PIN MACROS - CAN
 ***************************************************************************************************/
 
-// TODO: place common pin macro names (e.g. PIO_PA3 -> SCLK, etc.)
+/** CAN0 (Downstream) PIN RX. */
+#define PIN_CAN0_RX_IDX           PIO_PB3_IDX
+#define PIN_CAN0_RX_FLAGS         IOPORT_MODE_MUX_A
 
+/** CAN0 (Downstream) PIN TX. */
+#define PIN_CAN0_TX_IDX           PIO_PB2_IDX
+#define PIN_CAN0_TX_FLAGS         IOPORT_MODE_MUX_A
+
+/** CAN1 (Upstream) PIN RX. */
+#define PIN_CAN1_RX_IDX           PIO_PC12_IDX
+#define PIN_CAN1_RX_FLAGS         IOPORT_MODE_MUX_C
+
+/** CAN1 (Upstream) PIN TX. */
+#define PIN_CAN1_TX_IDX           PIO_PC15_IDX
+#define PIN_CAN1_TX_FLAGS         IOPORT_MODE_MUX_C
+
+
+/***************************************************************************************************
+                                          PIN MACROS - ADC
+***************************************************************************************************/
+
+// TODO: pull in pin macros for ADC control
 
 #endif // DIGITIZER_H

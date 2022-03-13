@@ -49,29 +49,14 @@ void CAN1_Handler(void)
 
 uint8_t CANSetup(void)
 {
-	
-	#if (BOARD==SAM4E_XPLAINED_PRO)
-	
-	ioport_set_pin_mode(PIN_CAN1_RX_IDX, PIN_CAN1_RX_FLAGS);
-	// ioport_disable_pin(PIN_CAN1_RX_IDX);
-	ioport_set_pin_mode(PIN_CAN1_TX_IDX, PIN_CAN1_TX_FLAGS);
-	// ioport_disable_pin(PIN_CAN1_TX_IDX);
 
-	/* Configure the transiver1 RS & EN pins. */
-	ioport_set_pin_dir(PIN_CAN1_TR_RS_IDX, IOPORT_DIR_OUTPUT);
-	ioport_set_pin_dir(PIN_CAN1_TR_EN_IDX, IOPORT_DIR_OUTPUT);
+	// enable CAN0 TX and RX pins
+	ioport_set_pin_mode(PIN_CAN0_RX_IDX, PIN_CAN0_RX_FLAGS);
+	ioport_set_pin_mode(PIN_CAN0_TX_IDX, PIN_CAN0_TX_FLAGS);
 
-	#else // (BOARD==SAM4E_XPLAINED_PRO)
-	
+	// enable CAN1 TX and RX pins
 	ioport_set_pin_mode(PIN_CAN1_RX_IDX, PIN_CAN1_RX_FLAGS);
 	ioport_set_pin_mode(PIN_CAN1_TX_IDX, PIN_CAN1_TX_FLAGS);
-
-	/* Configure the transiver1 RS & EN pins. */
-	ioport_set_pin_dir(PIN_CAN1_TR_RS_IDX, IOPORT_DIR_OUTPUT);
-	ioport_set_pin_dir(PIN_CAN1_TR_EN_IDX, IOPORT_DIR_OUTPUT);
-	
-	#endif // (BOARD==SAM4E_XPLAINED_PRO)
-
 	
 	/*** CAN0 is downstream, CAN1 is upstream ***/
 	

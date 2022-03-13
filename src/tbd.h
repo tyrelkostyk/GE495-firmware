@@ -14,7 +14,7 @@
 
 
 /*** CAN ***/
-#define TBD_CAN_BAUD CAN_BPS_500K
+#define TBD_CAN_BAUD CAN_BPS_250K
 
 #define TBD_CAN_DOWN CAN0
 #define TBD_CAN_UP   CAN1
