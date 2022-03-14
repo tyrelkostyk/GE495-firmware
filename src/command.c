@@ -33,6 +33,6 @@ uint8_t cmdHandle(message_t *command)
 		}
 	}
 
-	return 1;
+	return SUCCESS;
 }
 

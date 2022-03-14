@@ -14,25 +14,21 @@ extern can_mb_conf_t can_mbox_down_rx, can_mbox_down_tx;
 uint32_t systemClk = 0;
 uint32_t cpuClk = 0;
 
-message_t currentCommand = { 0 };
-message_t currentUpdate = { 0 };
+message_t command = { 0 };
+message_t localUpdate = { 0 };
+message_t remoteUpdate = { 0 };
 
 uint8_t x = 0;
 
 int main (void)
 {
+	int error = 0;
+	float mass = 0.0;
+	
 	// Initialize system clock
 	sysclk_init();
 
-	/* Board initialization should include the following:
-	    - clock config
-		- timer config
-		- peripheral config
-		- CAN settings
-		- TWI settings
-		- GPIO settings
-	*/
-
+	// get system and CPU clock settings
 	systemClk = sysclk_get_main_hz();
 	cpuClk = sysclk_get_cpu_hz();
 
@@ -40,7 +36,9 @@ int main (void)
 	board_init();
 
 	// initialize the CAN peripheral
-	CANSetup();
+	if (CANSetup() != SUCCESS) {
+		error++;
+	}
 
 	// initialize delay functionality
 	delayInit();
@@ -48,37 +46,66 @@ int main (void)
 	// initialize the ADC
 	adcInit();
 
+	uint32_t updatePeriod = 100 * 1000;
+	uint32_t loopTimer = 0;
+
 	while (1) {
+		
+		loopTimer++;
 
-		// TODO: Check to see if it's time to sample the ADC output
+		/*** UPDATE ACQUISITION TRANSMISSION ***/
 
-		// Sample ADC output
-		int32_t data = adcReadAllSmooth();
-	
-		/*** CALIBRATION ***/
+		// Check to see if it's time to sample the ADC output
+		// TODO: use an accurate timer
+		if ((loopTimer % updatePeriod) == 0) {
+			
+			// Obtain ADC output
+			mass = (float) adcReadAllSmooth();
+
+			// Create the new update message
+			updateCreate(&localUpdate, mass);
+		
+			// Transmit the new update message
+			if (updateSendDownstream(&localUpdate) != SUCCESS) {
+				// Something went wrong with the transmission of the update
+				error++;
+			}
+		}
 
 
-		// TODO: Check if it's time to send an update
+		/*** CALIBRATION COMMANDS ***/
 
+		/*
 		// Poll for commands from downstream and respond accordingly
-		if (cmdReceiveDownstream(&currentCommand) != 0) {
-			if (!cmdSendUpstream(&currentCommand)) {
+		if (cmdReceiveDownstream(&command) != 0) {
+			if (!cmdSendUpstream(&command)) {
 				// Something went wrong with the transmission of the command
+				error++;
 			}
-			if (!cmdHandle(&currentCommand)) {
+			if (!cmdHandle(&command)) {
 				// Something went wrong with the handling of this command
+				error++;
 			}
 		}
-				// Poll for updates from upstream and respond accordingly
-		if (updateReceiveUpstream(&currentUpdate) != 0) {
-			if (!updateHandle(&currentUpdate)) {
+		*/
+		
+		
+		/*** UPDATE FORWARDING ***/
+
+		// Poll for upstream updates
+		if (updateReceiveUpstream(&remoteUpdate) == SUCCESS) {
+			
+			// Handle the update
+			if (updateHandle(&remoteUpdate) != SUCCESS) {
 		 		// Something went wrong with the update handling
+				error++;
 		 	}
-		 	if (!updateSendDownstream(&currentUpdate)) {
+			
+			// Forward the update downstream
+		 	if (updateSendDownstream(&remoteUpdate) != SUCCESS) {
 		 		// Something went wrong with the transmission of the update
+				error++;
 		 	}
 		}
-
 	}
-
 }

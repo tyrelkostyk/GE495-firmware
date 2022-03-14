@@ -18,10 +18,19 @@
 
 #define TBD_CAN_DOWN CAN0
 #define TBD_CAN_UP   CAN1
+
 typedef enum {
 	Up,
 	Down
 } direction_t;
+
+#define CAN_MAX_PAYLOAD_SIZE	(8)
+
+typedef struct {
+	uint32_t id;
+	uint8_t length;
+	uint8_t data[CAN_MAX_PAYLOAD_SIZE];
+} message_t;
 
 #define TBD_CAN_TX_IDX (0)
 #define TBD_CAN_RX_IDX (1)
@@ -38,14 +47,14 @@ uint8_t CANReceive(direction_t direction, uint32_t *id, uint8_t *length, uint8_t
 #define TBD_UPDATE_TANK_ID_IDX (0)
 
 typedef struct {
-	uint32_t id;
-	uint8_t length;
-	uint8_t data[8];
-} message_t;
+	uint8_t tankId;
+	float mass;
+} update_t;
 
-uint8_t updateSendDownstream(message_t *update);
-uint8_t updateReceiveUpstream(message_t *update);
-uint8_t updateHandle(message_t *update);
+uint8_t updateSendDownstream(message_t *message);
+uint8_t updateReceiveUpstream(message_t *message);
+uint8_t updateCreate(message_t *message, float mass);
+uint8_t updateHandle(message_t *message);
 
 
 /*** Command ***/
@@ -70,6 +79,7 @@ int32_t adcReadChannelSmooth(adcChannel_t channel);
 
 /*** CALIBRATION ***/
 int32_t calibrationOffset(adcChannel_t channel);
+
 void calibrationTare(adcChannel_t channel, int32_t offset);
 void calibrationTareAllLoadCells(void);
 void calibrationObtainMassOne(double mass);
@@ -78,7 +88,11 @@ void calibrationGetConversionFactor();
 
 
 /*** GENERAL ***/
+#define SUCCESS	(0)
+#define FAILURE	(1)
+
 #define LOAD_CELLS_PER_TANK	3
+
 void delayInit(void);
 void delayFor(uint32_t us);
 

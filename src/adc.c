@@ -23,9 +23,6 @@
 #define ADC_DATA_MAX_VALUE_MASK		((1 << ADC_READ_SIZE_BITS) - 1)
 #define ADC_BIT_MAX_VALUE_MASK		(1)
 
-#define SUCCESS				0
-#define TIMEOUT_OCCURRED	1
-
 
 #if (BOARD==SAM4E_XPLAINED_PRO)
 
@@ -243,7 +240,7 @@ static uint8_t adcWaitWhileDataLineEquals(uint8_t voltage)
 		delayFor(1);
 		delayCounter++;
 		if (delayCounter > ADC_MAX_BLOCKING_WAIT_US)
-			return TIMEOUT_OCCURRED;
+			return FAILURE;
 	};
 	return SUCCESS;
 }
@@ -260,9 +257,9 @@ static int32_t adcReadChannel(adcChannel_t channel)
 	adcSelectChannel(channel);
 	
 	// wait for data line to go low then high then low again
-	if (adcWaitWhileDataLineEquals(0) == TIMEOUT_OCCURRED)
+	if (adcWaitWhileDataLineEquals(0) == FAILURE)
 		return 0;
-	if (adcWaitWhileDataLineEquals(1) == TIMEOUT_OCCURRED)
+	if (adcWaitWhileDataLineEquals(1) == FAILURE)
 		return 0;
 
 	for (int i = ADC_READ_SIZE_BITS - 1; i>=0; i--)
