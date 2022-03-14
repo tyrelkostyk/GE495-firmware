@@ -65,7 +65,7 @@ void adcInit(void);
 int32_t adcReadAllChannels(void);
 int32_t adcReadAllSmooth(void);
 int32_t adcReadChannelSmooth(adcChannel_t channel);
-
+int32_t adcReadAndCalibrate(adcChannel_t channel);
 
 /*** CALIBRATION ***/
 int32_t calibrationOffset(adcChannel_t channel);
@@ -75,6 +75,7 @@ void calibrationObtainMassOne(double mass);
 void calibrationObtainMassTwo(double mass);
 void calibrationGetConversionFactor();
 
+extern float voltageToMassFactor;
 
 /*** GENERAL ***/
 #define LOAD_CELLS_PER_TANK	3

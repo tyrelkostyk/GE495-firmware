@@ -17,7 +17,7 @@
 
 #define ADC_SCLK_EDGE_DELAY_US			1
 #define ADC_POWER_ON_SEQUENCE_DELAY_US	100
-#define ADC_MAX_BLOCKING_WAIT_US		100000 // 0.1 second
+#define ADC_MAX_BLOCKING_WAIT_US		10000000 // 10 seconds
 
 #define ADC_READ_SIZE_BITS	24
 #define ADC_DATA_MAX_VALUE_MASK		((1 << ADC_READ_SIZE_BITS) - 1)
@@ -99,7 +99,6 @@ static uint8_t adcReadBit(void);
 static uint8_t adcScanDataLine(void);
 static uint8_t adcWaitWhileDataLineEquals(uint8_t voltage);
 static int32_t adcReadChannel(adcChannel_t channel);
-static int32_t adcReadAndCalibrate(adcChannel_t channel);
 
 static void adcSelectChannel(adcChannel_t channel);
 static void adcSetSpeed(adcSpeed_t sampleSpeed);
@@ -261,9 +260,9 @@ static int32_t adcReadChannel(adcChannel_t channel)
 	
 	// wait for data line to go low then high then low again
 	if (adcWaitWhileDataLineEquals(0) == TIMEOUT_OCCURRED)
-		return 0;
+		return calibrationOffset(channel);
 	if (adcWaitWhileDataLineEquals(1) == TIMEOUT_OCCURRED)
-		return 0;
+		return calibrationOffset(channel);
 
 	for (int i = ADC_READ_SIZE_BITS - 1; i>=0; i--)
 	{
@@ -292,7 +291,7 @@ static int32_t adcReadChannel(adcChannel_t channel)
  * Retrieves 24-bit ADC data and calibrates the ADC.
  * @return int32_t 24-bit ADC data
  */
-static int32_t adcReadAndCalibrate(adcChannel_t channel)
+int32_t adcReadAndCalibrate(adcChannel_t channel)
 {
 	int32_t data = adcReadChannel(channel);
 	adcApplySclk();

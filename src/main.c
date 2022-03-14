@@ -72,15 +72,13 @@ int main (void)
 
 	// initialize the ADC
 	adcInit();
-	
-
 
 	while (1) {
 
 		// TODO: Check to see if it's time to sample the ADC output
 
 		// Sample ADC output
-		int32_t data = adcReadAllSmooth();
+ 		float data = adcReadAllSmooth() * voltageToMassFactor;
 	
 		/*** CALIBRATION ***/
 
