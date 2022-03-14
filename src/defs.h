@@ -71,7 +71,7 @@ uint8_t CANReceive (can_dir_t direction, uint32_t *id, uint8_t **buffer);
  * uint16_t crc;
  * uint8_t  null;
 */
-#define SER_CMD_SZ (8)
+#define SER_CMD_SZ (64)
 
 /****************
 * COMMAND (CMD) *

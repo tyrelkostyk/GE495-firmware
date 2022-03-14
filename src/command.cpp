@@ -54,26 +54,48 @@ uint8_t cmdReceiveDownstream(message_t *command)
     int checksum = 0;
 
     received = Serial.readBytes(buffer, SER_CMD_SZ);
-    if (strlen(buffer) > 3)
-        Serial.println((char *)buffer);
 
-    switch (received) {
-        case 0:
-            return 0;
-        case 8:  // Terminator
-        case 7:  // CRC
-            checksum = crc16MCRFXX(checksum, buffer, 5);
-            if (checksum != (uint16_t)(buffer[6] << 8 | buffer[5])) {
-                Serial.println("No match");
-                return -1;
-            } else {
-                Serial.println("Match!");
+    char message[SER_CMD_SZ-5];
+    char checksum[6];
+    
+    message = strtok(buffer, "/");
+    if (message == NULL)
+        return 0;
+    checksum = strtok(NULL, "/");
+    if (checksum == NULL)
+        return 0;
+
+    uint16_t checkNum = (uint16_t)atol(checksum);
+    if (checkNum != crc16MCRFXX(0, message, strlen(message)-1)) {
+        Serial.println("X");
+        return 0;
+    }
+    Serial.println("Y");
+
+    switch (message[0]) {
+        case 'T':
+            // construct a tare command
+            break;
+        case 'R':
+            // cycle power on the Arduino
+            break;
+        case 'Z':
+            switch (message[1]) {
+                case '0':
+                    // construct a start zero command
+                    break;
+                case '1':
+                    // construct a zero step-1 command
+                    break;
+                case '2':
+                    // construct a zero step-2 command
+                    break;
+                default:
+                    return 0;
             }
-            memcpy(command->data, &buffer[2], 4 * sizeof(uint8_t));
-            command->id = cmdConstructID(buffer[0]);
             break;
         default:
-            return -1;
+            return 0;
     }
 
     return received;
