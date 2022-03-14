@@ -12,35 +12,7 @@
 
 uint16_t crc16MCRFXX(uint16_t crc, uint8_t *data, uint8_t len);
 
-/**
- * Converts an integer representation of a float into an actual float
- * @param i the integer representation
- * @param bits the number of bits
- * @param expbits the number of exponent bits
- * @return a float
- */
-float unpackFloat754(uint32_t i, uint8_t bits, uint8_t expbits)
-{
-    float result;
-    long long shift;
-    uint16_t bias;
-    uint16_t significandBits = bits - expbits - 1;
-
-    if (i == 0) return 0.0;
-
-    result = (i & ((1LL << significandBits)-1));
-    result /= (1LL << significandBits);
-    result += 1.0;
-
-    bias = (1 << (expbits - 1)) - 1;
-    shift = ((i >> significandBits) & ((1LL << expbits)-1)) - bias;
-    while (shift > 0) { result *= 2.0; shift--; }
-    while (shift < 0) { result /= 2.0; shift++; }
-
-    result *= (i >> (bits - 1)) & 1 ? -1.0 : 1.0;
-
-    return result;
-}
+float unpackFloat754(uint32_t i, uint8_t bits, uint8_t expbits);
 
 #define unpackFloat(i) (unpackFloat754((f), 32, 8))
 
@@ -89,6 +61,7 @@ uint8_t CANReceive (can_dir_t direction, uint32_t *id, uint8_t **buffer);
  * uint16_t crc;
  * uint8_t  null;
 */
+#define SER_TEL_SZ (8)
 
 /*
  * Command:
@@ -97,6 +70,7 @@ uint8_t CANReceive (can_dir_t direction, uint32_t *id, uint8_t **buffer);
  * uint16_t crc;
  * uint8_t  null;
 */
+#define SER_CMD_SZ (8)
 
 /****************
 * COMMAND (CMD) *
@@ -110,13 +84,13 @@ uint8_t cmdParse (message_t *command);
 
 #define PGN_DEBUG_HANDSHAKE (0x01)
 
-#define PGN_TARE_START  (0x02)
-#define PGN_TARE_STEP1  (0x03)
-#define PGN_TARE_STEP2  (0x04)
-#define PGN_TARE_FINISH (0x05)
+#define PGN_TARE (0xc2)
 
-#define PGN_CALIBRATE_START  (0x06)
-#define PGN_CALIBRATE_FINISH (0x07)
+#define PGN_CALIBRATE   (0xc8)
+#define PGN_CAL_START   (0x01)
+#define PGN_CAL_CONF_M1 (0x02)
+#define PGN_CAL_CONF_M2 (0x03)
+#define PGN_CAL_FINISH  (0x04)
 
 /*********
 * UPDATE *

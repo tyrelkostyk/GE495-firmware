@@ -3,6 +3,7 @@
 
 #include "defs.h"
 
+#include <Arduino.h>
 #include <string.h>
 
 extern message_t currentUpdate;
@@ -15,6 +16,16 @@ extern message_t currentUpdate;
 inline uint32_t cmdPGNFromMessage(message_t *message)
 {
     return (message->id & 0x3ffff00) >> 8;  // J1939 parameter group number (PGN) should be id[25:8]
+}
+
+/**
+ * Constructs a CAN ID by building a PGN from the provided code and inserting the ID mask.
+ * @param code The command code received from the PC
+ * @return uint32_t
+ */
+inline uint32_t cmdConstructID(uint8_t code)
+{
+    return (uint32_t)(code << 8);
 }
 
 /**
@@ -38,12 +49,31 @@ uint8_t cmdReceiveDownstream(message_t *command)
 {
     uint8_t received;
 
-    uint32_t id;
-    uint8_t data[CAN_DATA_LEN_MAX];
+    uint8_t buffer[SER_CMD_SZ];
 
-    if ((received = CANReceive(DOWN, &id, (uint8_t **)&data)) != NOP) {
-        command->id = id;
-        memcpy(command->data, data, CAN_DATA_LEN_MAX);
+    int checksum = 0;
+
+    received = Serial.readBytes(buffer, SER_CMD_SZ);
+    if (strlen(buffer) > 3)
+        Serial.println((char *)buffer);
+
+    switch (received) {
+        case 0:
+            return 0;
+        case 8:  // Terminator
+        case 7:  // CRC
+            checksum = crc16MCRFXX(checksum, buffer, 5);
+            if (checksum != (uint16_t)(buffer[6] << 8 | buffer[5])) {
+                Serial.println("No match");
+                return -1;
+            } else {
+                Serial.println("Match!");
+            }
+            memcpy(command->data, &buffer[2], 4 * sizeof(uint8_t));
+            command->id = cmdConstructID(buffer[0]);
+            break;
+        default:
+            return -1;
     }
 
     return received;
@@ -65,30 +95,26 @@ uint8_t cmdParse(message_t *command)
     uint32_t pgn = cmdPGNFromMessage(command);
     switch (pgn) {
         case PGN_DEBUG_HANDSHAKE: {
-            updateSendDownstream(&currentUpdate);  // Just send the message right back
+            Serial.println("Hello, world!");
             break;
         }
-        case PGN_TARE_START: {
+        case PGN_TARE: {
 
             break;
         }
-        case PGN_TARE_STEP1: {
+        case PGN_CALIBRATE | PGN_CAL_START: {
 
             break;
         }
-        case PGN_TARE_STEP2: {
+        case PGN_CALIBRATE | PGN_CAL_CONF_M1: {
 
             break;
         }
-        case PGN_TARE_FINISH: {
+        case PGN_CALIBRATE | PGN_CAL_CONF_M2: {
 
             break;
         }
-        case PGN_CALIBRATE_START: {
-
-            break;
-        }
-        case PGN_CALIBRATE_FINISH: {
+        case PGN_CALIBRATE | PGN_CAL_FINISH: {
 
             break;
         }
