@@ -35,6 +35,10 @@ uint8_t CANSetup(void)
     serUp.begin(CAN_BAUDRATE);
     canUp.begin(serUp, CAN_BAUDRATE);
 
+    if (!canUp.canRate(CAN_RATE_250)) {
+        setupStatus = ERR;
+    }
+
     if (!canUp.setMask(rx_mask)) {
         setupStatus = ERR;
     } else {

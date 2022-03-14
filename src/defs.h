@@ -21,6 +21,7 @@ float unpackFloat754(uint32_t i, uint8_t bits, uint8_t expbits);
 ******/
 
 #define CAN_BAUDRATE (9600)
+#define CAN_RATE_250 (15)
 #define CAN_UP_TX (4)
 #define CAN_UP_RX (5)
 
