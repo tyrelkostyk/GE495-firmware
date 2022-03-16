@@ -19,7 +19,7 @@ uint32_t prevUpdateTime;
 uint32_t prevSampleTime;
 
 // Initialization steps go in here
-void setup()
+void _setup()
 {
     Serial.begin(19200);
     Serial.setTimeout(500);
@@ -27,7 +27,7 @@ void setup()
 }
 
 // Repeated routines (e.g. comms polling) go in here
-void loop()
+void _loop()
 {
     // Poll for commands and respond accordingly
     // If a command is received from downstream (ECU-side) immediately forward upstream
