@@ -248,6 +248,7 @@
           </JtagDaisyChainDevices>
         </InterfaceProperties>
         <InterfaceName>SWD</InterfaceName>
+        <JlinkConfigFile>C:\Users\short\Documents\git-repos\GE495-firmware\jlink.config</JlinkConfigFile>
       </ToolOptions>
       <ToolType>com.atmel.avrdbg.tool.samice</ToolType>
       <ToolNumber>261011134</ToolNumber>

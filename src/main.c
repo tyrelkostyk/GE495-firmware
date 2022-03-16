@@ -49,11 +49,14 @@ int main (void)
 	uint32_t updatePeriod = 100 * 1000;
 	uint32_t loopTimer = 0;
 
+	int yay_rx = 0;
+	int yay_tx = 0;
+
 	while (1) {
 		
 		loopTimer++;
 
-		/*** UPDATE ACQUISITION TRANSMISSION ***/
+		/*** UPDATE ACQUISITION & TRANSMISSION ***/
 
 		// Check to see if it's time to sample the ADC output
 		// TODO: use an accurate timer
@@ -69,6 +72,8 @@ int main (void)
 			if (updateSendDownstream(&localUpdate) != SUCCESS) {
 				// Something went wrong with the transmission of the update
 				error++;
+			} else {
+				yay_tx++;
 			}
 		}
 
@@ -95,17 +100,20 @@ int main (void)
 		// Poll for upstream updates
 		if (updateReceiveUpstream(&remoteUpdate) == SUCCESS) {
 			
+			yay_rx++;
+			
 			// Handle the update
 			if (updateHandle(&remoteUpdate) != SUCCESS) {
 		 		// Something went wrong with the update handling
 				error++;
+				
 		 	}
-			
+			 
 			// Forward the update downstream
-		 	if (updateSendDownstream(&remoteUpdate) != SUCCESS) {
-		 		// Something went wrong with the transmission of the update
+			else if (updateSendDownstream(&remoteUpdate) != SUCCESS) {
+				// Something went wrong with the transmission of the update
 				error++;
-		 	}
+			}
 		}
 	}
 }
