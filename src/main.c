@@ -64,6 +64,8 @@ int main (void)
 	// initialize the board settings
 	board_init();
 
+	serialSetup();
+
 	// initialize the CAN peripheral
 	CANSetup();
 

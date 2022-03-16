@@ -7,3 +7,5 @@
 - TC - Timer Counter (driver)
 - TWI - Two-wire Interface (driver)
 - IOPORT
+- PIO
+- USART

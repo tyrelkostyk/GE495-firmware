@@ -32,6 +32,13 @@ uint8_t CANSetup(void);
 uint8_t CANSend(direction_t direction, uint32_t id, uint8_t length, const uint8_t *data);
 uint8_t CANReceive(direction_t direction, uint32_t *id, uint8_t *length, uint8_t **data);
 
+/*** USART ***/
+#define US_BAUDRATE (9600)
+#define US_CHAR_LENGTH (8)
+#define US_PARITY_TYPE US_MR_PAR_NO
+#define US_STOP_BITS (1)
+
+void serialSetup(void);
 
 /*** Update ***/
 #define TBD_UPDATE_TANK_ID_IDX (0)
