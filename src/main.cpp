@@ -21,11 +21,9 @@ uint32_t prevSampleTime;
 // Initialization steps go in here
 void setup()
 {
-    Serial.begin(SER_BAUDRATE);
-    Serial.setTimeout(100);
+    Serial.begin(19200);
+    Serial.setTimeout(500);
     while (!Serial);
-    prevUpdateTime = millis();
-    prevSampleTime = millis();
 }
 
 // Repeated routines (e.g. comms polling) go in here
@@ -34,9 +32,14 @@ void loop()
     // Poll for commands and respond accordingly
     // If a command is received from downstream (ECU-side) immediately forward upstream
     // Then check to see if the command requires any action from this device
-    if (cmdReceiveDownstream(&currentCommand)) {
-        cmdSendUpstream(&currentCommand);
-        cmdParse(&currentCommand);
+    while (!Serial.available());
+    if (Serial.available()) {
+        Serial.println("hello");
+        if (cmdReceiveDownstream(&currentCommand)) {
+            cmdSendUpstream(&currentCommand);
+            cmdParse(&currentCommand);
+        }
+        Serial.println("Bye for now");
     }
 
     // Poll for updates and respond accordingly
@@ -77,4 +80,3 @@ float unpackFloat754(uint32_t i, uint8_t bits, uint8_t expbits)
 
     return result;
 }
-

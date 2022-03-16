@@ -21,7 +21,6 @@ float unpackFloat754(uint32_t i, uint8_t bits, uint8_t expbits);
 ******/
 
 #define CAN_BAUDRATE (9600)
-#define CAN_RATE_250 (15)
 #define CAN_UP_TX (4)
 #define CAN_UP_RX (5)
 
@@ -64,13 +63,6 @@ uint8_t CANReceive (can_dir_t direction, uint32_t *id, uint8_t **buffer);
 */
 #define SER_TEL_SZ (8)
 
-/*
- * Command:
- * uint8_t  commandType;
- * float    argument;
- * uint16_t crc;
- * uint8_t  null;
-*/
 #define SER_CMD_SZ (64)
 
 /****************

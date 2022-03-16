@@ -4,6 +4,8 @@
 #include "defs.h"
 
 #include <Arduino.h>
+#include <SoftwareSerial.h>
+#include <stdlib.h>
 #include <string.h>
 
 extern message_t currentUpdate;
@@ -47,57 +49,46 @@ uint8_t cmdSendUpstream(message_t *command)
  */
 uint8_t cmdReceiveDownstream(message_t *command)
 {
-    uint8_t received;
+    uint8_t received = 1;
 
-    uint8_t buffer[SER_CMD_SZ];
+    String s = Serial.readStringUntil(';');
 
-    int checksum = 0;
+    Serial.println("Got " + s);
+    // Serial.println(received);
 
-    received = Serial.readBytes(buffer, SER_CMD_SZ);
-
-    char message[SER_CMD_SZ-5];
-    char checksum[6];
-    
-    message = strtok(buffer, "/");
-    if (message == NULL)
-        return 0;
-    checksum = strtok(NULL, "/");
-    if (checksum == NULL)
-        return 0;
-
-    uint16_t checkNum = (uint16_t)atol(checksum);
-    if (checkNum != crc16MCRFXX(0, message, strlen(message)-1)) {
-        Serial.println("X");
-        return 0;
-    }
-    Serial.println("Y");
-
-    switch (message[0]) {
+    switch (s[0]) {
         case 'T':
             // construct a tare command
+            Serial.println("TARE");
             break;
         case 'R':
             // cycle power on the Arduino
+            Serial.println("RESET");
             break;
         case 'Z':
-            switch (message[1]) {
+            switch (s[1]) {
                 case '0':
                     // construct a start zero command
+                    Serial.println("ZERO-START");
                     break;
                 case '1':
                     // construct a zero step-1 command
+                    Serial.println("ZERO-M1");
                     break;
                 case '2':
                     // construct a zero step-2 command
+                    Serial.println("ZERO-M2");
                     break;
                 default:
                     return 0;
             }
             break;
         default:
+            Serial.println("Done...");
             return 0;
     }
 
+    Serial.println("Received");
     return received;
 }
 
