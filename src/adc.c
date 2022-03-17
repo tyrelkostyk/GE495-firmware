@@ -88,7 +88,7 @@ void adcInit(void)
 	adcInitPins();
 
 	// initialize ADC Speed
-	adcSetSpeed(adcSpeedSlow);
+	adcSetSpeed(adcSpeedFast);
 
 	// initialize ADC Gain
 	adcSetGain(adcGain128);
