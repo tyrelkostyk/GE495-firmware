@@ -10,7 +10,7 @@
 
 static int32_t channelOffset[LOAD_CELLS_PER_TANK] = { 0 };
 
-static float voltageToMassFactor = 1;
+float voltageToMassFactor = 1;
 static float mass1 = 0.0;
 static float mass2 = 0.0;
 static int32_t voltage1 = 0;
@@ -51,6 +51,7 @@ void calibrationTareAllLoadCells(void)
 {
 	for (adcChannel_t channel = adcChannelZero; channel < LOAD_CELLS_PER_TANK; channel++)
 	{
+		adcReadAndCalibrate(channel);
 		int32_t data = adcReadChannelSmooth(channel);
 		calibrationTare(channel, data);
 	}
@@ -64,7 +65,7 @@ void calibrationTareAllLoadCells(void)
 void calibrationObtainMassOne(double mass)
 {
 	mass1 = mass;
-	voltage1 = adcReadAllChannels();
+	voltage1 = adcReadAllSmooth();
 }
 
 
@@ -75,7 +76,7 @@ void calibrationObtainMassOne(double mass)
 void calibrationObtainMassTwo(double mass)
 {
 	mass2 = mass;
-	voltage2 = adcReadAllChannels();
+	voltage2 = adcReadAllSmooth();
 }
 
 
