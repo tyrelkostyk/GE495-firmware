@@ -38,9 +38,9 @@ typedef struct {
 #define TBD_CAN_DOWN_ADDR (0x01)
 #define TBD_CAN_UP_ADDR   (0x02)
 
-uint8_t CANSetup(void);
-uint8_t CANSend(direction_t direction, uint32_t id, uint8_t length, const uint8_t *data);
-uint8_t CANReceive(direction_t direction, uint32_t *id, uint8_t *length, uint8_t **data);
+uint8_t canInit(void);
+uint8_t canTransmit(direction_t direction, uint32_t id, uint8_t length, const uint8_t *data);
+uint8_t canReceive(direction_t direction, uint32_t *id, uint8_t *length, uint8_t **data);
 
 
 /*** Update ***/

@@ -50,7 +50,7 @@ void CAN1_Handler(void)
 	}
 }
 
-uint8_t CANSetup(void)
+uint8_t canInit(void)
 {
 	/*** CAN0 is downstream, CAN1 is upstream ***/
 
@@ -121,7 +121,7 @@ uint8_t CANSetup(void)
 	return SUCCESS;
 }
 
-uint8_t CANSend(direction_t direction, uint32_t id, uint8_t length, const uint8_t *data)
+uint8_t canTransmit(direction_t direction, uint32_t id, uint8_t length, const uint8_t *data)
 {
 	Can *can_module;
 	can_mb_conf_t *mbox;
@@ -162,7 +162,7 @@ uint8_t CANSend(direction_t direction, uint32_t id, uint8_t length, const uint8_
 	return FAILURE;
 }
 
-uint8_t CANReceive(direction_t direction, uint32_t *id, uint8_t *length, uint8_t **data)
+uint8_t canReceive(direction_t direction, uint32_t *id, uint8_t *length, uint8_t **data)
 {
 	Can *can_module;
 	can_mb_conf_t *mbox;

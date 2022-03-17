@@ -11,12 +11,12 @@
 
 uint8_t updateSendDownstream(message_t *message)
 {
-	return CANSend(Down, message->id, message->length, (uint8_t *)message->data);
+	return canTransmit(Down, message->id, message->length, (uint8_t *)message->data);
 }
 
 uint8_t updateReceiveUpstream(message_t *message)
 {
-	return CANReceive(Up, &message->id, &message->length, (uint8_t **)message->data);
+	return canReceive(Up, &message->id, &message->length, (uint8_t **)message->data);
 }
 
 uint8_t updateCreate(message_t *message, float mass)

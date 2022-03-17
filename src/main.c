@@ -18,7 +18,6 @@ message_t command = { 0 };
 message_t localUpdate = { 0 };
 message_t remoteUpdate = { 0 };
 
-uint8_t x = 0;
 
 int main (void)
 {
@@ -36,7 +35,7 @@ int main (void)
 	board_init();
 
 	// initialize the CAN peripheral
-	if (CANSetup() != SUCCESS) {
+	if (canInit() != SUCCESS) {
 		error++;
 	}
 
