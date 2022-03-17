@@ -80,3 +80,33 @@ float unpackFloat754(uint32_t i, uint8_t bits, uint8_t expbits)
 
     return result;
 }
+
+/**
+ * Converts a float into an integer representation of a float
+ * @param float f the float to be converted
+ * @param bits the number of bits
+ * @param expbits the number of exponent bits
+ * @return an integer
+ */
+ uint32_t packFloat754(float f, uint8_t bits, uint8_t expbits)
+ {
+  float fnorm;
+  uint32_t shift;
+  uint32_t sign, exp, significand;
+  uint32_t significandbits = bits - expbits - 1;
+
+  if (f == 0.0) return 0;
+
+  if (f < 0) {sign = 1; fnorm = -f; }
+  else {sign = 0; fnorm = f; }
+
+  shift = 0;
+  while(fnorm >= 2.0) { fnorm /= 2.0; shift++; }
+  while(fnorm < 1.0) { fnorm *= 2.0; shift--; }
+  fnorm = fnorm - 1.0;
+  significand = fnorm * ((1LL<<significandbits) + 0.5f);
+
+  exp = shift + ((1<<(expbits-1)) - 1);
+
+  return (sign<<(bits-1)) | (exp<<(bits-expbits-1)) | significand;
+ }

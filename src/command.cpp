@@ -115,10 +115,6 @@ uint8_t cmdParse(message_t *command)
 
             break;
         }
-        case PGN_CALIBRATE | PGN_CAL_START: {
-
-            break;
-        }
         case PGN_CALIBRATE | PGN_CAL_CONF_M1: {
 
             break;
@@ -139,4 +135,3 @@ uint8_t cmdParse(message_t *command)
 
     return OK;
 }
-
