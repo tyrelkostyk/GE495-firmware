@@ -153,6 +153,9 @@ uint8_t canTransmit(direction_t direction, uint32_t id, uint8_t length, const ui
 	// get the status of the transmit mailbox
 	uint32_t write_status = can_mailbox_write(can_module, mbox);
 
+	// get the status of the CAN peripheral
+	uint32_t status = can_get_status(can_module);
+
 	// transmit the message in the mailbox if it's ready
 	if (write_status == CAN_MAILBOX_TRANSFER_OK) {
 		can_mailbox_send_transfer_cmd(can_module, mbox);

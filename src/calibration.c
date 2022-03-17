@@ -56,7 +56,6 @@ void calibrationTareAllLoadCells(void)
 {
 	for (adcChannel_t channel = adcChannelZero; channel < LOAD_CELLS_PER_TANK; channel++)
 	{
-		adcReadAndCalibrate(channel);
 		int32_t data = adcReadChannelSmooth(channel);
 		calibrationTare(channel, data);
 	}

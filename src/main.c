@@ -42,14 +42,16 @@ int main (void)
 	// initialize the ADC
 	adcInit();
 
-	calibrationTareAllLoadCells();
+	//calibrationTareAllLoadCells();
 	
-	calibrationObtainMassOne(0);
+	//calibrationObtainMassOne(2.5);
 	
-	calibrationObtainMassTwo(5);
+	//calibrationObtainMassTwo(7.5);
 
-	uint32_t updatePeriod = 25 * 1000;
+	uint32_t updatePeriod = 15 * 1000;
 	uint32_t loopTimer = 0;
+
+	int yay = 0;
 
 	while (1) {
 		
@@ -71,6 +73,8 @@ int main (void)
 			if (updateSendDownstream(&localUpdate) != SUCCESS) {
 				// Something went wrong with the transmission of the update
 				error++;
+			} else {
+				yay++;
 			}
 		}
 
@@ -92,7 +96,7 @@ int main (void)
 				error++;
 			}
 		}
-		
+	
 		
 		/*** UPDATE FORWARDING ***/
 

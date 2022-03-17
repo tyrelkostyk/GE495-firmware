@@ -10,14 +10,15 @@
                                   PRIVATE DEFINITIONS AND GLOBALS
 ***************************************************************************************************/
 
-#define ADC_SMOOTH_SAMPLE_SIZE			5
+#define ADC_SMOOTH_SAMPLE_SIZE			(10)
 
-#define ADC_RESET_PWDN_DELAY_MS			100
-#define ADC_OFFSET_CALIBRATION_DELAY_MS	802
+#define ADC_OFFSET_CALIBRATION_LONG_DELAY_US	(803*1000)
+#define ADC_OFFSET_CALIBRATION_SHORT_DELAY_US	(103*1000)
 
-#define ADC_SCLK_EDGE_DELAY_US			1
-#define ADC_POWER_ON_SEQUENCE_DELAY_US	100
-#define ADC_MAX_BLOCKING_WAIT_US		10000000 // 10 seconds
+#define ADC_SCLK_EDGE_DELAY_US			(1)
+#define ADC_MUX_SETTLE_TIME_US			(50)
+#define ADC_POWER_ON_SEQUENCE_DELAY_US	(100)
+#define ADC_MAX_BLOCKING_WAIT_US		(10000000) // 10 seconds
 
 #define ADC_READ_SIZE_BITS	24
 #define ADC_DATA_MAX_VALUE_MASK		((1 << ADC_READ_SIZE_BITS) - 1)
@@ -76,6 +77,7 @@ static void adcSetGain(adcGain_t gain);
 
 static void adcPowerOn(void);
 static void adcReset(void);
+void adcCalibrate(void);
 
 
 /***************************************************************************************************
@@ -98,6 +100,9 @@ void adcInit(void)
 
 	// power on the ADC
 	adcPowerOn();
+	
+	// calibrate to account for internal offset
+	adcCalibrate();
 }
 
 
@@ -133,21 +138,6 @@ int32_t adcReadChannelSmooth(adcChannel_t channel)
 	}
 
 	return dataTotal / ADC_SMOOTH_SAMPLE_SIZE;
-}
-
-
-/**
- * Retrieves 24-bit ADC data and calibrates the ADC.
- * @return int32_t 24-bit ADC data
- */
-int32_t adcReadAndCalibrate(adcChannel_t channel)
-{
-	int32_t data = adcReadChannel(channel);
-	adcApplySclk();
-
-	delayFor(ADC_OFFSET_CALIBRATION_DELAY_MS);
-
-	return data;
 }
 
 
@@ -325,6 +315,9 @@ static void adcSelectChannel(adcChannel_t channel)
 	default:
 		break;
 	}
+	
+	// wait for data line to settle after the switch
+	delayFor(ADC_MUX_SETTLE_TIME_US);
 }
 
 
@@ -406,3 +399,18 @@ static void adcSetGain(adcGain_t gain)
 		break;
 	}
 }
+
+
+/**
+ * Calibrates the ADC to account for internal offset.
+ */
+void adcCalibrate(void)
+{
+	int32_t data = adcReadChannel(adcChannelZero);
+	adcApplySclk();
+	adcApplySclk();
+
+	delayFor(ADC_OFFSET_CALIBRATION_SHORT_DELAY_US);
+}
+
+
