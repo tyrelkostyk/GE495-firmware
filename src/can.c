@@ -195,8 +195,8 @@ uint8_t canReceive(direction_t direction, uint32_t *id, uint8_t *length, uint8_t
 		// grab the CAN message payload length
 		*length = mbox->uc_length;
 		// grab the CAN message payload
-		memcpy(*data, mbox->ul_datal, sizeof(mbox->ul_datal));
-		memcpy(&((*data)[sizeof(mbox->ul_datal)]), mbox->ul_datah, sizeof(mbox->ul_datah));
+		memcpy(*data, &mbox->ul_datal, sizeof(mbox->ul_datal));
+		memcpy(&((*data)[sizeof(mbox->ul_datal)]), &mbox->ul_datah, sizeof(mbox->ul_datah));
 		return SUCCESS;
 	}
 	

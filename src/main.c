@@ -8,9 +8,6 @@
 #include <ioport.h>
 #include <tbd.h>
 
-extern can_mb_conf_t can_mbox_up_rx, can_mbox_up_tx;
-extern can_mb_conf_t can_mbox_down_rx, can_mbox_down_tx;
-
 uint32_t systemClk = 0;
 uint32_t cpuClk = 0;
 
@@ -45,7 +42,13 @@ int main (void)
 	// initialize the ADC
 	adcInit();
 
-	uint32_t updatePeriod = 100 * 1000;
+	calibrationTareAllLoadCells();
+	
+	calibrationObtainMassOne(0);
+	
+	calibrationObtainMassTwo(5);
+
+	uint32_t updatePeriod = 25 * 1000;
 	uint32_t loopTimer = 0;
 
 	while (1) {
@@ -59,7 +62,7 @@ int main (void)
 		if ((loopTimer % updatePeriod) == 0) {
 			
 			// Obtain ADC output
-			mass = (float) adcReadAllSmooth();
+			mass = (float) (adcReadAllSmooth() * calibrationConversionFactor());
 
 			// Create the new update message
 			updateCreate(&localUpdate, mass);

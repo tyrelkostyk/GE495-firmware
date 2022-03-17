@@ -75,16 +75,18 @@ void adcInit(void);
 int32_t adcReadAllChannels(void);
 int32_t adcReadAllSmooth(void);
 int32_t adcReadChannelSmooth(adcChannel_t channel);
+int32_t adcReadAndCalibrate(adcChannel_t channel);
 
 
 /*** CALIBRATION ***/
 int32_t calibrationOffset(adcChannel_t channel);
+float calibrationConversionFactor(void);
 
 void calibrationTare(adcChannel_t channel, int32_t offset);
 void calibrationTareAllLoadCells(void);
-void calibrationObtainMassOne(double mass);
-void calibrationObtainMassTwo(double mass);
-void calibrationGetConversionFactor();
+
+void calibrationObtainMassOne(float mass);
+void calibrationObtainMassTwo(float mass);
 
 
 /*** GENERAL ***/
