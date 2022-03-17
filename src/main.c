@@ -49,9 +49,6 @@ int main (void)
 	uint32_t updatePeriod = 100 * 1000;
 	uint32_t loopTimer = 0;
 
-	int yay_rx = 0;
-	int yay_tx = 0;
-
 	while (1) {
 		
 		loopTimer++;
@@ -72,15 +69,12 @@ int main (void)
 			if (updateSendDownstream(&localUpdate) != SUCCESS) {
 				// Something went wrong with the transmission of the update
 				error++;
-			} else {
-				yay_tx++;
 			}
 		}
 
 
 		/*** CALIBRATION COMMANDS ***/
 
-		/*
 		// Poll for commands from downstream and respond accordingly
 		if (cmdReceiveDownstream(&command) != 0) {
 			if (!cmdSendUpstream(&command)) {
@@ -92,15 +86,12 @@ int main (void)
 				error++;
 			}
 		}
-		*/
 		
 		
 		/*** UPDATE FORWARDING ***/
 
 		// Poll for upstream updates
 		if (updateReceiveUpstream(&remoteUpdate) == SUCCESS) {
-			
-			yay_rx++;
 			
 			// Handle the update
 			if (updateHandle(&remoteUpdate) != SUCCESS) {
