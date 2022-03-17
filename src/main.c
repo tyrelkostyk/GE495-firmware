@@ -74,13 +74,17 @@ int main (void)
 
 		/*** CALIBRATION COMMANDS ***/
 
-		// Poll for commands from downstream and respond accordingly
-		if (cmdReceiveDownstream(&command) != 0) {
-			if (!cmdSendUpstream(&command)) {
+		// Poll for commands from downstream
+		if (cmdReceiveDownstream(&command) != SUCCESS) {
+			
+			// Forward the commands upstream
+			if (cmdSendUpstream(&command) != SUCCESS) {
 				// Something went wrong with the transmission of the command
 				error++;
 			}
-			if (!cmdHandle(&command)) {
+			
+			// Handle the command
+			if (cmdHandle(&command) != SUCCESS) {
 				// Something went wrong with the handling of this command
 				error++;
 			}
@@ -95,11 +99,10 @@ int main (void)
 			// Handle the update
 			if (updateHandle(&remoteUpdate) != SUCCESS) {
 		 		// Something went wrong with the update handling
-				error++;
-				
+				error++;	
 		 	}
 			 
-			// Forward the update downstream
+			// Forward the update downstream (if handling succeeded)
 			else if (updateSendDownstream(&remoteUpdate) != SUCCESS) {
 				// Something went wrong with the transmission of the update
 				error++;
