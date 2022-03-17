@@ -5,6 +5,7 @@
 #define DEFS_H
 
 #include <stdint.h>
+#define _ARDUINO
 
 #define OK  0x01
 #define ERR 0x00
@@ -13,6 +14,7 @@
 uint16_t crc16MCRFXX(uint16_t crc, uint8_t *data, uint8_t len);
 
 float unpackFloat754(uint32_t i, uint8_t bits, uint8_t expbits);
+uint32_t packFloat754(float f, uint8_t bits, uint8_t expbits);
 
 #define unpackFloat(i) (unpackFloat754((f), 32, 8))
 
@@ -52,7 +54,7 @@ uint8_t CANReceive (can_dir_t direction, uint32_t *id, uint8_t **buffer);
 * SERIAL *
 *********/
 
-#define SER_BAUDRATE (115200)
+#define SER_BAUDRATE (9600)
 
 /*
  * Telemetry:
@@ -77,12 +79,11 @@ uint8_t cmdParse (message_t *command);
 
 #define PGN_DEBUG_HANDSHAKE (0x01)
 
-#define PGN_TARE (0xc2)
+#define PGN_TARE (0x20)
 
-#define PGN_CALIBRATE   (0xc8)
-#define PGN_CAL_START   (0x01)
-#define PGN_CAL_CONF_M1 (0x02)
-#define PGN_CAL_CONF_M2 (0x03)
+#define PGN_CALIBRATE   (0x10)
+#define PGN_CAL_CONF_M1 (0x01)
+#define PGN_CAL_CONF_M2 (0x02)
 #define PGN_CAL_FINISH  (0x04)
 
 /*********
@@ -102,5 +103,67 @@ uint8_t updateHandle(message_t *update);
 *******/
 
 #define MASS_NUM_BYTES 4
+
+extern double mass1;
+extern double mass2;
+extern int32_t voltage1;
+extern int32_t voltage2;
+extern double voltageToMassFactor; 
+
+
+/******
+* I2C *
+******/
+
+void applySCLK();
+void setSCLKHigh();
+void setSCLKLow();
+
+/******
+* ADC *
+******/
+
+extern int32_t dataOffset0;
+extern int32_t dataOffset1;
+extern int32_t dataOffset2;
+
+int32_t retrieveADCData();
+int32_t retrieveADCDataWithCal();
+void setADCMux(uint8_t muxSelect);
+void doADCPowerUpSequence();
+void setADCSpeed(uint8_t sampleSpeed);
+void blockingWaitForData();
+int32_t readThreeLoadCells();
+int32_t getNMeasurements(int32_t N);
+int32_t getNRawMeasurements(uint8_t mux, int32_t N);
+
+#define NUM_ADC_BITS 24
+#define NUM_LOAD_CELLS 3
+
+/**************
+* CALIBRATION *
+**************/
+
+void tare(uint8_t mux, int32_t offset);
+void tareAllLoadCells();
+void getCalMass1(double mass);
+void getCalMass2(double mass);
+void getVoltageToMassFactor();
+
+/**********
+* ARDUINO *
+**********/
+
+
+#define DATA_PIN 12
+#define CLOCK_PIN 11
+#define POWER_PIN 10
+
+#define MUX_PIN0 4
+#define MUX_PIN1 5
+
+#define SPEED_PIN 7
+
+
 
 #endif  // DEFS_H

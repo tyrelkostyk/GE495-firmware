@@ -1,0 +1,77 @@
+// calibration.c
+// Contains device weight calibration functions.
+
+#include "defs.h"
+
+extern double mass1;
+extern double mass2;
+extern int32_t voltage1;
+extern int32_t voltage2;
+extern double voltageToMassFactor; 
+
+extern int32_t dataOffset0;
+extern int32_t dataOffset1;
+extern int32_t dataOffset2;
+
+/**
+ * Set the current output of a load cell to zero.
+ * @param uint8_t mux Load cell to tare
+ * @param int32_t offset The value to offset the load cell's output by
+ */
+void tare(uint8_t mux, int32_t offset)
+{
+  switch (mux)
+  {
+    case 0:
+      dataOffset0 = offset;
+    case 1:
+      dataOffset1 = offset;
+    case 2: 
+      dataOffset2 = offset;
+  }  
+}
+
+/**
+ * Tare all load cell outputs to zero.
+ */
+void tareAllLoadCells()
+{
+  for (int mux=0; mux<NUM_LOAD_CELLS; mux++)
+  {
+    setADCMux(mux);
+    int32_t data = getNRawMeasurements(mux, 10);
+    tare(mux, data);
+  }
+}
+
+/**
+ * Get the first mass and voltage value for calibration step one.
+ * @param double mass The mass of the first point for calibration
+ */
+void getCalMass1(double mass)
+{
+  mass1 = mass;
+  voltage1 = readThreeLoadCells();
+}
+
+/**
+ * Get the second mass and voltage value for calibration step two.
+ * @param double mass The mass of the second point for calibration
+ */
+void getCalMass2(double mass)
+{
+  mass2 = mass;
+  voltage2 = readThreeLoadCells();
+}
+
+/**
+ * Create the factor to convert the measured voltage from a load cell to a mass value.
+ * @param mass1 The mass value for the first point of reference for calibration
+ * @param voltage1 The voltage value for the first point of reference for calibration
+ * @param mass2 The mass value for the second point of reference for calibration
+ * @param voltage2 The voltage value for the second point of reference for calibration
+ */
+void getVoltageToMassFactor()
+{
+  voltageToMassFactor = (mass1 - mass2) / (voltage1 - voltage2);
+}

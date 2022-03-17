@@ -1,13 +1,93 @@
 #include <avr/wdt.h>
 
+#include "defs.h"
+
+
 String inputString = "";         // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
 
+int32_t dataOffset0 = 0;
+int32_t dataOffset1 = 0;
+int32_t dataOffset2 = 0;
+
+double voltageToMassFactor = 1;
+double mass1 = 0;
+double mass2 = 1;
+int32_t voltage1 = 0;
+int32_t voltage2 = 1;
 
 void setup()
 {
-    Serial.begin(9600);
+    Serial.begin(SER_BAUDRATE);
     inputString.reserve(256);
+    pinMode(DATA_PIN, INPUT);
+    pinMode(CLOCK_PIN, OUTPUT);
+    pinMode(POWER_PIN, OUTPUT);
+    pinMode(MUX_PIN0, OUTPUT);
+    pinMode(MUX_PIN1, OUTPUT);
+  //    float mass1 = 0;
+//    float mass2 = 5;
+//    uint32_t mass1_int = packFloat754(mass1, 32, 8);
+//    uint32_t mass2_int = packFloat754(mass2, 32, 8);
+  
+//    message_t tare = {
+//      .id = (PGN_TARE) << 8,
+//      .length = 8,
+//      .data = {0,0,0,0, 0,0,0,0}
+//    };
+//
+//    message_t cal_1 = {
+//      .id = (PGN_CALIBRATE | PGN_CAL_CONF_M1) << 8,
+//      .length = 8,
+//      .data = {
+//      (uint8_t)(mass1_int & 0x000000FF),
+//      (uint8_t)(mass1_int & 0x0000FF00) >> 2,
+//      (uint8_t)(mass1_int & 0x00FF0000) >> 4,
+//      (uint8_t)(mass1_int & 0xFF000000) >> 6,
+//      0,
+//      0,
+//      0,
+//      0}
+//    };
+//
+//    message_t cal_2 = {
+//      .id = (PGN_CALIBRATE | PGN_CAL_CONF_M2) << 8,
+//      .length = 8,
+//      .data = {
+//      (uint8_t)(mass2_int & 0x000000FF),
+//      (uint8_t)(mass2_int & 0x0000FF00) >> 2,
+//      (uint8_t)(mass2_int & 0x00FF0000) >> 4,
+//      (uint8_t)(mass2_int & 0xFF000000) >> 6,
+//      0,
+//      0,
+//      0,
+//      0}
+//    };
+//
+//    message_t cal_3 = {
+//      .id = (PGN_CALIBRATE | PGN_CAL_FINISH) << 8,
+//      .length = 0,
+//      .data = {0,0,0,0, 0,0,0,0}
+//    };
+
+    doADCPowerUpSequence();
+    setADCSpeed(0);
+    delay(300);
+    tareAllLoadCells();
+
+//    Serial.println("Input mass 1:");
+//    while (Serial.available() == 0){}
+//    getCalMass1(Serial.parseInt());
+//    while (Serial.available() == 1){}
+//
+//    Serial.println("Input mass 2:");
+//    while (Serial.available() == 0){}
+//    getCalMass2(Serial.parseInt());
+//
+//    getVoltageToMassFactor(mass1, voltage1, mass2, voltage2);
+//    Serial.println(voltageToMassFactor);
+//    Serial.println("\nSetup Complete");
+
 }
 
 
@@ -37,40 +117,41 @@ float getMassValue(const String &input)
 
 void loop()
 {
+    int32_t data = getNMeasurements(5);
+    Serial.print("Data = ");
+    Serial.println(data * voltageToMassFactor);
     if (stringComplete) {
         /*
          * Formats:
          *
          * T(2) -- tare tank 2
-         * Z0(2) -- start zero of tank 2
-         * Z1(2):69.01 -- confirm mass 1 for tank 2 as 69.01 kg
-         * Z2(2):42.14 -- confirm mass 2 as 42.14 kg and end zero for tank 2
+         * C1(2):69.01 -- confirm mass 1 for tank 2 as 69.01 kg
+         * C2(2):42.14 -- confirm mass 2 as 42.14 kg
+         * C3(2) -- end calibration of tank 2
          * R! -- reset arduino
          */
-        Serial.println(inputString);
+
+        Serial.println("Received message: " + inputString);
         switch (inputString.charAt(0)) {
-            case 'T': {
+            case 't': {
                 // tare
-                uint8_t tareTank = getTankNumber(inputString);
-                if (tareTank < 0) {
-                    Serial.println("INVALID TANK #...");
-                    break;
-                }
-                Serial.println("TARING TANK #" + String(tareTank) + "...");
+//                uint8_t tareTank = getTankNumber(inputString);
+//                if (tareTank < 0) {
+//                    Serial.println("INVALID TANK #...");
+//                    break;
+//                }
+//                Serial.println("TARING TANK #" + String(tareTank) + "...");
+                tareAllLoadCells();
+                Serial.println("TARING");
                 break;
             }
-            case 'Z': {
-                // zero
-                uint8_t zeroTank = getTankNumber(inputString);
-                if (zeroTank < 0) {
-                    Serial.println("INVALID TANK #...");
-                }
+            case 'c': {
+                // calibration
+//                uint8_t zeroTank = getTankNumber(inputString);
+//                if (zeroTank < 0) {
+//                    Serial.println("INVALID TANK #...");
+//                }
                 switch (inputString.charAt(1)) {
-                    case '0': {
-                        // start
-                        Serial.println("START TANK #" + String(zeroTank) + " ZERO...");
-                        break;
-                    }
                     case '1': {
                         // confirm mass 1
                         float mass = getMassValue(inputString);
@@ -78,7 +159,8 @@ void loop()
                             Serial.println("INVALID MASS");
                             break;
                         }
-                        Serial.println("TANK #" + String(zeroTank) + " MASS 1 " + String(mass));
+                        getCalMass1(mass);
+                        Serial.println("MASS 1 " + String(mass));
                         break;
                     }
                     case '2': {
@@ -88,8 +170,13 @@ void loop()
                             Serial.println("INVALID MASS");
                             break;
                         }
-                        Serial.println("TANK #" + String(zeroTank) + " MASS 2 " + String(mass));
-                        Serial.println("ZEROING COMPLETE!");
+                        getCalMass2(mass);
+                        Serial.println("MASS 2 " + String(mass));
+                        break;
+                    }
+                    case '3': {
+                        getVoltageToMassFactor();                      
+                        Serial.println("CAL STEP THREE RECEIVED");
                         break;
                     }
                     default: {
@@ -102,9 +189,9 @@ void loop()
             }
             case 'R': {
                 // reset
-                if (inputString.charAt(1) == '!') {
-                    Serial.println("RESETTING...");
-                }
+//                if (inputString.charAt(1) == '!') {
+                Serial.println("RESETTING...");
+//                }
                 break;
             }
             default: {
