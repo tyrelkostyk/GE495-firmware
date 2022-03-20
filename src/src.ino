@@ -1,6 +1,8 @@
-#include <avr/wdt.h>
-
 #include "defs.h"
+
+#include <avr/wdt.h>
+#include <stdlib.h>
+#include <string.h>
 
 
 String inputString = "";         // a String to hold incoming data
@@ -52,7 +54,16 @@ float getMassValue(const String &input)
         return -1.0;
 
     String substr = input.substring(start+1);
-    return substr.toFloat();
+    return (float)atof(substr.c_str());
+}
+
+
+void loadFloatIntoData(uint8_t *data[], float f)
+{
+    uint32_t num = static_cast<uint32_t>(f);
+    for (int i = 0; i < 4; i++) {
+        *data[i] = (num >> (8 * i)) & 0xff;
+    }
 }
 
 
@@ -113,6 +124,7 @@ void loop()
                                 .length = 8,
                                 .data = { 0 }
                         };
+                        loadFloatIntoData((uint8_t **)&calibrateMessage.data, mass);
                         cmdSendUpstream(&calibrateMessage);
                         break;
                     }
@@ -130,6 +142,7 @@ void loop()
                                 .length = 8,
                                 .data = { 0 }
                         };
+                        loadFloatIntoData((uint8_t **)&calibrateMessage.data, mass);
                         cmdSendUpstream(&calibrateMessage);
                         break;
                     }
