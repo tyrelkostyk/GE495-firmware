@@ -36,25 +36,6 @@
                                           CLOCK SETTINGS
 ***************************************************************************************************/
 
-// External oscillator settings.
-// Uncomment and set correct values if external oscillator is used.
-
-// External oscillator frequency
-//#define BOARD_XOSC_HZ          8000000
-
-// External oscillator type.
-//!< External clock signal
-//#define BOARD_XOSC_TYPE        XOSC_TYPE_EXTERNAL
-//!< 32.768 kHz resonator on TOSC
-//#define BOARD_XOSC_TYPE        XOSC_TYPE_32KHZ
-//!< 0.4 to 16 MHz resonator on XTALS
-//#define BOARD_XOSC_TYPE        XOSC_TYPE_XTAL
-
-// External oscillator startup time
-//#define BOARD_XOSC_STARTUP_US  500000
-
-// TODO: these are default values... are they correct?
-
 /** Slow clock settings */
 #  define BOARD_FREQ_SLCK_XTAL      (32768UL)
 #  define BOARD_FREQ_SLCK_BYPASS    (32768UL)
@@ -71,10 +52,30 @@
 
 
 /***************************************************************************************************
-                                            PIN MACROS
+                                          PIN MACROS - CAN
 ***************************************************************************************************/
 
-// TODO: place common pin macro names (e.g. PIO_PA3 -> SCLK, etc.)
+/** CAN0 (Downstream) PIN RX. */
+#define PIN_CAN0_RX_IDX           PIO_PB3_IDX
+#define PIN_CAN0_RX_FLAGS         IOPORT_MODE_MUX_A
 
+/** CAN0 (Downstream) PIN TX. */
+#define PIN_CAN0_TX_IDX           PIO_PB2_IDX
+#define PIN_CAN0_TX_FLAGS         IOPORT_MODE_MUX_A
+
+/** CAN1 (Upstream) PIN RX. */
+#define PIN_CAN1_RX_IDX           PIO_PC12_IDX
+#define PIN_CAN1_RX_FLAGS         IOPORT_MODE_MUX_C
+
+/** CAN1 (Upstream) PIN TX. */
+#define PIN_CAN1_TX_IDX           PIO_PC15_IDX
+#define PIN_CAN1_TX_FLAGS         IOPORT_MODE_MUX_C
+
+
+/***************************************************************************************************
+                                          PIN MACROS - ADC
+***************************************************************************************************/
+
+// TODO: pull in pin macros for ADC control
 
 #endif // DIGITIZER_H

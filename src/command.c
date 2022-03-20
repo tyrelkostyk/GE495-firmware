@@ -9,12 +9,12 @@
 
 uint8_t cmdSendUpstream(message_t *command)
 {
-	return CANSend(Up, command->id, command->length, (uint8_t *)command->data);
+	return canTransmit(Up, command->id, command->length, (uint8_t *)command->data);
 }
 
 uint8_t cmdReceiveDownstream(message_t *command)
 {
-	return CANReceive(Down, &command->id, &command->length, (uint8_t **)&command->data);
+	return canReceive(Down, &command->id, &command->length, (uint8_t **)&command->data);
 }
 
 uint8_t cmdHandle(message_t *command)
@@ -33,6 +33,6 @@ uint8_t cmdHandle(message_t *command)
 		}
 	}
 
-	return 1;
+	return SUCCESS;
 }
 

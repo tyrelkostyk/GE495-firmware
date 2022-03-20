@@ -16,7 +16,12 @@ static float mass2 = 0.0;
 static int32_t voltage1 = 0;
 static int32_t voltage2 = 0;
 
-// static uint8_t offsetFlag = 0;
+
+/***************************************************************************************************
+                                       PRIVATE FUNCTION STUBS
+***************************************************************************************************/
+
+static void calibrationUpdateConversionFactor(void);
 
 
 /***************************************************************************************************
@@ -61,10 +66,10 @@ void calibrationTareAllLoadCells(void)
  * Get the first mass and voltage value for calibration step one.
  * @param double mass The mass of the first point for calibration
  */
-void calibrationObtainMassOne(double mass)
+void calibrationObtainMassOne(float mass)
 {
 	mass1 = mass;
-	voltage1 = adcReadAllChannels();
+	voltage1 = adcReadAllSmooth();
 }
 
 
@@ -72,12 +77,26 @@ void calibrationObtainMassOne(double mass)
  * Get the second mass and voltage value for calibration step two.
  * @param double mass The mass of the second point for calibration
  */
-void calibrationObtainMassTwo(double mass)
+void calibrationObtainMassTwo(float mass)
 {
 	mass2 = mass;
-	voltage2 = adcReadAllChannels();
+	voltage2 = adcReadAllSmooth();
+	calibrationUpdateConversionFactor();
 }
 
+
+/**
+ * Getter function for the voltage to mass slope factor.
+ */
+float calibrationConversionFactor(void)
+{
+	return voltageToMassFactor;
+}
+
+
+/***************************************************************************************************
+                                         PRIVATE FUNCTIONS
+***************************************************************************************************/
 
 /**
  * Create the factor to convert the measured voltage from a load cell to a mass value.
@@ -86,7 +105,20 @@ void calibrationObtainMassTwo(double mass)
  * @param mass2 The mass value for the second point of reference for calibration
  * @param voltage2 The voltage value for the second point of reference for calibration
  */
-void calibrationGetConversionFactor()
+static void calibrationUpdateConversionFactor(void)
 {
-	voltageToMassFactor = (mass1 - mass2) / (voltage1 - voltage2);
+	// obtain the difference in reported mass (rise)
+	float massDifference = mass1 - mass2;
+		
+	// obtain the difference in measured voltage (run)
+	int32_t voltageDifference = voltage1 - voltage2;
+	if (voltageDifference == 0)
+		voltageDifference = 1;
+	
+	// calculate new voltage to mass scale (slope = rise/run)
+	voltageToMassFactor = massDifference / voltageDifference;
+	
+	// ensure the slope factor is never negative
+	//if (voltageToMassFactor < 0)
+		//voltageToMassFactor = (-1) * voltageToMassFactor;
 }

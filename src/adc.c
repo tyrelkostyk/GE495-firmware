@@ -10,47 +10,20 @@
                                   PRIVATE DEFINITIONS AND GLOBALS
 ***************************************************************************************************/
 
-#define ADC_SMOOTH_SAMPLE_SIZE			5
+#define ADC_SMOOTH_SAMPLE_SIZE			(10)
 
-#define ADC_RESET_PWDN_DELAY_MS			100
-#define ADC_OFFSET_CALIBRATION_DELAY_MS	802
+#define ADC_OFFSET_CALIBRATION_LONG_DELAY_US	(803*1000)
+#define ADC_OFFSET_CALIBRATION_SHORT_DELAY_US	(103*1000)
 
-#define ADC_SCLK_EDGE_DELAY_US			1
-#define ADC_POWER_ON_SEQUENCE_DELAY_US	100
-#define ADC_MAX_BLOCKING_WAIT_US		100000 // 0.1 second
+#define ADC_SCLK_EDGE_DELAY_US			(1)
+#define ADC_MUX_SETTLE_TIME_US			(50)
+#define ADC_POWER_ON_SEQUENCE_DELAY_US	(100)
+#define ADC_MAX_BLOCKING_WAIT_US		(10000000) // 10 seconds
 
 #define ADC_READ_SIZE_BITS	24
 #define ADC_DATA_MAX_VALUE_MASK		((1 << ADC_READ_SIZE_BITS) - 1)
 #define ADC_BIT_MAX_VALUE_MASK		(1)
 
-#define SUCCESS				0
-#define TIMEOUT_OCCURRED	1
-
-
-#if (BOARD==SAM4E_XPLAINED_PRO)
-
-#define ADC_RETRIEVAL_PIO_ID	ID_PIOA
-#define ADC_CONTROL_PIO_ID		ID_PIOE
-
-#define ADC_DATA_PIN_BANK		PIOA
-#define ADC_DATA_PIN			PIO_PA3		// EXT1 PIN 11
-#define ADC_SCLK_PIN_BANK		PIOA
-#define ADC_SCLK_PIN			PIO_PA4		// EXT1 PIN 12
-
-#define ADC_PWDN_PIN_BANK		PIOA
-#define ADC_PWDN_PIN			PIO_PA24	// EXT1 PIN5 (PE0 used by LCD)
-#define ADC_MUX0_PIN_BANK		PIOE
-#define ADC_MUX0_PIN			PIO_PE1		// EXT3 PIN9
-#define ADC_MUX1_PIN_BANK		PIOE
-#define ADC_MUX1_PIN			PIO_PE2		// EXT2 PIN5
-#define ADC_SPEED_PIN_BANK		PIOA
-#define ADC_SPEED_PIN			PIO_PA25	// EXT1 PIN6 (PE3 used by LCD)
-#define ADC_GAIN0_PIN_BANK		PIOA
-#define ADC_GAIN0_PIN			PIO_PA15	// EXT1 PIN7 (PE5 used by LCD)
-#define ADC_GAIN1_PIN_BANK		PIOA
-#define ADC_GAIN1_PIN			PIO_PA16	// EXT1 PIN8 (PE4 used by LCD)
-
-#else // (BOARD==SAM4E_XPLAINED_PRO)
 
 #define ADC_RETRIEVAL_PIO_ID	ID_PIOA
 #define ADC_CONTROL_PIO_ID		ID_PIOE
@@ -72,8 +45,6 @@
 #define ADC_GAIN0_PIN			PIO_PE5
 #define ADC_GAIN1_PIN_BANK		PIOE
 #define ADC_GAIN1_PIN			PIO_PE4
-
-#endif // (BOARD==SAM4E_XPLAINED_PRO)
 
 
 typedef enum _adcSpeed_t {
@@ -99,7 +70,6 @@ static uint8_t adcReadBit(void);
 static uint8_t adcScanDataLine(void);
 static uint8_t adcWaitWhileDataLineEquals(uint8_t voltage);
 static int32_t adcReadChannel(adcChannel_t channel);
-static int32_t adcReadAndCalibrate(adcChannel_t channel);
 
 static void adcSelectChannel(adcChannel_t channel);
 static void adcSetSpeed(adcSpeed_t sampleSpeed);
@@ -107,6 +77,7 @@ static void adcSetGain(adcGain_t gain);
 
 static void adcPowerOn(void);
 static void adcReset(void);
+void adcCalibrate(void);
 
 
 /***************************************************************************************************
@@ -119,7 +90,7 @@ void adcInit(void)
 	adcInitPins();
 
 	// initialize ADC Speed
-	adcSetSpeed(adcSpeedSlow);
+	adcSetSpeed(adcSpeedFast);
 
 	// initialize ADC Gain
 	adcSetGain(adcGain128);
@@ -129,6 +100,9 @@ void adcInit(void)
 
 	// power on the ADC
 	adcPowerOn();
+	
+	// calibrate to account for internal offset
+	adcCalibrate();
 }
 
 
@@ -165,7 +139,6 @@ int32_t adcReadChannelSmooth(adcChannel_t channel)
 
 	return dataTotal / ADC_SMOOTH_SAMPLE_SIZE;
 }
-
 
 
 /***************************************************************************************************
@@ -243,7 +216,7 @@ static uint8_t adcWaitWhileDataLineEquals(uint8_t voltage)
 		delayFor(1);
 		delayCounter++;
 		if (delayCounter > ADC_MAX_BLOCKING_WAIT_US)
-			return TIMEOUT_OCCURRED;
+			return FAILURE;
 	};
 	return SUCCESS;
 }
@@ -260,10 +233,10 @@ static int32_t adcReadChannel(adcChannel_t channel)
 	adcSelectChannel(channel);
 	
 	// wait for data line to go low then high then low again
-	if (adcWaitWhileDataLineEquals(0) == TIMEOUT_OCCURRED)
-		return 0;
-	if (adcWaitWhileDataLineEquals(1) == TIMEOUT_OCCURRED)
-		return 0;
+	if (adcWaitWhileDataLineEquals(0) == FAILURE)
+		return calibrationOffset(channel);
+	if (adcWaitWhileDataLineEquals(1) == FAILURE)
+		return calibrationOffset(channel);
 
 	for (int i = ADC_READ_SIZE_BITS - 1; i>=0; i--)
 	{
@@ -277,27 +250,14 @@ static int32_t adcReadChannel(adcChannel_t channel)
 		// all other bits get treated normally
 		else
 			offset = (bit << i) & ADC_DATA_MAX_VALUE_MASK;
+			
+		// add the value to the total
 		data = data + offset;
 	}
 	
 	// one additional SCLK ensures that the DRDY/DOUT line stays high after data
 	// is received
 	adcApplySclk();
-
-	return data;
-}
-
-
-/**
- * Retrieves 24-bit ADC data and calibrates the ADC.
- * @return int32_t 24-bit ADC data
- */
-static int32_t adcReadAndCalibrate(adcChannel_t channel)
-{
-	int32_t data = adcReadChannel(channel);
-	adcApplySclk();
-
-	delayFor(ADC_OFFSET_CALIBRATION_DELAY_MS);
 
 	return data;
 }
@@ -355,6 +315,9 @@ static void adcSelectChannel(adcChannel_t channel)
 	default:
 		break;
 	}
+	
+	// wait for data line to settle after the switch
+	delayFor(ADC_MUX_SETTLE_TIME_US);
 }
 
 
@@ -436,3 +399,18 @@ static void adcSetGain(adcGain_t gain)
 		break;
 	}
 }
+
+
+/**
+ * Calibrates the ADC to account for internal offset.
+ */
+void adcCalibrate(void)
+{
+	int32_t data = adcReadChannel(adcChannelZero);
+	adcApplySclk();
+	adcApplySclk();
+
+	delayFor(ADC_OFFSET_CALIBRATION_SHORT_DELAY_US);
+}
+
+
