@@ -25,69 +25,10 @@ void setup()
     pinMode(POWER_PIN, OUTPUT);
     pinMode(MUX_PIN0, OUTPUT);
     pinMode(MUX_PIN1, OUTPUT);
-  //    float mass1 = 0;
-//    float mass2 = 5;
-//    uint32_t mass1_int = packFloat754(mass1, 32, 8);
-//    uint32_t mass2_int = packFloat754(mass2, 32, 8);
-  
-//    message_t tare = {
-//      .id = (PGN_TARE) << 8,
-//      .length = 8,
-//      .data = {0,0,0,0, 0,0,0,0}
-//    };
-//
-//    message_t cal_1 = {
-//      .id = (PGN_CALIBRATE | PGN_CAL_CONF_M1) << 8,
-//      .length = 8,
-//      .data = {
-//      (uint8_t)(mass1_int & 0x000000FF),
-//      (uint8_t)(mass1_int & 0x0000FF00) >> 2,
-//      (uint8_t)(mass1_int & 0x00FF0000) >> 4,
-//      (uint8_t)(mass1_int & 0xFF000000) >> 6,
-//      0,
-//      0,
-//      0,
-//      0}
-//    };
-//
-//    message_t cal_2 = {
-//      .id = (PGN_CALIBRATE | PGN_CAL_CONF_M2) << 8,
-//      .length = 8,
-//      .data = {
-//      (uint8_t)(mass2_int & 0x000000FF),
-//      (uint8_t)(mass2_int & 0x0000FF00) >> 2,
-//      (uint8_t)(mass2_int & 0x00FF0000) >> 4,
-//      (uint8_t)(mass2_int & 0xFF000000) >> 6,
-//      0,
-//      0,
-//      0,
-//      0}
-//    };
-//
-//    message_t cal_3 = {
-//      .id = (PGN_CALIBRATE | PGN_CAL_FINISH) << 8,
-//      .length = 0,
-//      .data = {0,0,0,0, 0,0,0,0}
-//    };
-
     doADCPowerUpSequence();
     setADCSpeed(0);
     delay(300);
     tareAllLoadCells();
-
-//    Serial.println("Input mass 1:");
-//    while (Serial.available() == 0){}
-//    getCalMass1(Serial.parseInt());
-//    while (Serial.available() == 1){}
-//
-//    Serial.println("Input mass 2:");
-//    while (Serial.available() == 0){}
-//    getCalMass2(Serial.parseInt());
-//
-//    getVoltageToMassFactor(mass1, voltage1, mass2, voltage2);
-//    Serial.println(voltageToMassFactor);
-//    Serial.println("\nSetup Complete");
-
 }
 
 
@@ -124,59 +65,83 @@ void loop()
         /*
          * Formats:
          *
-         * T(2) -- tare tank 2
-         * C1(2):69.01 -- confirm mass 1 for tank 2 as 69.01 kg
-         * C2(2):42.14 -- confirm mass 2 as 42.14 kg
-         * C3(2) -- end calibration of tank 2
-         * R! -- reset arduino
+         * t(2) -- tare tank 2
+         * c1(2):69.01 -- confirm mass 1 for tank 2 as 69.01 kg
+         * c2(2):42.14 -- confirm mass 2 as 42.14 kg
+         * c3(2) -- end calibration of tank 2
+         * r! -- reset arduino
          */
 
-        Serial.println("Received message: " + inputString);
         switch (inputString.charAt(0)) {
             case 't': {
                 // tare
-//                uint8_t tareTank = getTankNumber(inputString);
-//                if (tareTank < 0) {
-//                    Serial.println("INVALID TANK #...");
-//                    break;
-//                }
-//                Serial.println("TARING TANK #" + String(tareTank) + "...");
-                tareAllLoadCells();
-                Serial.println("TARING");
+                uint8_t tareTank = getTankNumber(inputString);
+                if (tareTank < 0) {
+                    Serial.println("INVALID TANK");
+                    break;
+                }
+                Serial.println("TARING TANK " + String(tareTank));
+                // TODO Construct tare command and transmit over CAN
+                uint32_t messageID = cmdConstructID(tareTank, PGN_TARE);
+                message_t tareMessage = {
+                        .id = messageID,
+                        .length = 8,
+                        .data = { 0 }
+                };
+                cmdSendUpstream(&tareMessage);
                 break;
             }
             case 'c': {
                 // calibration
-//                uint8_t zeroTank = getTankNumber(inputString);
-//                if (zeroTank < 0) {
-//                    Serial.println("INVALID TANK #...");
-//                }
+                uint8_t zeroTank = getTankNumber(inputString);
+                if (zeroTank < 0) {
+                    Serial.println("INVALID TANK");
+                    break;
+                }
                 switch (inputString.charAt(1)) {
                     case '1': {
                         // confirm mass 1
+                        // TODO pack it manually
                         float mass = getMassValue(inputString);
                         if (mass < 0) {
                             Serial.println("INVALID MASS");
                             break;
                         }
-                        getCalMass1(mass);
-                        Serial.println("MASS 1 " + String(mass));
+                        uint32_t messageID = cmdConstructID(zeroTank, PGN_CALIBRATE & PGN_CAL_CONF_M1);
+                        message_t calibrateMessage = {
+                                .id = messageID,
+                                .length = 8,
+                                .data = { 0 }
+                        };
+                        cmdSendUpstream(&calibrateMessage);
                         break;
                     }
                     case '2': {
                         // confirm mass 2
+                        // TODO pack it manually
                         float mass = getMassValue(inputString);
                         if (mass < 0) {
                             Serial.println("INVALID MASS");
                             break;
                         }
-                        getCalMass2(mass);
-                        Serial.println("MASS 2 " + String(mass));
+                        uint32_t messageID = cmdConstructID(zeroTank, PGN_CALIBRATE & PGN_CAL_CONF_M2);
+                        message_t calibrateMessage = {
+                                .id = messageID,
+                                .length = 8,
+                                .data = { 0 }
+                        };
+                        cmdSendUpstream(&calibrateMessage);
                         break;
                     }
                     case '3': {
-                        getVoltageToMassFactor();                      
-                        Serial.println("CAL STEP THREE RECEIVED");
+                        // getVoltageToMassFactor();
+                        uint32_t messageID = cmdConstructID(zeroTank, PGN_CALIBRATE & PGN_CAL_FINISH);
+                        message_t calibrateMessage = {
+                                .id = messageID,
+                                .length = 8,
+                                .data = { 0 }
+                        };
+                        cmdSendUpstream(&calibrateMessage);
                         break;
                     }
                     default: {
@@ -187,16 +152,16 @@ void loop()
                 }
                 break;
             }
-            case 'R': {
+            case 'r': {
                 // reset
-//                if (inputString.charAt(1) == '!') {
-                Serial.println("RESETTING...");
-//                }
+                if (inputString.charAt(1) == '!') {
+                    // TODO Implement software reset
+                }
                 break;
             }
             default: {
                 // invalid
-                Serial.println("INVALID...");
+                Serial.println("INVALID COMMAND");
                 break;
             }
         }

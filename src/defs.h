@@ -5,7 +5,6 @@
 #define DEFS_H
 
 #include <stdint.h>
-#define _ARDUINO
 
 #define OK  0x01
 #define ERR 0x00
@@ -71,20 +70,28 @@ uint8_t CANReceive (can_dir_t direction, uint32_t *id, uint8_t **buffer);
 * COMMAND (CMD) *
 ****************/
 
+uint32_t cmdConstructID (uint8_t tank, uint8_t command);
 uint8_t cmdSendUpstream (message_t *command);
 uint8_t cmdReceiveDownstream (message_t *command);
 uint8_t cmdParse (message_t *command);
 
-// TODO These will definitely have to change (or will they?)
+#define PGN_POSITION    (8)
+/*
+ * PGN Format:
+ * [28 ... 9   8   7   6   5   4   3   2   1   0  ]
+ * [X... TARE|CAL|   CAL STEP    | X |  TANK  ID  ]
+ */
+#define PGN_TANK_IDX    (0)
+#define PGN_CMD_IDX     (4)
 
 #define PGN_DEBUG_HANDSHAKE (0x01)
 
 #define PGN_TARE (0x20)
 
 #define PGN_CALIBRATE   (0x10)
-#define PGN_CAL_CONF_M1 (0x01)
-#define PGN_CAL_CONF_M2 (0x02)
-#define PGN_CAL_FINISH  (0x04)
+#define PGN_CAL_CONF_M1 (1<<0)
+#define PGN_CAL_CONF_M2 (1<<1)
+#define PGN_CAL_FINISH  (1<<2)
 
 /*********
 * UPDATE *

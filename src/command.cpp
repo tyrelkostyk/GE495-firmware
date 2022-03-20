@@ -8,8 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern message_t currentUpdate;
-
 /**
  * Extracts and returns the PGN from a CAN message structure
  * @param message_t *message The message from which to get the PGN
@@ -22,12 +20,16 @@ inline uint32_t cmdPGNFromMessage(message_t *message)
 
 /**
  * Constructs a CAN ID by building a PGN from the provided code and inserting the ID mask.
- * @param code The command code received from the PC
+ * @param tank The tank number the command is intended for
+ * @param command The command code received from the PC
  * @return uint32_t
  */
-inline uint32_t cmdConstructID(uint8_t code)
+uint32_t cmdConstructID(uint8_t tank, uint8_t command)
 {
-    return (uint32_t)(code << 8);
+    uint32_t id = 0;
+    id |= (tank & 0x7) << PGN_TANK_IDX;
+    id |= (command & 0x3f) << PGN_CMD_IDX;
+    return id << PGN_POSITION;
 }
 
 /**
@@ -50,45 +52,6 @@ uint8_t cmdSendUpstream(message_t *command)
 uint8_t cmdReceiveDownstream(message_t *command)
 {
     uint8_t received = 1;
-
-    String s = Serial.readStringUntil(';');
-
-    Serial.println("Got " + s);
-    // Serial.println(received);
-
-    switch (s[0]) {
-        case 'T':
-            // construct a tare command
-            Serial.println("TARE");
-            break;
-        case 'R':
-            // cycle power on the Arduino
-            Serial.println("RESET");
-            break;
-        case 'Z':
-            switch (s[1]) {
-                case '0':
-                    // construct a start zero command
-                    Serial.println("ZERO-START");
-                    break;
-                case '1':
-                    // construct a zero step-1 command
-                    Serial.println("ZERO-M1");
-                    break;
-                case '2':
-                    // construct a zero step-2 command
-                    Serial.println("ZERO-M2");
-                    break;
-                default:
-                    return 0;
-            }
-            break;
-        default:
-            Serial.println("Done...");
-            return 0;
-    }
-
-    Serial.println("Received");
     return received;
 }
 
