@@ -1,56 +1,38 @@
 // debug.c
 // Contains functions for communicating with a debugging device via serial or JTAG.
 
-#ifdef _ARDUINO
+#include "defs.h"
+
 #include <Arduino.h>
 #include <SoftwareSerial.h>
-#endif
 
 #include <string.h>
 
-#include "defs.h"
-
-extern message_t currentCommand;
-extern message_t currentUpdate;
-
-extern uint32_t currentMass;
-
 /**
  * Sends a string message to the debugger, with NO newline appended.
- * @param char *message The string to be debug-printed.
- * @return void
+ * @param message The string to be debug-printed
  */
 void debugPrint(const char *message)
 {
-#ifdef _DBG
-#ifdef Arduino_h
     Serial.print(message);
-
-#endif  // Arduino_h
-#endif  // _DBG
 }
 
+/**
+ * Sends a hex-formatted number to the debugger, with NO newline appended.
+ * @param num The number to be displayed
+ */
 void debugPrintNumber(uint32_t num)
 {
-#ifdef _DBG
-#ifdef Arduino_h
     Serial.print(num, HEX);
-#endif  // Arduino_h
-#endif  // _DBG
 }
 
 /**
  * Sends a string message to the debugger, with a newline appended.
- * @param char *message The string to be debug-printed.
- * @return void
+ * @param message The string to be debug-printed
  */
 void debugPrintLine(const char *message)
 {
-#ifdef _DBG
-#ifdef Arduino_h
     Serial.println(message);
-#endif  // Arduino_h
-#endif  // _DBG
 }
 
 /**
@@ -60,16 +42,12 @@ void debugPrintLine(const char *message)
  */
 uint32_t debugReadLine(char *buffer)
 {
-#ifdef _DBG
-#ifdef Arduino_h
     return Serial.readBytesUntil('\n', buffer, DEBUG_INPUT_LEN_MAX);
-#endif  // Arduino_h
-#endif  // _DBG
 }
 
 /**
- * Scans the debug input line for a debug command and executes it if valid.
- * @return void
+ * Scans the serial line for input and parses it.
+ * @param command A command instance (deprecated?)
  */
 void debugScan(message_t *command)
 {
@@ -82,17 +60,5 @@ void debugScan(message_t *command)
     } else {
         debugPrintLine("Unrecognized debug command!");
     }
-}
-
-/**
- * Executes a test handshake from this device to the next upstream device.
- * @return void
- */
-uint8_t debugHandshake(message_t *command)
-{
-    command->id = 1<<8;
-    memset(command->data, 2, CAN_DATA_LEN_MAX);  // Just to be safe
-
-    cmdSendUpstream(command);
 }
 

@@ -44,8 +44,8 @@ uint8_t debugHandshake(message_t *command);
 
 // Enum for determining which CAN unit is desired (upstream or downstream)
 typedef enum {
-    UP,
-    DOWN
+    Up,
+    Down
 } can_dir_t;
 
 typedef struct _message_t {
@@ -54,10 +54,10 @@ typedef struct _message_t {
     uint8_t data[CAN_DATA_LEN_MAX];
 } message_t;
 
-uint8_t CANSetup (void);
-uint8_t CANSend (can_dir_t direction, uint32_t id, uint8_t ext, uint8_t rtr, 
+uint8_t canInit (void);
+uint8_t canSend (can_dir_t direction, uint32_t id, uint8_t ext, uint8_t rtr,
                  uint8_t length, const uint8_t *data);
-uint8_t CANReceive (can_dir_t direction, uint32_t *id, uint8_t *buffer);
+uint8_t canReceive (can_dir_t direction, uint32_t *id, uint8_t *buffer);
 
 /*********
 * SERIAL *
@@ -97,22 +97,5 @@ uint8_t updateReceiveUpstream(message_t *update);
 uint8_t updateSendDownstream(message_t *update);
 uint8_t updateHandle(message_t *update);
 uint8_t updateLoadCurrentData(message_t *update);
-
-/*******
-* MASS *
-*******/
-
-#define MASS_NUM_BYTES 4
-#define ARDUINO_MASS_PIN A4
-#define SAMPLE_DELAY_MS 250
-
-void massGetCurrent(uint8_t *buffer);
-void massRead(void);
-
-/*******
-* TANK *
-*******/
-
-// void tankRefreshID(uint8_t refID);  // Deprecated (for now?)
 
 #endif  // DEFS_H

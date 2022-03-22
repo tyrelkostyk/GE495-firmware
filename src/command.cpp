@@ -4,16 +4,16 @@
 #ifdef _ARDUINO
 #endif  // _ARDUINO
 
-#include <string.h>
-
 #include "defs.h"
+
+#include <string.h>
 
 extern message_t currentUpdate;
 
 /**
  * Extracts and returns the PGN from a CAN message structure
- * @param message_t *message The message from which to get the PGN
- * @return uint32_t
+ * @param message The message from which to get the PGN
+ * @return Unsigned 32-bit integer representing the PGN of the message
  */
 inline uint32_t cmdPGNFromMessage(message_t *message)
 {
@@ -26,7 +26,7 @@ inline uint32_t cmdPGNFromMessage(message_t *message)
  */
 uint8_t cmdSendUpstream(message_t *command)
 {
-    if (CANSend(UP, command->id, CAN_FRAME_EXT, 0x00, CAN_DATA_LEN_MAX, 
+    if (canSend(Up, command->id, CAN_FRAME_EXT, 0x00, CAN_DATA_LEN_MAX,
                 command->data) != OK)
         return ERR;
     debugPrintLine("Sent command!");
@@ -35,8 +35,8 @@ uint8_t cmdSendUpstream(message_t *command)
 
 /**
  * Receives a command from the next downstream device.
- * @param message_t *command Pointer to the message structure to populate with received CAN data
- * @return 0x01 on a successful receive, 0x00 otherwise
+ * @param command Pointer to the message structure to populate with received CAN data
+ * @return OK on a successful receive, NOP otherwise
  */
 uint8_t cmdReceiveDownstream(message_t *command)
 {
@@ -45,59 +45,61 @@ uint8_t cmdReceiveDownstream(message_t *command)
     uint32_t id;
     uint8_t data[CAN_DATA_LEN_MAX];
 
-    if ((received = CANReceive(DOWN, &id, data)) != 0x00) {
+    if ((received = canReceive(Down, &id, data)) != 0x00) {
         debugPrintLine("Received command!");
         command->id = id;
         memcpy(command->data, data, CAN_DATA_LEN_MAX);
     }
 
-    return received;
+    return received > 0 ? OK : NOP;
 }
 
 /**
  * Parses a command to determine if it should execute on this device.
- * @param message_t *command The command to be parsed
+ * @param command The command to be parsed
  * @return OK if there were no problems parsing the command, ERR otherwise
  */
 uint8_t cmdParse(message_t *command)
 {
-    // TODO Implement this properly
-    // What to do here:
-    //  - read command->id
-    //  - determine if the PGN matches one that is useful for this device
-    //  - if it is, convert command->data appropriately and call the right function
-
     uint32_t pgn = cmdPGNFromMessage(command);
+
     switch (pgn) {
         case PGN_DEBUG_HANDSHAKE: {
             updateLoadCurrentData(&currentUpdate);
             updateSendDownstream(&currentUpdate);  // Just send the message right back
             break;
         }
+
         case PGN_TARE_START: {
 
             break;
         }
+
         case PGN_TARE_STEP1: {
 
             break;
         }
+
         case PGN_TARE_STEP2: {
 
             break;
         }
+
         case PGN_TARE_FINISH: {
 
             break;
         }
+
         case PGN_CALIBRATE_START: {
 
             break;
         }
+
         case PGN_CALIBRATE_FINISH: {
 
             break;
         }
+
         default: {
             // Unrecognized command
             return ERR;
