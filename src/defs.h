@@ -15,19 +15,6 @@ typedef struct _message_t message_t;
 typedef struct _command_t command_t;
 typedef struct _update_t  update_t;
 
-/********
-* DEBUG *
-********/
-
-#define DEBUG_INPUT_LEN_MAX (1<<7)
-
-void debugPrint(const char *message);
-void debugPrintLine(const char *message);
-void debugPrintNumber(uint32_t num);
-uint32_t debugReadLine(char *buffer);
-void debugScan(message_t *command);
-uint8_t debugHandshake(message_t *command);
-
 /******
 * CAN *
 ******/

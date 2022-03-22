@@ -41,26 +41,26 @@ uint8_t canInit(void)
     canUp.begin(serUp, CAN_BAUDRATE);
     canDown.begin(serDown, CAN_BAUDRATE);
 
-    debugPrintLine("Setting upstream mask...");
+    Serial.println("Setting upstream mask...");
     if (!canUp.setMask(rx_mask)) {
-        debugPrintLine("Upstream mask not set, skipping upstream filter...");
+        Serial.println("Upstream mask not set, skipping upstream filter...");
         setupStatus = ERR;
     } else {
-        debugPrintLine("Setting upstream filter...");
+        Serial.println("Setting upstream filter...");
         if (!canUp.setFilt(rx_filter)) {
-            debugPrintLine("Upstream filter not set");
+            Serial.println("Upstream filter not set");
             setupStatus = ERR;
         }
     }
 
-    debugPrintLine("Setting downstream mask...");
+    Serial.println("Setting downstream mask...");
     if (!canDown.setMask(rx_mask)) {
-        debugPrintLine("Downstream mask not set, skipping downstream filter...");
+        Serial.println("Downstream mask not set, skipping downstream filter...");
         setupStatus = ERR;
     } else {
-        debugPrintLine("Setting downstream filter...");
+        Serial.println("Setting downstream filter...");
         if (!canDown.setFilt(rx_filter)) {
-            debugPrintLine("Downstream filter not set");
+            Serial.println("Downstream filter not set");
             setupStatus = ERR;
         }
     }

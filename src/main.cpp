@@ -35,7 +35,7 @@ void setup()
 
     pinMode(LED_BUILTIN, OUTPUT);
 
-    debugPrintLine("ARDUINO: Started setup");
+    Serial.println("ARDUINO: Started setup");
     Serial.begin(SER_BAUDRATE);
     Serial.setTimeout(250);
     while (!Serial);

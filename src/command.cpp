@@ -1,10 +1,9 @@
 // command.c
 // Contains functions for parsing and carrying out commands received from downstream sources including ECU.
 
-#ifdef _ARDUINO
-#endif  // _ARDUINO
-
 #include "defs.h"
+
+#include <Arduino.h>
 
 static command_t gCommand = {0};
 
@@ -96,7 +95,7 @@ uint8_t cmdParse(void)
             return ERR;
     }
 
-    debugPrintLine("Parsed a command!");
+    Serial.println("Parsed command");
     return OK;
 }
 
