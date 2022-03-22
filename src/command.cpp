@@ -69,8 +69,9 @@ uint8_t cmdReceiveDownstream(void)
     uint8_t received = canReceive(Down, &message);
     if (received > 0) {
         cmdGetFromMessage(&message);
+        return OK;
     }
-    return received > 0 ? OK : NOP;
+    return NOP;
 }
 
 /**
