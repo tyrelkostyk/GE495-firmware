@@ -98,4 +98,71 @@ uint8_t updateSendDownstream(message_t *update);
 uint8_t updateHandle(message_t *update);
 uint8_t updateLoadCurrentData(message_t *update);
 
+/*******
+* MASS *
+*******/
+
+#define MASS_NUM_BYTES 4
+
+void massGetCurrent(uint8_t *buffer);
+
+extern double mass1;
+extern double mass2;
+extern int32_t voltage1;
+extern int32_t voltage2;
+extern double voltageToMassFactor; 
+
+/******
+* I2C *
+******/
+
+void applySCLK();
+void setSCLKHigh();
+void setSCLKLow();
+
+/******
+* ADC *
+******/
+
+extern int32_t dataOffset0;
+extern int32_t dataOffset1;
+extern int32_t dataOffset2;
+
+int32_t retrieveADCData();
+int32_t retrieveADCDataWithCal();
+void setADCMux(uint8_t muxSelect);
+void doADCPowerUpSequence();
+void setADCSpeed(uint8_t sampleSpeed);
+void blockingWaitForData();
+int32_t readThreeLoadCells();
+int32_t getNMeasurements(int32_t N);
+int32_t getNRawMeasurements(uint8_t mux, int32_t N);
+
+#define NUM_ADC_BITS 24
+#define NUM_LOAD_CELLS 3
+
+/**************
+* CALIBRATION *
+**************/
+
+void tare(uint8_t mux, int32_t offset);
+void tareAllLoadCells();
+void getCalMass1(double mass);
+void getCalMass2(double mass);
+void getVoltageToMassFactor(double mass1, int32_t voltage1, double mass2, int32_t voltage2);
+
+/**********
+* ARDUINO *
+**********/
+
+
+#define DATA_PIN 12
+#define CLOCK_PIN 11
+#define POWER_PIN 10
+
+#define MUX_PIN0 4
+#define MUX_PIN1 5
+
+#define SPEED_PIN 7
+
 #endif  // DEFS_H
