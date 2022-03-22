@@ -95,7 +95,7 @@ void loop()
     if (millis() - prevUpdateTime > UPDATE_DELAY_MS) {
         prevUpdateTime = millis();
         logger->PrintLog(Info, "Sent update");
-        Update::PackData(0);  // TODO
+        Update::PackData(millis());  // TODO
         Update::ForwardDownstream();
     }
 
@@ -112,8 +112,8 @@ void loop()
     // If an update is received from upstream, handle (e.g. provide modifications)
     // Then forward the modified message downstream
     if (Update::ReceiveUpstream()) {
-        logger->PrintLog(Info, "Received update");
         Update::Handle();
+        logger->PrintLog(Info, Update::ToString());
         Update::ForwardDownstream();
     }
 }

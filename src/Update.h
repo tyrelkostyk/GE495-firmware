@@ -25,6 +25,8 @@ public:
     static void ForwardDownstream();
     static bool ReceiveUpstream();
 
+    static String ToString();
+
     void IncrementTank();
     static void Handle();
     static void PackData(uint32_t mass);

@@ -17,6 +17,7 @@ void Update::ForwardDownstream()
     }
 
     canDown->Send(current);
+    logger.PrintLog(Info, "Sent update downstream");
 }
 
 
@@ -35,6 +36,14 @@ bool Update::ReceiveUpstream()
     current.Load();
 
     return true;
+}
+
+
+String Update::ToString()
+{
+    String output = "Update: ";
+    output += String(current.tank) + " - " + String(current.mass, 4);
+    return output;
 }
 
 
