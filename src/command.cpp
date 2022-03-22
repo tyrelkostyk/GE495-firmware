@@ -70,32 +70,22 @@ uint8_t cmdParse(message_t *command)
             break;
         }
 
-        case PGN_TARE_START: {
+        case PGN_TARE: {
 
             break;
         }
 
-        case PGN_TARE_STEP1: {
+        case PGN_CALIBRATE | PGN_CAL_CONF_M1: {
 
             break;
         }
 
-        case PGN_TARE_STEP2: {
+        case PGN_CALIBRATE | PGN_CAL_CONF_M2: {
 
             break;
         }
 
-        case PGN_TARE_FINISH: {
-
-            break;
-        }
-
-        case PGN_CALIBRATE_START: {
-
-            break;
-        }
-
-        case PGN_CALIBRATE_FINISH: {
+        case PGN_CALIBRATE | PGN_CAL_FINISH: {
 
             break;
         }
