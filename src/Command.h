@@ -6,18 +6,34 @@
 #define CAPSTONE_FIRMWARE_COMMAND_H
 
 
+#include "CanModule.h"
+#include "Logger.h"
 #include "Message.h"
 
 
 class Command : private Message {
 
+    static CanModule *canUp;
+    static CanModule *canDown;
+    static Logger logger;
+    static Command current;
+
+    uint8_t target;
+    cmd_type_t type;
+    uint8_t arg;
+    float mass;
+
 public:
-    Command() { }
+    Command() = default;
 
-    static void SendUpstream(Command *command);
-    static Command *ReceiveFromDownstream();
+    static void Init(CanModule *up, CanModule *down);
 
-    void Parse();
+    static void ForwardUpstream();
+    static bool ReceiveDownstream();
+
+    static void Parse();
+
+    void Load() override;
 
 };
 

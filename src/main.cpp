@@ -2,13 +2,14 @@
 // Contains the entrypoint for the software including setup and the main loop.
 
 #include "defs.h"
+#include "Command.h"
+#include "CanModule.h"
 
 #include <Arduino.h>
 #include <AltSoftSerial.h>
 #include <SoftwareSerial.h>
 
-extern SoftwareSerial serUp;
-extern AltSoftSerial serDown;
+CanModule *canUp, *canDown;
 
 uint8_t mux;
 
@@ -39,9 +40,17 @@ void setup()
     Serial.begin(SER_BAUDRATE);
     Serial.setTimeout(250);
     while (!Serial);
+
     prevUpdateTime = millis();
     prevSampleTime = millis();
-    canInit();
+
+    canUp = new CanModule(Up);
+    canDown = new CanModule(Down);
+
+    canUp->Init();
+    canDown->Init();
+
+    Command::Init(canUp, canDown);
 
     pinMode(DATA_PIN, INPUT);
     pinMode(CLOCK_PIN, OUTPUT);
@@ -79,23 +88,27 @@ void loop()
 
     if (millis() - prevUpdateTime > UPDATE_DELAY_MS) {
         prevUpdateTime = millis();
-        updateLoadCurrentData();
-        updateSendDownstream();
+        // updateLoadCurrentData();
+        // updateSendDownstream();
     }
 
     // Poll for commands and respond accordingly
     // If a command is received from downstream (ECU-side) immediately forward upstream
     // Then check to see if the command requires any action from this device
-    if (cmdReceiveDownstream() == OK) {
-        cmdSendUpstream();
-        cmdParse();
+    if (Command::ReceiveDownstream()) {
+        Command::ForwardUpstream();
+        Command::Parse();
     }
+    // if (cmdReceiveDownstream() == OK) {
+    //     cmdSendUpstream();
+    //     cmdParse();
+    // }
 
     // Poll for updates and respond accordingly
     // If an update is received from upstream, handle (e.g. provide modifications)
     // Then forward the modified message downstream
-    if (updateReceiveUpstream() == OK) {
-        updateHandle();
-        updateSendDownstream();
-    }
+    // if (updateReceiveUpstream() == OK) {
+    //     updateHandle();
+    //     updateSendDownstream();
+    // }
 }

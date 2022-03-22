@@ -16,6 +16,13 @@ public:
     uint32_t id;
     uint8_t length;
     uint8_t data[CAN_DATA_LEN_MAX] = { 0 };
+
+    uint32_t GetPGN() const
+    {
+        return (id >> PGN_POSITION) & PGN_SIZE;
+    }
+
+    virtual void Load() = 0;
 };
 
 

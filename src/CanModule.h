@@ -8,6 +8,7 @@
 
 #include "defs.h"
 #include "Logger.h"
+#include "Message.h"
 
 #include <Arduino.h>
 #include <AltSoftSerial.h>
@@ -19,12 +20,22 @@ class CanModule : private Serial_CAN, private Logger {
 
     can_dir_t direction;
 
-    static SoftwareSerial serialUp;
-    static AltSoftSerial serialDown;
+    SoftwareSerial *serialUp;
+    AltSoftSerial *serialDown;
 
     static String GetNameForLogger(can_dir_t dir)
     {
         return dir == Up ? "CanUp" : "CanDown";
+    }
+    static SoftwareSerial *NewSoftwareSerial(can_dir_t dir)
+    {
+        if (dir == Up) return new SoftwareSerial(CAN_UP_RX, CAN_UP_TX);
+        return nullptr;
+    }
+    static AltSoftSerial *NewAltSoftSerial(can_dir_t dir)
+    {
+        if (dir == Down) return new AltSoftSerial;
+        return nullptr;
     }
 
     uint32_t rx_mask[4] = {
@@ -43,21 +54,13 @@ class CanModule : private Serial_CAN, private Logger {
 
 public:
 
-    explicit CanModule(can_dir_t dir) : Logger(GetNameForLogger(dir)), direction(dir)
-    {
-        if (dir == Up) {
-            serialUp.begin(CAN_BAUDRATE);
-            Serial_CAN::begin(serialUp, CAN_BAUDRATE);  // SoftwareSerial for upstream
-        } else {
-            serialDown.begin(CAN_BAUDRATE);
-            Serial_CAN::begin(serialDown, CAN_BAUDRATE);  // AltSoftSerial for downstream
-        }
-    }
+    explicit CanModule(can_dir_t dir) :
+            Logger(GetNameForLogger(dir)), direction(dir), serialUp(NewSoftwareSerial(dir)),
+            serialDown(NewAltSoftSerial(dir)) { }
 
     void Init();
-
-    void Send();
-    void Receive();
+    void Send(Message &message);
+    uint8_t Receive(Message &message);
 
 };
 
