@@ -5,6 +5,7 @@
 #define DEFS_H
 
 #include <stdint.h>
+#include <string.h>
 
 #define OK  (0x01)
 #define ERR (0x00)
@@ -61,6 +62,31 @@ uint8_t canInit (void);
 uint8_t canSend (can_dir_t direction, uint32_t id, uint8_t ext, uint8_t rtr,
                  uint8_t length, const uint8_t *data);
 uint8_t canReceive (can_dir_t direction, uint32_t *id, uint8_t *buffer);
+
+inline float unpackFloatFromData(uint8_t *data)
+{
+    uint32_t num = 0;
+    for (int i = 0; i < 4; i++) {
+        num |= data[i] << (8*i);
+    }
+    return static_cast<float>(num);
+}
+
+inline void packDataWithFloat(uint8_t *data, float f)
+{
+    uint32_t num = static_cast<uint32_t>(f);
+    for (int i = 0; i < 4; i++) {
+        data[i] = (num >> (8*i)) & 0xff;
+    }
+    for (int i = 4; i < CAN_DATA_LEN_MAX; i++) {
+        data[i] = 0;
+    }
+}
+
+inline void packDataWithZero(uint8_t *data)
+{
+    memset(data, 0, CAN_DATA_LEN_MAX);
+}
 
 /*********
 * SERIAL *

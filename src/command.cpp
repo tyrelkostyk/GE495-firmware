@@ -6,31 +6,7 @@
 
 #include "defs.h"
 
-#include <string.h>
-
 static command_t gCommand = {0};
-
-inline float unpackFloatFromData(uint8_t *data)
-{
-    uint32_t num = 0;
-    for (int i = 0; i < 4; i++) {
-        num |= data[i] << (8*i);
-    }
-    return static_cast<float>(num);
-}
-
-inline void packDataWithFloat(uint8_t *data, float f)
-{
-    uint32_t num = static_cast<uint32_t>(f);
-    for (int i = 0; i < 4; i++) {
-        data[i] = (num >> (8*i)) & 0xff;
-    }
-}
-
-inline void packDataWithZero(uint8_t *data)
-{
-    memset(data, 0, CAN_DATA_LEN_MAX);
-}
 
 /**
  * Populates the static command struct with data from the provided message struct PGN.
