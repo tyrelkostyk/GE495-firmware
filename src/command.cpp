@@ -27,9 +27,13 @@ void cmdGetFromMessage(message_t *message)
 message_t cmdConvertToMessage(void)
 {
     message_t message = { 0 };
-    message.id |= (gCommand.target & PGN_CMD_TARGET) << PGN_CMD_TARGET_IDX;
-    message.id |= (gCommand.type & PGN_CMD_TYPE) << PGN_CMD_TYPE_IDX;
-    message.id |= (gCommand.arg & PGN_CMD_ARG) << PGN_CMD_ARG_IDX;
+
+    uint32_t pgn = 0;
+    pgn |= (gCommand.target & PGN_CMD_TARGET) << PGN_CMD_TARGET_IDX;
+    pgn |= (gCommand.type & PGN_CMD_TYPE) << PGN_CMD_TYPE_IDX;
+    pgn |= (gCommand.arg & PGN_CMD_ARG) << PGN_CMD_ARG_IDX;
+
+    message.id = (pgn & PGN_SIZE) << PGN_POSITION;
 
     if (gCommand.type == Calibrate) {
         message.length = CAN_DATA_LEN_CALIBRATE;
