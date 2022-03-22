@@ -48,27 +48,6 @@ void setup()
     prevUpdateTime = millis();
     prevSampleTime = millis();
     canInit();
-}
-
-// Repeated routines (e.g. comms polling) go in here
-void loop()
-{
-    // In debug mode, wait for specific test inputs
-    // debugScan(&currentCommand);
-
-    if (millis() - prevUpdateTime > UPDATE_DELAY_MS) {
-        prevUpdateTime = millis();
-        updateLoadCurrentData(&currentUpdate);
-        updateSendDownstream(&currentUpdate);
-    }
-
-    // Poll for commands and respond accordingly
-    // If a command is received from downstream (ECU-side) immediately forward upstream
-    // Then check to see if the command requires any action from this device
-    if (cmdReceiveDownstream(&currentCommand)) {
-        cmdSendUpstream(&currentCommand);
-        cmdParse(&currentCommand);
-    }
 
     pinMode(DATA_PIN, INPUT);
     pinMode(CLOCK_PIN, OUTPUT);
@@ -94,11 +73,29 @@ void loop()
     Serial.println(voltageToMassFactor);
     Serial.println("\nSetup Complete");
 
+}
 
+// Repeated routines (e.g. comms polling) go in here
+void loop()
+{
     int32_t data = getNMeasurements(5);
 
     Serial.print("Data = ");
     Serial.println(data * voltageToMassFactor);
+
+    if (millis() - prevUpdateTime > UPDATE_DELAY_MS) {
+        prevUpdateTime = millis();
+        updateLoadCurrentData(&currentUpdate);
+        updateSendDownstream(&currentUpdate);
+    }
+
+    // Poll for commands and respond accordingly
+    // If a command is received from downstream (ECU-side) immediately forward upstream
+    // Then check to see if the command requires any action from this device
+    if (cmdReceiveDownstream(&currentCommand)) {
+        cmdSendUpstream(&currentCommand);
+        cmdParse(&currentCommand);
+    }
 
     // Poll for updates and respond accordingly
     // If an update is received from upstream, handle (e.g. provide modifications)
