@@ -28,7 +28,8 @@ inline void updateMessageTankID(message_t *message)
 uint8_t updateReceiveUpstream(void)
 {
     // TODO convert message_t to update_t
-    return canReceive(Up, &update->id, update->data);
+    message_t message = { 0 };
+    return canReceive(Up, &message);
 }
 
 /**
@@ -39,8 +40,8 @@ uint8_t updateReceiveUpstream(void)
 uint8_t updateSendDownstream(void)
 {
     // TODO convert update_t to message_t
-    if (canSend(Down, update->id, CAN_FRAME_EXT, 0x00, CAN_DATA_LEN_MAX,
-                update->data) != OK) {
+    message_t message = { 0 };
+    if (canSend(Down, message) != OK) {
         return ERR;
     }
     return OK;

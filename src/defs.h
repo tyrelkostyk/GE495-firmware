@@ -40,8 +40,11 @@ uint8_t debugHandshake(message_t *command);
 // #define CAN_DOWN_TX 6
 // #define CAN_DOWN_RX 7
 
-#define CAN_FRAME_STD (0x00)
-#define CAN_FRAME_EXT (0x01)
+#define CAN_FRAME_STD           (0x00)
+#define CAN_FRAME_EXT           (0x01)
+
+#define CAN_NO_REMOTE           (0x00)
+#define CAN_REMOTE              (0x01)
 
 #define CAN_DATA_LEN_MAX        (8)
 #define CAN_DATA_LEN_CALIBRATE  (5)
@@ -59,9 +62,8 @@ typedef struct _message_t {
 } message_t;
 
 uint8_t canInit (void);
-uint8_t canSend (can_dir_t direction, uint32_t id, uint8_t ext, uint8_t rtr,
-                 uint8_t length, const uint8_t *data);
-uint8_t canReceive (can_dir_t direction, uint32_t *id, uint8_t *buffer);
+uint8_t canSend(can_dir_t direction, message_t message);
+uint8_t canReceive(can_dir_t direction, message_t *message);
 
 inline float unpackFloatFromData(uint8_t *data)
 {

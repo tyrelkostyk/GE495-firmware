@@ -50,8 +50,7 @@ message_t cmdConvertToMessage(void)
 uint8_t cmdSendUpstream(void)
 {
     message_t message = cmdConvertToMessage();
-    if (canSend(Up, message.id, CAN_FRAME_EXT, 0x00, message.length,
-                message.data) != OK)
+    if (canSend(Up, message) != OK)
         return ERR;
     return OK;
 }
@@ -64,7 +63,7 @@ uint8_t cmdSendUpstream(void)
 uint8_t cmdReceiveDownstream(void)
 {
     message_t message = { 0 };
-    int received = canReceive(Down, &message.id, message.data);
+    int received = canReceive(Down, &message);
     if (received > 0) {
         cmdGetFromMessage(&message);
     }
