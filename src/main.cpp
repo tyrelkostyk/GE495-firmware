@@ -56,21 +56,21 @@ void setup()
     pinMode(MUX_PIN1, OUTPUT);
     Serial.println("\nSetup Started");
 
-    doADCPowerUpSequence();
-    setADCSpeed(0);
-    delay(300);
-    tareAllLoadCells();
-    Serial.println("Input mass 1:");
-    while (Serial.available() == 0){}
-    getCalMass1(Serial.parseInt());
-    while (Serial.available() == 1){}
+    // doADCPowerUpSequence();
+    // setADCSpeed(0);
+    // delay(300);
+    // tareAllLoadCells();
+    // Serial.println("Input mass 1:");
+    // while (Serial.available() == 0){}
+    // getCalMass1(Serial.parseInt());
+    // while (Serial.available() == 1){}
 
-    Serial.println("Input mass 2:");
-    while (Serial.available() == 0){}
-    getCalMass2(Serial.parseInt());
+    // Serial.println("Input mass 2:");
+    // while (Serial.available() == 0){}
+    // getCalMass2(Serial.parseInt());
 
-    getVoltageToMassFactor(mass1, voltage1, mass2, voltage2);
-    Serial.println(voltageToMassFactor);
+    // getVoltageToMassFactor(mass1, voltage1, mass2, voltage2);
+    // Serial.println(voltageToMassFactor);
     Serial.println("\nSetup Complete");
 
 }
@@ -78,10 +78,10 @@ void setup()
 // Repeated routines (e.g. comms polling) go in here
 void loop()
 {
-    int32_t data = getNMeasurements(5);
+    // int32_t data = getNMeasurements(5);
 
-    Serial.print("Data = ");
-    Serial.println(data * voltageToMassFactor);
+    // Serial.print("Data = ");
+    // Serial.println(data * voltageToMassFactor);
 
     if (millis() - prevUpdateTime > UPDATE_DELAY_MS) {
         prevUpdateTime = millis();
@@ -92,7 +92,7 @@ void loop()
     // Poll for commands and respond accordingly
     // If a command is received from downstream (ECU-side) immediately forward upstream
     // Then check to see if the command requires any action from this device
-    if (cmdReceiveDownstream(&currentCommand)) {
+    if (cmdReceiveDownstream(&currentCommand) == OK) {
         cmdSendUpstream(&currentCommand);
         cmdParse(&currentCommand);
     }
@@ -100,7 +100,7 @@ void loop()
     // Poll for updates and respond accordingly
     // If an update is received from upstream, handle (e.g. provide modifications)
     // Then forward the modified message downstream
-    if (updateReceiveUpstream(&currentUpdate)) {
+    if (updateReceiveUpstream(&currentUpdate) == OK) {
         updateHandle(&currentUpdate);
         updateSendDownstream(&currentUpdate);
     }

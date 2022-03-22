@@ -91,15 +91,17 @@ uint8_t canSend(can_dir_t direction, uint32_t id, uint8_t ext, uint8_t rtr, uint
  * into the specified buffer.
  * @param id Address to store the message identifier (29 bits in J1939)
  * @param buffer Buffer to which the received message data will be written
- * @return OK if there is data to read, NOP otherwise
+ * @return The number of bytes received, or 0
  */
 uint8_t canReceive(can_dir_t direction, uint32_t *id, uint8_t *buffer)
 {
     uint8_t received;
-    if (direction == Up)
+    if (direction == Up) {
         received = canUp.recv(id, buffer);
-    else if (direction == Down)
+    }
+    else if (direction == Down) {
         received = canDown.recv(id, buffer);
-    return received ? OK : NOP;
+    }
+    return received;
 }
 

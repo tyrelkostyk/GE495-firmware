@@ -108,7 +108,7 @@ uint8_t updateLoadCurrentData(message_t *update);
 * MASS *
 *******/
 
-#define MASS_NUM_BYTES 4
+#define MASS_NUM_BYTES (4)
 
 void massGetCurrent(uint8_t *buffer);
 

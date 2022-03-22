@@ -6,8 +6,6 @@
 
 #include "defs.h"
 
-#include <string.h>
-
 extern message_t currentUpdate;
 
 /**
@@ -29,29 +27,17 @@ uint8_t cmdSendUpstream(message_t *command)
     if (canSend(Up, command->id, CAN_FRAME_EXT, 0x00, CAN_DATA_LEN_MAX,
                 command->data) != OK)
         return ERR;
-    debugPrintLine("Sent command!");
     return OK;
 }
 
 /**
  * Receives a command from the next downstream device.
  * @param command Pointer to the message structure to populate with received CAN data
- * @return OK on a successful receive, NOP otherwise
+ * @return The number of bytes received, or 0
  */
 uint8_t cmdReceiveDownstream(message_t *command)
 {
-    uint8_t received;
-
-    uint32_t id;
-    uint8_t data[CAN_DATA_LEN_MAX];
-
-    if ((received = canReceive(Down, &id, data)) != 0x00) {
-        debugPrintLine("Received command!");
-        command->id = id;
-        memcpy(command->data, data, CAN_DATA_LEN_MAX);
-    }
-
-    return received > 0 ? OK : NOP;
+    return canReceive(Down, &command->id, command->data);
 }
 
 /**
@@ -65,8 +51,8 @@ uint8_t cmdParse(message_t *command)
 
     switch (pgn) {
         case PGN_DEBUG_HANDSHAKE: {
-            updateLoadCurrentData(&currentUpdate);
-            updateSendDownstream(&currentUpdate);  // Just send the message right back
+            // updateLoadCurrentData(&currentUpdate);
+            // updateSendDownstream(&currentUpdate);  // Just send the message right back
             break;
         }
 
