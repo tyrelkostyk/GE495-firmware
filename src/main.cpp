@@ -79,8 +79,8 @@ void loop()
 
     if (millis() - prevUpdateTime > UPDATE_DELAY_MS) {
         prevUpdateTime = millis();
-        updateLoadCurrentData(&currentUpdate);
-        updateSendDownstream(&currentUpdate);
+        updateLoadCurrentData();
+        updateSendDownstream();
     }
 
     // Poll for commands and respond accordingly

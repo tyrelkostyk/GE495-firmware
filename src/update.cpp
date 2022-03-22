@@ -10,26 +10,46 @@
 static update_t gUpdate;
 
 /**
- * Retrieves a tank ID from the data field of a message instance.
- * @param message The message structure from which to extract the tank ID
- * @return The tank ID number from the message
+ * Populates the static command struct with data from the provided message struct PGN.
+ * @param message The message struct to retrieve data from
  */
-inline void updateMessageTankID(message_t *message)
+void updateGetFromMessage(message_t *message)
 {
-    // Little-endian data transmission means ID will be at the end
-    ++(message->data[CAN_DATA_LEN_MAX-1]);
+    uint32_t pgn = (message->id >> PGN_POSITION) & PGN_SIZE;
+
+    gUpdate.tank = (pgn >> PGN_UPDATE_TANK_IDX) & PGN_UPDATE_TANK;
+    gUpdate.mass = unpackFloatFromData(message->data);
+}
+
+message_t updateConvertToMessage(void)
+{
+    message_t message = { 0 };
+
+    uint32_t pgn = 0;
+    pgn |= (gUpdate.tank & PGN_UPDATE_TANK) << PGN_UPDATE_TANK_IDX;
+
+    message.id = (pgn & PGN_SIZE) << PGN_POSITION;
+
+    packDataWithFloat(message.data, gUpdate.mass);
+
+    return message;
 }
 
 /**
  * Receives an update from the next upstream device.
  * @param update The message structure to populate with the received CAN data
- * @return The number of bytes received, or 0
+ * @return OK if bytes were received, NOP otherwise
  */
 uint8_t updateReceiveUpstream(void)
 {
     // TODO convert message_t to update_t
     message_t message = { 0 };
-    return canReceive(Up, &message);
+    uint8_t received = canReceive(Up, &message);
+    if (received > 0) {
+        updateGetFromMessage(&message);
+        return OK;
+    }
+    return NOP;
 }
 
 /**
@@ -40,10 +60,9 @@ uint8_t updateReceiveUpstream(void)
 uint8_t updateSendDownstream(void)
 {
     // TODO convert update_t to message_t
-    message_t message = { 0 };
-    if (canSend(Down, message) != OK) {
+    message_t message = updateConvertToMessage();
+    if (canSend(Down, message) != OK)
         return ERR;
-    }
     return OK;
 }
 
@@ -54,10 +73,8 @@ uint8_t updateSendDownstream(void)
  */
 uint8_t updateHandle(void)
 {
-    updateMessageTankID(update);
-
     Serial.print("ID now ");
-    Serial.println(update->data[CAN_DATA_LEN_MAX-1], HEX);
+    Serial.println(++gUpdate.tank, HEX);
 
     return OK;
 }
@@ -67,16 +84,9 @@ uint8_t updateHandle(void)
  * @param update The message structure to be reset and modified
  * @return OK or ERR
  */
-uint8_t updateLoadCurrentData(void)
+void updateLoadCurrentData(void)
 {
-    uint8_t mass[MASS_NUM_BYTES] = { 0 };
-
-    update->id = 0x0;  // TODO Set the PGN correctly
-    if (memcpy((uint8_t *)(&update->data), (uint8_t *)mass, MASS_NUM_BYTES) == NULL)
-        return ERR;
-
-    update->data[CAN_DATA_LEN_MAX-1] = 0x00;
-
-    return OK;
+    gUpdate.tank = 0;  // Always
+    gUpdate.mass = 0.0;  // TODO get data from the ADC
 }
 

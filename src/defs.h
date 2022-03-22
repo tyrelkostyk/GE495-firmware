@@ -121,6 +121,9 @@ typedef struct _command_t {
 #define PGN_CMD_TYPE        (0x3)
 #define PGN_CMD_ARG         (0xf)
 
+#define PGN_UPDATE_TANK_IDX (0)
+#define PGN_UPDATE_TANK     (0x7)
+
 #define PGN_DEBUG_HANDSHAKE 0x01
 
 #define PGN_TARE (0x20)
@@ -146,7 +149,7 @@ typedef struct _update_t {
 uint8_t updateReceiveUpstream(void);
 uint8_t updateSendDownstream(void);
 uint8_t updateHandle(void);
-uint8_t updateLoadCurrentData(void);
+void updateLoadCurrentData(void);
 
 /*******
 * MASS *
@@ -204,7 +207,6 @@ void getVoltageToMassFactor(double mass1, int32_t voltage1, double mass2, int32_
 /**********
 * ARDUINO *
 **********/
-
 
 #define DATA_PIN  (12)
 #define CLOCK_PIN (11)
