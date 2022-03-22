@@ -41,7 +41,7 @@ void cmdGetFromMessage(message_t *message)
     uint32_t pgn = (message->id >> PGN_POSITION) & PGN_SIZE;
 
     gCommand.target = (pgn >> PGN_CMD_TARGET_IDX) & PGN_CMD_TARGET;
-    gCommand.type = (pgn >> PGN_CMD_TYPE_IDX) & PGN_CMD_TYPE;
+    gCommand.type = static_cast<cmd_type_t>((pgn >> PGN_CMD_TYPE_IDX) & PGN_CMD_TYPE);
     gCommand.arg = (pgn >> PGN_CMD_ARG_IDX) & PGN_CMD_ARG;
 
     if (gCommand.type == Calibrate) {
@@ -58,10 +58,10 @@ message_t cmdConvertToMessage(void)
 
     if (gCommand.type == Calibrate) {
         message.length = CAN_DATA_LEN_CALIBRATE;
-        packDataWithFloat(message->data, gCommand.data.mass);
+        packDataWithFloat(message.data, gCommand.data.mass);
     } else {
         message.length = 0;
-        packDataWithZero(message->data);
+        packDataWithZero(message.data);
     }
 
     return message;
@@ -87,8 +87,12 @@ uint8_t cmdSendUpstream(void)
  */
 uint8_t cmdReceiveDownstream(void)
 {
-    // TODO convert message_t to command_t
-    return canReceive(Down, &command->id, command->data);
+    message_t message = { 0 };
+    int received = canReceive(Down, &message.id, message.data);
+    if (received > 0) {
+        cmdGetFromMessage(&message);
+    }
+    return received;
 }
 
 /**
