@@ -6,43 +6,34 @@
 #include "defs.h"
 
 
-CanModule *Command::canUp = nullptr;
-CanModule *Command::canDown = nullptr;
 Logger Command::logger = Logger("Command");
 Command Command::current = Command();
 
 
-void Command::Init(CanModule *up, CanModule *down)
-{
-    Command::canUp = up;
-    Command::canDown = down;
-}
-
-
 void Command::ForwardUpstream()
 {
-    if (Command::canUp == nullptr) {
+    if (canUp == nullptr) {
         logger.PrintLog(Warn, "No upstream CAN device found");
         return;
     }
 
-    canUp->Send(Command::current);
+    canUp->Send(current);
 }
 
 
 bool Command::ReceiveDownstream()
 {
-    if (Command::canUp == nullptr) {
+    if (canDown == nullptr) {
         logger.PrintLog(Warn, "No downstream CAN device found");
         return false;
     }
 
-    Command::current = Command();
-    if (canDown->Receive(Command::current) == 0) {
+    current = Command();
+    if (canDown->Receive(current) == 0) {
         return false;
     }
 
-    Command::current.Load();
+    current.Load();
 
     return true;
 }
@@ -74,7 +65,7 @@ void Command::Parse()
 
 void Command::Load()
 {
-    uint32_t pgn = (id >> PGN_POSITION) & PGN_SIZE;
+    uint32_t pgn = GetPGN();
 
     target = (pgn >> PGN_CMD_TARGET_IDX) & PGN_CMD_TARGET;
     type = static_cast<cmd_type_t>((pgn >> PGN_CMD_TYPE_IDX) & PGN_CMD_TYPE);

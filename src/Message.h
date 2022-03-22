@@ -7,15 +7,26 @@
 
 
 #include "defs.h"
+#include "Logger.h"
 
 #include <stdint.h>
 
 
+class CanModule;
+
+
 struct Message {
+protected:
+    static CanModule *canUp;
+    static CanModule *canDown;
+    static Logger logger;
+
 public:
     uint32_t id;
     uint8_t length;
     uint8_t data[CAN_DATA_LEN_MAX] = { 0 };
+
+    static void Init(CanModule *up, CanModule *down);
 
     uint32_t GetPGN() const
     {

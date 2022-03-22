@@ -4,12 +4,16 @@
 #include "defs.h"
 #include "Command.h"
 #include "CanModule.h"
+#include "Logger.h"
+#include "Message.h"
+#include "Update.h"
 
 #include <Arduino.h>
 #include <AltSoftSerial.h>
 #include <SoftwareSerial.h>
 
 CanModule *canUp, *canDown;
+Logger *logger;
 
 uint8_t mux;
 
@@ -41,6 +45,8 @@ void setup()
     Serial.setTimeout(250);
     while (!Serial);
 
+    logger = new Logger("Main");
+
     prevUpdateTime = millis();
     prevSampleTime = millis();
 
@@ -50,7 +56,7 @@ void setup()
     canUp->Init();
     canDown->Init();
 
-    Command::Init(canUp, canDown);
+    Message::Init(canUp, canDown);
 
     pinMode(DATA_PIN, INPUT);
     pinMode(CLOCK_PIN, OUTPUT);
@@ -88,27 +94,26 @@ void loop()
 
     if (millis() - prevUpdateTime > UPDATE_DELAY_MS) {
         prevUpdateTime = millis();
-        // updateLoadCurrentData();
-        // updateSendDownstream();
+        logger->PrintLog(Info, "Sent update");
+        Update::PackData(0);  // TODO
+        Update::ForwardDownstream();
     }
 
     // Poll for commands and respond accordingly
     // If a command is received from downstream (ECU-side) immediately forward upstream
     // Then check to see if the command requires any action from this device
     if (Command::ReceiveDownstream()) {
+        logger->PrintLog(Info, "Received command");
         Command::ForwardUpstream();
         Command::Parse();
     }
-    // if (cmdReceiveDownstream() == OK) {
-    //     cmdSendUpstream();
-    //     cmdParse();
-    // }
 
     // Poll for updates and respond accordingly
     // If an update is received from upstream, handle (e.g. provide modifications)
     // Then forward the modified message downstream
-    // if (updateReceiveUpstream() == OK) {
-    //     updateHandle();
-    //     updateSendDownstream();
-    // }
+    if (Update::ReceiveUpstream()) {
+        logger->PrintLog(Info, "Received update");
+        Update::Handle();
+        Update::ForwardDownstream();
+    }
 }

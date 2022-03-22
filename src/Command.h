@@ -13,8 +13,6 @@
 
 class Command : private Message {
 
-    static CanModule *canUp;
-    static CanModule *canDown;
     static Logger logger;
     static Command current;
 
@@ -25,8 +23,6 @@ class Command : private Message {
 
 public:
     Command() = default;
-
-    static void Init(CanModule *up, CanModule *down);
 
     static void ForwardUpstream();
     static bool ReceiveDownstream();
