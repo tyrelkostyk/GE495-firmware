@@ -6,7 +6,7 @@
 
 #include "defs.h"
 
-extern message_t currentUpdate;
+static command_t gCommand = {0};
 
 /**
  * Extracts and returns the PGN from a CAN message structure
@@ -22,10 +22,12 @@ inline uint32_t cmdPGNFromMessage(message_t *message)
  * Sends a command to the next upstream device.
  * @return OK if the command was sent successfully, ERR otherwise
  */
-uint8_t cmdSendUpstream(message_t *command)
+uint8_t cmdSendUpstream(void)
 {
-    if (canSend(Up, command->id, CAN_FRAME_EXT, 0x00, CAN_DATA_LEN_MAX,
-                command->data) != OK)
+    // TODO convert "gCommand" to a message_t format
+    message_t message = { 0 };
+    if (canSend(Up, message.id, CAN_FRAME_EXT, 0x00, CAN_DATA_LEN_MAX,
+                message.data) != OK)
         return ERR;
     return OK;
 }
@@ -35,8 +37,9 @@ uint8_t cmdSendUpstream(message_t *command)
  * @param command Pointer to the message structure to populate with received CAN data
  * @return The number of bytes received, or 0
  */
-uint8_t cmdReceiveDownstream(message_t *command)
+uint8_t cmdReceiveDownstream(void)
 {
+    // TODO convert message_t to command_t
     return canReceive(Down, &command->id, command->data);
 }
 
@@ -45,7 +48,7 @@ uint8_t cmdReceiveDownstream(message_t *command)
  * @param command The command to be parsed
  * @return OK if there were no problems parsing the command, ERR otherwise
  */
-uint8_t cmdParse(message_t *command)
+uint8_t cmdParse(void)
 {
     uint32_t pgn = cmdPGNFromMessage(command);
 

@@ -10,12 +10,6 @@
 extern SoftwareSerial serUp;
 extern AltSoftSerial serDown;
 
-// The last command received from downstream
-message_t currentCommand;
-
-// The last update received from upstream
-message_t currentUpdate;
-
 uint8_t mux;
 
 int32_t dataOffset0 = 0;

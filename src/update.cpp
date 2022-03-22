@@ -7,6 +7,8 @@
 
 #include <string.h>
 
+static update_t gUpdate;
+
 /**
  * Retrieves a tank ID from the data field of a message instance.
  * @param message The message structure from which to extract the tank ID
@@ -23,8 +25,9 @@ inline void updateMessageTankID(message_t *message)
  * @param update The message structure to populate with the received CAN data
  * @return The number of bytes received, or 0
  */
-uint8_t updateReceiveUpstream(message_t *update)
+uint8_t updateReceiveUpstream(void)
 {
+    // TODO convert message_t to update_t
     return canReceive(Up, &update->id, update->data);
 }
 
@@ -33,8 +36,9 @@ uint8_t updateReceiveUpstream(message_t *update)
  * @param update The message structure to transmit downstream
  * @return OK on successful transmission, ERR otherwise
  */
-uint8_t updateSendDownstream(message_t *update)
+uint8_t updateSendDownstream(void)
 {
+    // TODO convert update_t to message_t
     if (canSend(Down, update->id, CAN_FRAME_EXT, 0x00, CAN_DATA_LEN_MAX,
                 update->data) != OK) {
         return ERR;
@@ -47,7 +51,7 @@ uint8_t updateSendDownstream(message_t *update)
  * @param update The update to be modified
  * @return OK on successful handling, ERR if an error occurs
  */
-uint8_t updateHandle(message_t *update)
+uint8_t updateHandle(void)
 {
     updateMessageTankID(update);
 
@@ -62,7 +66,7 @@ uint8_t updateHandle(message_t *update)
  * @param update The message structure to be reset and modified
  * @return OK or ERR
  */
-uint8_t updateLoadCurrentData(message_t *update)
+uint8_t updateLoadCurrentData(void)
 {
     uint8_t mass[MASS_NUM_BYTES] = { 0 };
 

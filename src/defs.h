@@ -11,6 +11,8 @@
 #define NOP (0xff)
 
 typedef struct _message_t message_t;
+typedef struct _command_t command_t;
+typedef struct _update_t  update_t;
 
 /********
 * DEBUG *
@@ -69,9 +71,21 @@ uint8_t canReceive (can_dir_t direction, uint32_t *id, uint8_t *buffer);
 * COMMAND (CMD) *
 ****************/
 
-uint8_t cmdSendUpstream (message_t *command);
-uint8_t cmdReceiveDownstream (message_t *command);
-uint8_t cmdParse (message_t *command);
+uint8_t cmdSendUpstream (void);
+uint8_t cmdReceiveDownstream (void);
+uint8_t cmdParse (void);
+
+typedef enum {
+    Tare,
+    Calibrate,
+    Reset
+} cmd_type_t;
+
+typedef struct _command_t {
+    uint8_t target;
+    cmd_type_t type;
+    uint16_t arg;
+} command_t;
 
 #define PGN_POSITION    (8)
 /*
@@ -99,10 +113,15 @@ uint8_t cmdParse (message_t *command);
 #define UPDATE_MASS_LEN_MAX (8)
 #define UPDATE_DELAY_MS (1000)
 
-uint8_t updateReceiveUpstream(message_t *update);
-uint8_t updateSendDownstream(message_t *update);
-uint8_t updateHandle(message_t *update);
-uint8_t updateLoadCurrentData(message_t *update);
+typedef struct _update_t {
+    uint8_t tank;
+    float mass;
+} update_t;
+
+uint8_t updateReceiveUpstream(void);
+uint8_t updateSendDownstream(void);
+uint8_t updateHandle(void);
+uint8_t updateLoadCurrentData(void);
 
 /*******
 * MASS *
