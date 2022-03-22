@@ -6,16 +6,65 @@
 
 #include "defs.h"
 
+#include <string.h>
+
 static command_t gCommand = {0};
 
-/**
- * Extracts and returns the PGN from a CAN message structure
- * @param message The message from which to get the PGN
- * @return Unsigned 32-bit integer representing the PGN of the message
- */
-inline uint32_t cmdPGNFromMessage(message_t *message)
+inline float unpackFloatFromData(uint8_t *data)
 {
-    return (message->id & 0x3ffff00) >> 8;  // J1939 parameter group number (PGN) should be id[25:8]
+    uint32_t num = 0;
+    for (int i = 0; i < 4; i++) {
+        num |= data[i] << (8*i);
+    }
+    return static_cast<float>(num);
+}
+
+inline void packDataWithFloat(uint8_t *data, float f)
+{
+    uint32_t num = static_cast<uint32_t>(f);
+    for (int i = 0; i < 4; i++) {
+        data[i] = (num >> (8*i)) & 0xff;
+    }
+}
+
+inline void packDataWithZero(uint8_t *data)
+{
+    memset(data, 0, CAN_DATA_LEN_MAX);
+}
+
+/**
+ * Populates the static command struct with data from the provided message struct PGN.
+ * @param message The message struct to retrieve data from
+ */
+void cmdGetFromMessage(message_t *message)
+{
+    uint32_t pgn = (message->id >> PGN_POSITION) & PGN_SIZE;
+
+    gCommand.target = (pgn >> PGN_CMD_TARGET_IDX) & PGN_CMD_TARGET;
+    gCommand.type = (pgn >> PGN_CMD_TYPE_IDX) & PGN_CMD_TYPE;
+    gCommand.arg = (pgn >> PGN_CMD_ARG_IDX) & PGN_CMD_ARG;
+
+    if (gCommand.type == Calibrate) {
+        gCommand.data.mass = unpackFloatFromData(message->data);
+    }
+}
+
+message_t cmdConvertToMessage(void)
+{
+    message_t message = { 0 };
+    message.id |= (gCommand.target & PGN_CMD_TARGET) << PGN_CMD_TARGET_IDX;
+    message.id |= (gCommand.type & PGN_CMD_TYPE) << PGN_CMD_TYPE_IDX;
+    message.id |= (gCommand.arg & PGN_CMD_ARG) << PGN_CMD_ARG_IDX;
+
+    if (gCommand.type == Calibrate) {
+        message.length = CAN_DATA_LEN_CALIBRATE;
+        packDataWithFloat(message->data, gCommand.data.mass);
+    } else {
+        message.length = 0;
+        packDataWithZero(message->data);
+    }
+
+    return message;
 }
 
 /**
@@ -24,9 +73,8 @@ inline uint32_t cmdPGNFromMessage(message_t *message)
  */
 uint8_t cmdSendUpstream(void)
 {
-    // TODO convert "gCommand" to a message_t format
-    message_t message = { 0 };
-    if (canSend(Up, message.id, CAN_FRAME_EXT, 0x00, CAN_DATA_LEN_MAX,
+    message_t message = cmdConvertToMessage();
+    if (canSend(Up, message.id, CAN_FRAME_EXT, 0x00, message.length,
                 message.data) != OK)
         return ERR;
     return OK;
@@ -45,44 +93,28 @@ uint8_t cmdReceiveDownstream(void)
 
 /**
  * Parses a command to determine if it should execute on this device.
- * @param command The command to be parsed
- * @return OK if there were no problems parsing the command, ERR otherwise
+ * @return OK if there were no problems parsing the command, NOP if this device is not the target, ERR otherwise
  */
 uint8_t cmdParse(void)
 {
-    uint32_t pgn = cmdPGNFromMessage(command);
+    // Check target value, if 0 then take action, otherwise continue
+    // Decrement after check
+    if (gCommand.target-- != 0) {
+        return NOP;
+    }
 
-    switch (pgn) {
-        case PGN_DEBUG_HANDSHAKE: {
-            // updateLoadCurrentData(&currentUpdate);
-            // updateSendDownstream(&currentUpdate);  // Just send the message right back
+    switch (gCommand.type) {
+        case Tare:
             break;
-        }
 
-        case PGN_TARE: {
-
+        case Calibrate:
             break;
-        }
 
-        case PGN_CALIBRATE | PGN_CAL_CONF_M1: {
-
+        case Reset:
             break;
-        }
 
-        case PGN_CALIBRATE | PGN_CAL_CONF_M2: {
-
-            break;
-        }
-
-        case PGN_CALIBRATE | PGN_CAL_FINISH: {
-
-            break;
-        }
-
-        default: {
-            // Unrecognized command
+        default:
             return ERR;
-        }
     }
 
     debugPrintLine("Parsed a command!");

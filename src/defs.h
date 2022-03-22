@@ -42,7 +42,8 @@ uint8_t debugHandshake(message_t *command);
 #define CAN_FRAME_STD (0x00)
 #define CAN_FRAME_EXT (0x01)
 
-#define CAN_DATA_LEN_MAX (8)
+#define CAN_DATA_LEN_MAX        (8)
+#define CAN_DATA_LEN_CALIBRATE  (5)
 
 // Enum for determining which CAN unit is desired (upstream or downstream)
 typedef enum {
@@ -52,7 +53,7 @@ typedef enum {
 
 typedef struct _message_t {
     uint32_t id;
-    // uint8_t length;  // Unnecessary
+    uint8_t length;
     uint8_t data[CAN_DATA_LEN_MAX];
 } message_t;
 
@@ -85,16 +86,25 @@ typedef struct _command_t {
     uint8_t target;
     cmd_type_t type;
     uint16_t arg;
+    union {
+        float mass;
+        uint32_t val;
+    } data;
 } command_t;
 
 #define PGN_POSITION    (8)
+#define PGN_SIZE        (0x3ffff)
 /*
  * PGN Format:
  * [28 ... 9   8   7   6   5   4   3   2   1   0  ]
  * [X... TARE|CAL|   CAL STEP    | X |  TANK  ID  ]
  */
-#define PGN_TANK_IDX    (0)
-#define PGN_CMD_IDX     (4)
+#define PGN_CMD_TARGET_IDX  (0)
+#define PGN_CMD_TYPE_IDX    (8)
+#define PGN_CMD_ARG_IDX     (4)
+#define PGN_CMD_TARGET      (0x7)
+#define PGN_CMD_TYPE        (0x3)
+#define PGN_CMD_ARG         (0xf)
 
 #define PGN_DEBUG_HANDSHAKE 0x01
 
