@@ -59,7 +59,7 @@ uint8_t cmdSendUpstream(void)
 /**
  * Receives a command from the next downstream device.
  * @param command Pointer to the message structure to populate with received CAN data
- * @return The number of bytes received, or 0
+ * @return OK if bytes were received, NOP otherwise
  */
 uint8_t cmdReceiveDownstream(void)
 {
@@ -68,7 +68,7 @@ uint8_t cmdReceiveDownstream(void)
     if (received > 0) {
         cmdGetFromMessage(&message);
     }
-    return received;
+    return received > 0 ? OK : NOP;
 }
 
 /**

@@ -94,8 +94,8 @@ void loop()
     // Poll for updates and respond accordingly
     // If an update is received from upstream, handle (e.g. provide modifications)
     // Then forward the modified message downstream
-    if (updateReceiveUpstream(&currentUpdate) == OK) {
-        updateHandle(&currentUpdate);
-        updateSendDownstream(&currentUpdate);
+    if (updateReceiveUpstream() == OK) {
+        updateHandle();
+        updateSendDownstream();
     }
 }
