@@ -63,7 +63,11 @@ inline float unpackFloatFromData(uint8_t *data)
 
 inline void packDataWithFloat(uint8_t *data, float f)
 {
-    uint32_t num = static_cast<uint32_t>(f);
+    union {
+        float fl;
+        uint32_t ui;
+    } un = { .fl = f };
+    uint32_t num = un.ui;
     for (int i = 0; i < 4; i++) {
         data[i] = (num >> (8*i)) & 0xff;
     }
@@ -149,7 +153,7 @@ typedef struct _update_t {
 uint8_t updateReceiveUpstream(void);
 uint8_t updateSendDownstream(void);
 uint8_t updateHandle(void);
-void updateLoadCurrentData(void);
+void updateLoadCurrentData(double data);
 
 /*******
 * MASS *

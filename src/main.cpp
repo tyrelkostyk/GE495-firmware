@@ -41,7 +41,7 @@ void setup()
     while (!Serial);
     prevUpdateTime = millis();
     prevSampleTime = millis();
-    // canInit();
+    canInit();
 
     pinMode(DATA_PIN, INPUT);
     pinMode(CLOCK_PIN, OUTPUT);
@@ -56,7 +56,6 @@ void setup()
     tareAllLoadCells();
     Serial.setTimeout(10000);
     Serial.println("Input mass 1:");
-    // while (Serial.available() <= 0);
     String m1 = Serial.readStringUntil('\n');
     Serial.println(m1.toDouble());
     getCalMass1(m1.toDouble());
@@ -64,7 +63,6 @@ void setup()
 
     delay(500);
     Serial.println("Input mass 2:");
-    // while (Serial.available() <= 0);
     String m2 = Serial.readStringUntil('\n');
     Serial.println(m2.toDouble());
     getCalMass2(m2.toDouble());
@@ -86,11 +84,11 @@ void loop()
     Serial.print("Data = ");
     Serial.println(data * voltageToMassFactor);
 
-    //if (millis() - prevUpdateTime > UPDATE_DELAY_MS) {
-    //    prevUpdateTime = millis();
-    //    updateLoadCurrentData();
-    //    updateSendDownstream();
-    //}
+    if (millis() - prevUpdateTime > UPDATE_DELAY_MS) {
+        prevUpdateTime = millis();
+        updateLoadCurrentData(data * voltageToMassFactor);
+        updateSendDownstream();
+    }
 
     //// Poll for commands and respond accordingly
     //// If a command is received from downstream (ECU-side) immediately forward upstream

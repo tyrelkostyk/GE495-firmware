@@ -5,8 +5,6 @@
 
 #include <Arduino.h>
 
-#include <string.h>
-
 static update_t gUpdate;
 
 /**
@@ -32,6 +30,11 @@ message_t updateConvertToMessage(void)
 
     packDataWithFloat(message.data, gUpdate.mass);
 
+    for (int i = 0; i < CAN_DATA_LEN_MAX; i++) {
+        Serial.print(message.data[i], HEX);
+    }
+    Serial.println();
+
     return message;
 }
 
@@ -42,7 +45,6 @@ message_t updateConvertToMessage(void)
  */
 uint8_t updateReceiveUpstream(void)
 {
-    // TODO convert message_t to update_t
     message_t message = { 0 };
     uint8_t received = canReceive(Up, &message);
     if (received > 0) {
@@ -59,7 +61,6 @@ uint8_t updateReceiveUpstream(void)
  */
 uint8_t updateSendDownstream(void)
 {
-    // TODO convert update_t to message_t
     message_t message = updateConvertToMessage();
     if (canSend(Down, message) != OK)
         return ERR;
@@ -81,12 +82,11 @@ uint8_t updateHandle(void)
 
 /**
  * Inserts current data from mass module into a new update message.
- * @param update The message structure to be reset and modified
- * @return OK or ERR
+ * @param data The float data to be inserted
  */
-void updateLoadCurrentData(void)
+void updateLoadCurrentData(double data)
 {
     gUpdate.tank = 0;  // Always
-    gUpdate.mass = 0.0;  // TODO get data from the ADC
+    gUpdate.mass = data;
 }
 
