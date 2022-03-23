@@ -52,9 +52,11 @@ void setup()
 
     doADCPowerUpSequence();
     setADCSpeed(0);
+    Serial.println("Starting initial tare");
     delay(300);
     tareAllLoadCells();
-    Serial.setTimeout(10000);
+    Serial.println("Done initial tare");
+    Serial.setTimeout(5000);
     Serial.println("Input mass 1:");
     String m1 = Serial.readStringUntil('\n');
     if (m1.length()) {
@@ -84,11 +86,13 @@ void setup()
     Serial.println(voltageToMassFactor);
     Serial.println("\nSetup Complete");
 
+    digitalWrite(LED_BUILTIN, HIGH);
 }
 
 // Repeated routines (e.g. comms polling) go in here
 void loop()
 {
+    digitalWrite(LED_BUILTIN, HIGH);
     int32_t data = getNMeasurements(5);
 
     Serial.print("Data = ");
