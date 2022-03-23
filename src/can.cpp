@@ -78,25 +78,40 @@ uint8_t canSend(can_dir_t direction, message_t message)
 {
     Serial_CAN *can = direction == Up ? &canUp : &canDown;
     Serial.print("Sending message: ");
-    Serial.print(message.id);
+    Serial.print(message.id, HEX);
     Serial.print(" ");
     for (int i = 0; i < CAN_DATA_LEN_MAX; i++) {
         Serial.print(message.data[i], HEX);
+        Serial.print(".");
     }
     Serial.println();
-    return can->send(message.id, CAN_FRAME_EXT, CAN_NO_REMOTE, message.length, message.data);
+    return can->send(message.id, CAN_FRAME_EXT, CAN_NO_REMOTE, CAN_DATA_LEN_MAX, message.data);
 }
 
 /**
  * Checks if the CAN controller has data ready to be read and, if so, reads the data 
  * into the specified buffer.
- * @param id Address to store the message identifier (29 bits in J1939)
- * @param buffer Buffer to which the received message data will be written
+ * @param direction Up or Down
+ * @param message Message instance to populate with received data
  * @return The number of bytes received, or 0
  */
 uint8_t canReceive(can_dir_t direction, message_t *message)
 {
     Serial_CAN *can = direction == Up ? &canUp : &canDown;
-    return can->recv((unsigned long *)&message->id, message->data);
+    uint32_t id = 0;
+    uint8_t data[CAN_DATA_LEN_MAX] = {0};
+    uint8_t received = can->recv(&id, data);
+    Serial.print("Received: ");
+    Serial.print(id, HEX);
+    Serial.print(" ");
+    for (int i = 0; i < CAN_DATA_LEN_MAX; i++) {
+        Serial.print(data[i], HEX);
+        Serial.print(".");
+    }
+    Serial.println();
+    // Trying this copying approach to see if it works better than just passing the addresses of the message fields
+    message->id = id;
+    memcpy(message->data, data, CAN_DATA_LEN_MAX);
+    return received;
 }
 

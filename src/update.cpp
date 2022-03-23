@@ -4,6 +4,7 @@
 #include "defs.h"
 
 #include <Arduino.h>
+#include <string.h>
 
 static update_t gUpdate;
 
@@ -15,15 +16,22 @@ void updateGetFromMessage(message_t *message)
 {
     uint32_t pgn = (message->id >> PGN_POSITION) & PGN_SIZE;
 
+    memset(&gUpdate, 0, sizeof(gUpdate));
+
     gUpdate.tank = (pgn >> PGN_UPDATE_TANK_IDX) & PGN_UPDATE_TANK;
     gUpdate.mass = unpackFloatFromData(message->data);
-    Serial.println("Tank received: " + String(gUpdate.tank));
-    Serial.println("Mass received: " + String(gUpdate.mass));
+    Serial.print("Tank received: ");
+    Serial.print(gUpdate.tank, HEX);
+    Serial.print(" ");
+    Serial.print("Mass received: ");
+    Serial.print(gUpdate.mass);
+    Serial.println();
 }
 
 message_t updateConvertToMessage(void)
 {
-    message_t message = { 0 };
+    message_t message;
+    memset(&message, 0, sizeof(message));
 
     uint32_t pgn = 0;
     pgn |= (gUpdate.tank & PGN_UPDATE_TANK) << PGN_UPDATE_TANK_IDX;
@@ -33,11 +41,17 @@ message_t updateConvertToMessage(void)
 
     packDataWithFloat(message.data, gUpdate.mass);
 
+    Serial.print("Update to pack: ");
+    Serial.print(gUpdate.tank, HEX);
+    Serial.print(" ");
+    Serial.print(gUpdate.mass);
+    Serial.println();
     Serial.print("Packed: ");
     Serial.print(message.id, HEX);
     Serial.print(" ");
     for (int i = 0; i < CAN_DATA_LEN_MAX; i++) {
         Serial.print(message.data[i], HEX);
+        Serial.print(".");
     }
     Serial.println();
 
@@ -51,15 +65,9 @@ message_t updateConvertToMessage(void)
  */
 uint8_t updateReceiveUpstream(void)
 {
-    message_t message = { 0 };
+    message_t message;
+    memset(&message, 0, sizeof(message));
     uint8_t received = canReceive(Up, &message);
-    Serial.print("Received message: ");
-    Serial.print(message.id);
-    Serial.print(" ");
-    for (int i = 0; i < CAN_DATA_LEN_MAX; i++) {
-        Serial.print(message.data[i], HEX);
-    }
-    Serial.println();
     if (received > 0) {
         updateGetFromMessage(&message);
         return OK;
@@ -99,7 +107,7 @@ uint8_t updateHandle(void)
  */
 void updateLoadCurrentData(double data)
 {
-    gUpdate.tank = 0;  // Always
+    gUpdate.tank = 1;  // Always TODO
     gUpdate.mass = data;
 }
 

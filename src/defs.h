@@ -42,7 +42,7 @@ typedef enum {
     Down
 } can_dir_t;
 
-typedef struct _message_t {
+typedef struct __attribute__ ((__packed__)) _message_t {
     uint32_t id;
     uint8_t length;
     uint8_t data[CAN_DATA_LEN_MAX];
@@ -52,18 +52,41 @@ uint8_t canInit (void);
 uint8_t canSend(can_dir_t direction, message_t message);
 uint8_t canReceive(can_dir_t direction, message_t *message);
 
+inline float unpack754(unsigned long long i)
+{
+    unsigned bits = 32;
+    unsigned expbits = 8;
+    float result;
+    long long shift;
+    unsigned bias;
+    unsigned significandbits = bits - expbits - 1; // -1 for sign bit
+
+    if (i == 0) return 0.0;
+
+    // pull the significand
+    result = (i&((1LL<<significandbits)-1)); // mask
+    result /= (1LL<<significandbits); // convert back to float
+    result += 1.0f; // add the one back on
+
+    // deal with the exponent
+    bias = (1<<(expbits-1)) - 1;
+    shift = ((i>>significandbits)&((1LL<<expbits)-1)) - bias;
+    while(shift > 0) { result *= 2.0; shift--; }
+    while(shift < 0) { result /= 2.0; shift++; }
+
+    // sign it
+    result *= (i>>(bits-1))&1? -1.0: 1.0;
+
+    return result;
+}
+
 inline float unpackFloatFromData(uint8_t *data)
 {
     uint32_t num = 0;
     for (int i = 0; i < 4; i++) {
         num |= data[i] << (8*i);
     }
-    union {
-        uint32_t ui;
-        float fl;
-    } un = { .ui = num };
-    float f = un.fl;
-    return f;
+    return unpack754((unsigned long long)num);
 }
 
 inline void packDataWithFloat(uint8_t *data, float f)
@@ -77,7 +100,8 @@ inline void packDataWithFloat(uint8_t *data, float f)
         data[i] = (num >> (8*i)) & 0xff;
     }
     for (int i = 4; i < CAN_DATA_LEN_MAX; i++) {
-        data[i] = 0;
+        // data[i] = 0;
+        data[i] = 0xa + (i-4);
     }
 }
 
