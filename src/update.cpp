@@ -17,6 +17,8 @@ void updateGetFromMessage(message_t *message)
 
     gUpdate.tank = (pgn >> PGN_UPDATE_TANK_IDX) & PGN_UPDATE_TANK;
     gUpdate.mass = unpackFloatFromData(message->data);
+    Serial.println("Tank received: " + String(gUpdate.tank));
+    Serial.println("Mass received: " + String(gUpdate.mass));
 }
 
 message_t updateConvertToMessage(void)
@@ -27,9 +29,13 @@ message_t updateConvertToMessage(void)
     pgn |= (gUpdate.tank & PGN_UPDATE_TANK) << PGN_UPDATE_TANK_IDX;
 
     message.id = (pgn & PGN_SIZE) << PGN_POSITION;
+    message.length = CAN_DATA_LEN_MAX;  // TODO?
 
     packDataWithFloat(message.data, gUpdate.mass);
 
+    Serial.print("Packed: ");
+    Serial.print(message.id, HEX);
+    Serial.print(" ");
     for (int i = 0; i < CAN_DATA_LEN_MAX; i++) {
         Serial.print(message.data[i], HEX);
     }
@@ -47,6 +53,13 @@ uint8_t updateReceiveUpstream(void)
 {
     message_t message = { 0 };
     uint8_t received = canReceive(Up, &message);
+    Serial.print("Received message: ");
+    Serial.print(message.id);
+    Serial.print(" ");
+    for (int i = 0; i < CAN_DATA_LEN_MAX; i++) {
+        Serial.print(message.data[i], HEX);
+    }
+    Serial.println();
     if (received > 0) {
         updateGetFromMessage(&message);
         return OK;

@@ -112,11 +112,11 @@ void loop()
     //    cmdParse();
     //}
 
-    //// Poll for updates and respond accordingly
-    //// If an update is received from upstream, handle (e.g. provide modifications)
-    //// Then forward the modified message downstream
-    //if (updateReceiveUpstream() == OK) {
-    //    updateHandle();
-    //    updateSendDownstream();
-    //}
+    // Poll for updates and respond accordingly
+    // If an update is received from upstream, handle (e.g. provide modifications)
+    // Then forward the modified message downstream
+    if (updateReceiveUpstream() == OK) {
+        updateHandle();
+        updateSendDownstream();
+    }
 }

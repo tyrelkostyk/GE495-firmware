@@ -77,6 +77,13 @@ uint8_t canInit(void)
 uint8_t canSend(can_dir_t direction, message_t message)
 {
     Serial_CAN *can = direction == Up ? &canUp : &canDown;
+    Serial.print("Sending message: ");
+    Serial.print(message.id);
+    Serial.print(" ");
+    for (int i = 0; i < CAN_DATA_LEN_MAX; i++) {
+        Serial.print(message.data[i], HEX);
+    }
+    Serial.println();
     return can->send(message.id, CAN_FRAME_EXT, CAN_NO_REMOTE, message.length, message.data);
 }
 
