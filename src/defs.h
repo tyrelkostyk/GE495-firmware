@@ -58,7 +58,12 @@ inline float unpackFloatFromData(uint8_t *data)
     for (int i = 0; i < 4; i++) {
         num |= data[i] << (8*i);
     }
-    return static_cast<float>(num);
+    union {
+        uint32_t ui;
+        float fl;
+    } un = { .ui = num };
+    float f = un.fl;
+    return f;
 }
 
 inline void packDataWithFloat(uint8_t *data, float f)
