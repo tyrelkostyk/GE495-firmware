@@ -57,15 +57,25 @@ void setup()
     Serial.setTimeout(10000);
     Serial.println("Input mass 1:");
     String m1 = Serial.readStringUntil('\n');
-    Serial.println(m1.toDouble());
-    getCalMass1(m1.toDouble());
+    if (m1.length()) {
+        Serial.println(m1.toDouble());
+        getCalMass1(m1.toDouble());
+    } else {
+        Serial.println("0");
+        getCalMass1(0);
+    }
     while (Serial.available() > 1) Serial.read();
 
     delay(500);
     Serial.println("Input mass 2:");
     String m2 = Serial.readStringUntil('\n');
-    Serial.println(m2.toDouble());
-    getCalMass2(m2.toDouble());
+    if (m2.length()) {
+        Serial.println(m2.toDouble());
+        getCalMass2(m2.toDouble());
+    } else {
+        Serial.println("0");
+        getCalMass2(0);
+    }
     while (Serial.available() > 1) Serial.read();
     delay(500);
     Serial.setTimeout(250);
