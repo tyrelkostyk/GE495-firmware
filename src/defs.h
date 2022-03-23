@@ -212,8 +212,8 @@ void getVoltageToMassFactor(double mass1, int32_t voltage1, double mass2, int32_
 #define CLOCK_PIN (11)
 #define POWER_PIN (10)
 
-#define MUX_PIN0 (4)
-#define MUX_PIN1 (5)
+#define MUX_PIN0 (2)
+#define MUX_PIN1 (3)
 
 #define SPEED_PIN (7)
 
