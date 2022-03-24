@@ -11,9 +11,61 @@
 SoftwareSerial *serUp;
 AltSoftSerial *serDown;
 
-String upMailbox, downMailbox;
-bool upLocked, downLocked;
-bool upReceived, downReceived;
+class Mailbox {
+private:
+    bool receiving;
+    String content;
+
+public:
+    void Push(char c)
+    {
+        if (c == '{') {
+            content = "";
+            receiving = true;
+
+        } else if (c == '}') {
+            receiving = false;
+            Serial.println("Got " + content);  // TODO remove
+
+        } else {
+            content += c;
+        }
+    }
+
+    bool IsReady() const { return !receiving && content.length() > 0; }
+
+    String Read()
+    {
+        if (receiving) return "";
+        return content;
+    }
+};
+
+struct Parser {
+    Parser() = delete;
+
+    static String data;
+
+    static void LoadData(String str) { data = str; }
+
+    static bool IsCommand() { return data.charAt(0) == '!'; }
+    static cmd_type_t GetCommandType()
+    {
+        int idx;
+        if ((idx = data.indexOf("TYPE")) < 0) return Invalid;
+        if ((idx = data.indexOf(':', idx)) < 0) return Invalid;
+        switch (data.charAt(idx+1)) {
+            case 't': return Tare;
+            case 'c': return Calibrate;
+            case 'r': return Reset;
+            default:  return Invalid;
+        }
+    }
+};
+
+Parser::data = "";
+
+Mailbox mboxUp, mboxDown;
 
 void uartInit(void)
 {
@@ -35,51 +87,29 @@ String uartSerializeMessage(message_t *message)
 
 uint8_t uartSend(dir_t dir, message_t *message)
 {
-    size_t sent = 0;
+    // TODO Changed this, make sure it works
     String toSend = uartSerializeMessage(message);
-    if (dir == Up) {
-        sent = serUp->print(toSend);
-    } else {
-        sent = serDown->print(toSend);
-    }
-    return sent;
+    Stream *uart = dir == Up ? static_cast<Stream *>(serUp) : static_cast<Stream *>(serDown);
+    return uart->print(toSend);
 }
 
-void uartReceive(dir_t dir, message_t *message)
+bool uartReceive(dir_t dir)
 {
-    size_t received = 0;
-    char c;
-    if (dir == Up) {
-        while (serUp->available() > 0) {
-            c = serUp->read();
-            if (c == '{') {
-                upMailbox = "";
-                upReceived = false;
-                upLocked = true;
-            } else if (c == '}') {
-                upReceived = true;
-                upLocked = false;
-                Serial.println("Got " + upMailbox);
-            } else {
-                if (upLocked)
-                    upMailbox += c;
-            }
-        }
-    } else {
-        while (serDown->available() > 0) {
-            c = serDown->read();
-            if (c == '{') {
-                downMailbox = "";
-                downReceived = false;
-                downLocked = true;
-            } else if (c == '}') {
-                downReceived = true;
-                downLocked = false;
-                Serial.println("Got " + downMailbox);
-            } else {
-                if (downLocked)
-                    downMailbox += c;
-            }
-        }
+    // TODO Changed this, make sure it works
+    Stream *uart = dir == Up ? static_cast<Stream *>(serUp) : static_cast<Stream *>(serDown);
+    Mailbox *mbox = dir == Up ? &mboxUp : &mboxDown;
+    while (uart->available() > 0) {
+        mbox->Push(uart->read());
+    }
+    return mbox->IsReady();
+}
+
+void uartGetMessage(dir_t dir, message_t *message)
+{
+    Mailbox *mbox = dir == Up ? &mboxUp : &mboxDown;
+    Parser::LoadData(mbox->Read());
+
+    if (Parser::IsCommand()) {
+        cmd_type_t type = Parser::GetCommandType();
     }
 }

@@ -118,8 +118,12 @@ void loop()
 //        updateSendDownstream();
 //    }
 
-
     message_t msg = {0};
-    uartReceive(Up, &msg);
-    uartReceive(Down, &msg);
+
+    if (uartReceive(Up)) {
+        uartGetMessage(Up, &msg);
+    }
+    if (uartReceive(Down)) {
+        uartGetMessage(Down, &msg);
+    }
 }

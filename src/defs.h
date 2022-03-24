@@ -122,7 +122,8 @@ inline void packDataWithZero(uint8_t *data)
 
 void uartInit(void);
 uint8_t uartSend(dir_t dir, message_t *message);
-void uartReceive(dir_t dir, message_t *message);
+bool uartReceive(dir_t dir);
+void uartGetMessage(dir_t dir, message_t *message);
 
 /****************
 * COMMAND (CMD) *
@@ -135,7 +136,8 @@ uint8_t cmdParse (void);
 typedef enum {
     Tare,
     Calibrate,
-    Reset
+    Reset,
+    Invalid
 } cmd_type_t;
 
 typedef struct _command_t {
