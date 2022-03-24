@@ -105,22 +105,6 @@ void loop()
         uartSend(Down, &msg);
     }
 
-    //// Poll for commands and respond accordingly
-    //// If a command is received from downstream (ECU-side) immediately forward upstream
-    //// Then check to see if the command requires any action from this device
-    //if (cmdReceiveDownstream() == OK) {
-    //    cmdSendUpstream();
-    //    cmdParse();
-    //}
-
-    // Poll for updates and respond accordingly
-    // If an update is received from upstream, handle (e.g. provide modifications)
-    // Then forward the modified message downstream
-//    if (updateReceiveUpstream() == OK) {
-//        updateHandle();
-//        updateSendDownstream();
-//    }
-
     Command command;
     Update update;
 
