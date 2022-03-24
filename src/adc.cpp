@@ -3,16 +3,19 @@
 
 #include "defs.h"
 
+//#ifdef _ARDUINO
 #include <Arduino.h>
+//#endif  // _ARDUINO
 
-
+#define ADC_BIT_MASK  1         // 1 bit per reading
+#define ADC_DATA_MASK 0xFFFFFF  // 24 bit readings per channel
 
 /**
  * Polls the data pin of the ADC and returns its value
  */
 uint8_t pollADCDataPin()
 {
-  return digitalRead(DATA_PIN);
+  return digitalRead(DATA_PIN) & ADC_BIT_MASK;
 }
 
 /**
@@ -30,9 +33,9 @@ int32_t retrieveADCData()
     applySCLK();
     int32_t bit = pollADCDataPin();
     if (i == NUM_ADC_BITS - 1) 
-      data = data - (bit << i); // get signed output
+      data = data - ((bit << i) & ADC_DATA_MASK); // get signed output
     else
-      data = data + (bit << i);
+      data = data + ((bit << i) & ADC_DATA_MASK);
   }
   // one additional SCLK ensures that the DRDY/DOUT line stays high after data
   // is received
