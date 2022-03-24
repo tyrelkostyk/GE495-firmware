@@ -1,36 +1,22 @@
 #include "defs.h"
+#include "uart.h"
 
 #include <avr/wdt.h>
 #include <stdlib.h>
 #include <string.h>
 
 
-String inputString = "";         // a String to hold incoming data
+String inputString = "";      // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
-
-int32_t dataOffset0 = 0;
-int32_t dataOffset1 = 0;
-int32_t dataOffset2 = 0;
-
-double voltageToMassFactor = 1;
-double mass1 = 0;
-double mass2 = 1;
-int32_t voltage1 = 0;
-int32_t voltage2 = 1;
 
 void setup()
 {
     Serial.begin(SER_BAUDRATE);
+    Serial.setTimeout(100);
+    while (!Serial);
+    uartInit();
     inputString.reserve(256);
-    pinMode(DATA_PIN, INPUT);
-    pinMode(CLOCK_PIN, OUTPUT);
-    pinMode(POWER_PIN, OUTPUT);
-    pinMode(MUX_PIN0, OUTPUT);
-    pinMode(MUX_PIN1, OUTPUT);
-    doADCPowerUpSequence();
-    setADCSpeed(0);
-    delay(300);
-    tareAllLoadCells();
+    Serial.println("Setup complete");
 }
 
 
@@ -58,20 +44,8 @@ float getMassValue(const String &input)
 }
 
 
-void loadFloatIntoData(uint8_t *data[], float f)
-{
-    uint32_t num = static_cast<uint32_t>(f);
-    for (int i = 0; i < 4; i++) {
-        *data[i] = (num >> (8 * i)) & 0xff;
-    }
-}
-
-
 void loop()
 {
-    int32_t data = getNMeasurements(5);
-    Serial.print("Data = ");
-    Serial.println(data * voltageToMassFactor);
     if (stringComplete) {
         /*
          * Formats:
@@ -83,6 +57,8 @@ void loop()
          * r! -- reset arduino
          */
 
+        Command command;
+
         switch (inputString.charAt(0)) {
             case 't': {
                 // tare
@@ -92,14 +68,8 @@ void loop()
                     break;
                 }
                 Serial.println("TARING TANK " + String(tareTank));
-                // TODO Construct tare command and transmit over CAN
-                uint32_t messageID = cmdConstructID(tareTank, PGN_TARE);
-                message_t tareMessage = {
-                        .id = messageID,
-                        .length = 8,
-                        .data = { 0 }
-                };
-                cmdSendUpstream(&tareMessage);
+                command.type = Tare;
+                command.ttl = tareTank;
                 break;
             }
             case 'c': {
@@ -109,52 +79,36 @@ void loop()
                     Serial.println("INVALID TANK");
                     break;
                 }
+                Serial.println("CALIBRATING TANK " + String(zeroTank));
+                command.ttl = zeroTank;
+                command.type = Calibrate;
                 switch (inputString.charAt(1)) {
                     case '1': {
                         // confirm mass 1
-                        // TODO pack it manually
+                        command.step = 1;
                         float mass = getMassValue(inputString);
                         if (mass < 0) {
                             Serial.println("INVALID MASS");
                             break;
                         }
-                        uint32_t messageID = cmdConstructID(zeroTank, PGN_CALIBRATE & PGN_CAL_CONF_M1);
-                        message_t calibrateMessage = {
-                                .id = messageID,
-                                .length = 8,
-                                .data = { 0 }
-                        };
-                        loadFloatIntoData((uint8_t **)&calibrateMessage.data, mass);
-                        cmdSendUpstream(&calibrateMessage);
+                        command.data = mass;
                         break;
                     }
                     case '2': {
                         // confirm mass 2
-                        // TODO pack it manually
+                        command.step = 2;
                         float mass = getMassValue(inputString);
                         if (mass < 0) {
                             Serial.println("INVALID MASS");
                             break;
                         }
-                        uint32_t messageID = cmdConstructID(zeroTank, PGN_CALIBRATE & PGN_CAL_CONF_M2);
-                        message_t calibrateMessage = {
-                                .id = messageID,
-                                .length = 8,
-                                .data = { 0 }
-                        };
-                        loadFloatIntoData((uint8_t **)&calibrateMessage.data, mass);
-                        cmdSendUpstream(&calibrateMessage);
+                        command.data = mass;
                         break;
                     }
                     case '3': {
                         // getVoltageToMassFactor();
-                        uint32_t messageID = cmdConstructID(zeroTank, PGN_CALIBRATE & PGN_CAL_FINISH);
-                        message_t calibrateMessage = {
-                                .id = messageID,
-                                .length = 8,
-                                .data = { 0 }
-                        };
-                        cmdSendUpstream(&calibrateMessage);
+                        Serial.println("FINISHED CALIBRATING TANK " + String(zeroTank));
+                        command.step = 3;
                         break;
                     }
                     default: {
@@ -167,6 +121,8 @@ void loop()
             }
             case 'r': {
                 // reset
+                command.type = Reset;
+                // But don't do anything with it...
                 if (inputString.charAt(1) == '!') {
                     // TODO Implement software reset
                 }
@@ -178,6 +134,7 @@ void loop()
                 break;
             }
         }
+        uartSend(Up, &command);
         // clear the string:
         inputString = "";
         stringComplete = false;
