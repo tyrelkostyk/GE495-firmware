@@ -14,11 +14,16 @@ void tare(uint8_t mux, int32_t offset)
   {
     case 0:
       dataOffset0 = offset;
+      break;
     case 1:
       dataOffset1 = offset;
+      break;
     case 2: 
       dataOffset2 = offset;
-  }  
+      break;
+    default:
+      break;  
+  }
 }
 
 /**

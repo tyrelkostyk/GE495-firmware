@@ -7,8 +7,8 @@
 #include <Arduino.h>
 //#endif  // _ARDUINO
 
-#define ADC_BIT_MASK  1         // 1 bit per reading
-#define ADC_DATA_MASK 0xFFFFFF  // 24 bit readings per channel
+#define ADC_BIT_MASK  ((int32_t)1)         // 1 bit per reading
+#define ADC_DATA_MASK ((int32_t)0xFFFFFF)  // 24 bit readings per channel
 
 /**
  * Polls the data pin of the ADC and returns its value
