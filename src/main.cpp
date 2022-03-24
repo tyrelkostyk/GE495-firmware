@@ -65,6 +65,13 @@ void processCommand(Command *command)
 }
 
 
+void processUpdate(Update *update)
+{
+    ++update->tank;
+    uartSend(Down, update);
+}
+
+
 // Initialization steps go in here
 void setup()
 {
@@ -144,18 +151,19 @@ void loop()
 //        updateLoadCurrentData(data * voltageToMassFactor);
 //        updateSendDownstream();
         Update msg;
-        msg.tank = 1;
+        msg.tank = 0;
         msg.data = data * voltageToMassFactor;
         uartSend(Down, &msg);
     }
 
-    Command command;
-    Update update;
 
     if (uartReceive(Up)) {
+        Update update;
         uartGetMessage(Up, &update);
+        processUpdate(&update);
     }
     if (uartReceive(Down)) {
+        Command command;
         uartGetMessage(Down, &command);
         processCommand(&command);
     }
