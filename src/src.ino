@@ -139,6 +139,12 @@ void loop()
         inputString = "";
         stringComplete = false;
     }
+
+    if (uartReceive(Up)) {
+        Update update;
+        uartGetMessage(Up, &update);
+        Serial.println(uartSerializeUpdate(&update));
+    }
 }
 
 

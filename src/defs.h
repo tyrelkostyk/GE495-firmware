@@ -4,6 +4,7 @@
 #ifndef DEFS_H
 #define DEFS_H
 
+#include <Arduino.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -33,6 +34,7 @@ struct Message;
 struct Command;
 struct Update;
 
+String uartSerializeUpdate(Update *update);
 void uartInit(void);
 uint8_t uartSend(dir_t dir, Message *message);
 bool uartReceive(dir_t dir);
