@@ -61,12 +61,6 @@ typedef enum {
 
 #define SAMPLE_SIZE  (5)
 
-extern double mass1;
-extern double mass2;
-extern int32_t voltage1;
-extern int32_t voltage2;
-extern double voltageToMassFactor; 
-
 /******
 * I2C *
 ******/
@@ -79,10 +73,7 @@ void setSCLKLow();
 * ADC *
 ******/
 
-extern int32_t dataOffset0;
-extern int32_t dataOffset1;
-extern int32_t dataOffset2;
-
+double getCalibratedMassReading(int32_t measurement);
 int32_t retrieveADCData();
 int32_t retrieveADCDataWithCal();
 void setADCMux(uint8_t muxSelect);
@@ -102,9 +93,9 @@ int32_t getNRawMeasurements(uint8_t mux, int32_t N);
 
 void tare(uint8_t mux, int32_t offset);
 void tareAllLoadCells();
-void getCalMass1(double mass);
-void getCalMass2(double mass);
-void getVoltageToMassFactor(double mass1, int32_t voltage1, double mass2, int32_t voltage2);
+void calibrateMass1(double mass);
+void calibrateMass2(double mass);
+void calculateVoltageToMassFactor();
 
 /**********
 * ARDUINO *

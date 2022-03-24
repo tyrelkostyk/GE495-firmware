@@ -6,20 +6,6 @@
 
 #include <Arduino.h>
 
-uint8_t mux;
-
-int32_t dataOffset0 = 0;
-int32_t dataOffset1 = 0;
-int32_t dataOffset2 = 0;
-
-double voltageToMassFactor = 1;
-double mass1;
-double mass2;
-int32_t voltage1;
-int32_t voltage2;
-
-uint8_t offsetFlag = 0;
-
 
 // Tracker for time elapsed on a given SoftwareSerial port
 uint32_t prevUpdateTime;
@@ -37,13 +23,13 @@ void processCommand(Command *command)
             case Calibrate:
                 switch (command->step) {
                     case 1:
-                        getCalMass1(command->data);
+                        calibrateMass1(command->data);
                         break;
                     case 2:
-                        getCalMass2(command->data);
+                        calibrateMass2(command->data);
                         break;
                     case 3:
-                        getVoltageToMassFactor(mass1, voltage1, mass2, voltage2);
+                        calculateVoltageToMassFactor();
                         break;
                     default:
                         break;
@@ -101,7 +87,9 @@ void setup()
 
     delay(500);
 
-    getVoltageToMassFactor(0, voltage1, 0, voltage2);
+    calibrateMass1(0);
+    calibrateMass2(0);
+    calculateVoltageToMassFactor();
     Serial.println("\nSetup Complete");
 
     digitalWrite(LED_BUILTIN, HIGH);
@@ -112,6 +100,7 @@ void loop()
 {
     digitalWrite(LED_BUILTIN, HIGH);
     int32_t data = getNMeasurements(SAMPLE_SIZE);
+    Serial.println("Measure: " + String(data));
 
     if (millis() - prevUpdateTime > UPDATE_DELAY_MS) {
         prevUpdateTime = millis();
@@ -119,8 +108,8 @@ void loop()
 //        updateSendDownstream();
         Update msg;
         msg.tank = 0;
-        msg.data = data * voltageToMassFactor;
-        Serial.println(millis());
+        msg.data = getCalibratedMassReading(data);
+        Serial.println("Data: " + String(msg.data));
         uartSend(Down, &msg);
     }
 

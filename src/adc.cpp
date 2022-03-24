@@ -10,6 +10,27 @@
 #define ADC_BIT_MASK  ((int32_t)1)         // 1 bit per reading
 #define ADC_DATA_MASK ((int32_t)0xFFFFFF)  // 24 bit readings per channel
 
+int32_t dataOffset[3] = {0, 0, 0};
+
+double voltageToMassFactor = 1;
+
+double mass1;
+int32_t voltage1;
+
+double mass2;
+int32_t voltage2;
+
+
+/**
+ * Get a human-readable float value for the current mass
+ * @param measurement The raw data value to convert
+ * @return A double containing the "true" mass read by the ADC
+ */
+double getCalibratedMassReading(int32_t measurement) {
+    return voltageToMassFactor * measurement;
+}
+
+
 /**
  * Polls the data pin of the ADC and returns its value
  */
@@ -61,14 +82,13 @@ int32_t retrieveADCDataWithCal()
  */
 int32_t readThreeLoadCells()
 {
-  setADCMux(0);
-  int32_t data0 = retrieveADCData() - dataOffset0;
-  setADCMux(1);
-  int32_t data1 = retrieveADCData() - dataOffset1;
-  setADCMux(2);
-  int32_t data2 = retrieveADCData() - dataOffset2;
-  int32_t data_total = data0 + data1 + data2;
-  return data_total;
+    int32_t sum = 0;
+    for (int i = 0; i < NUM_LOAD_CELLS; i++) {
+        setADCMux(i);
+        sum += retrieveADCData() - dataOffset[i];
+    }
+    Serial.println("Read three: " + String(sum));
+    return sum;
 }
 
 /**
@@ -109,8 +129,8 @@ int32_t getNMeasurements(int32_t N)
  */
 void setADCMux(uint8_t muxSelect)
 {
-  digitalWrite(MUX_PIN0, muxSelect & 1);
-  digitalWrite(MUX_PIN1, muxSelect & 2);
+  digitalWrite(MUX_PIN0, muxSelect & 0x1);
+  digitalWrite(MUX_PIN1, muxSelect & 0x2);
 }
 
 
