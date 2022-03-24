@@ -59,7 +59,7 @@ typedef enum {
 * MASS *
 *******/
 
-#define SAMPLE_SIZE  (5)
+#define SAMPLE_SIZE  (1)
 
 /******
 * I2C *

@@ -27,6 +27,7 @@ void processCommand(Command *command)
                         break;
                     case 2:
                         calibrateMass2(command->data);
+                        calculateVoltageToMassFactor();
                         break;
                     case 3:
                         calculateVoltageToMassFactor();
