@@ -29,16 +29,19 @@ public:
             Serial.println("Got " + content);  // TODO remove
 
         } else {
-            content += c;
+            if (receiving)
+                content += c;
         }
     }
 
-    bool IsReady() const { return !receiving && content.length() > 0; }
+    bool IsReady() const { return (!receiving) && content.length() > 0; }
 
     String Read()
     {
         if (receiving) return "";
-        return content;
+        String copy(content);
+        content = "";
+        return copy;
     }
 };
 
@@ -146,7 +149,6 @@ String uartSerializeCommand(Command *command)
 
 uint8_t uartSend(dir_t dir, Message *message)
 {
-    // TODO Changed this, make sure it works
     String toSend = dir == Up ?
             uartSerializeCommand((Command *)message)
             : uartSerializeUpdate((Update *)message);
@@ -156,12 +158,12 @@ uint8_t uartSend(dir_t dir, Message *message)
 
 bool uartReceive(dir_t dir)
 {
-    // TODO Changed this, make sure it works
     Stream *uart = dir == Up ? static_cast<Stream *>(serUp) : static_cast<Stream *>(serDown);
     Mailbox *mbox = dir == Up ? &mboxUp : &mboxDown;
     while (uart->available() > 0) {
         mbox->Push(uart->read());
     }
+    if (mbox->IsReady()) Serial.println("Ready!");
     return mbox->IsReady();
 }
 
