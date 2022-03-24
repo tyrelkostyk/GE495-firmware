@@ -88,7 +88,7 @@ void setup()
     delay(500);
 
     calibrateMass1(0);
-    calibrateMass2(0);
+    calibrateMass2(1);
     calculateVoltageToMassFactor();
     Serial.println("\nSetup Complete");
 
