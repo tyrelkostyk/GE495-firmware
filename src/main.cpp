@@ -25,6 +25,46 @@ uint8_t offsetFlag = 0;
 uint32_t prevUpdateTime;
 uint32_t prevSampleTime;
 
+
+void processCommand(Command *command)
+{
+    if (command->ttl == 0) {
+        // handle it here
+        switch (command->type) {
+            case Tare:
+                tareAllLoadCells();
+                break;
+
+            case Calibrate:
+                switch (command->step) {
+                    case 1:
+                        getCalMass1(command->data);
+                        break;
+                    case 2:
+                        getCalMass2(command->data);
+                        break;
+                    case 3:
+                        getVoltageToMassFactor(mass1, voltage1, mass2, voltage2);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+
+            case Reset:
+
+                break;
+
+            default:
+                break;
+        }
+    } else {
+        --command->ttl;
+        uartSend(Up, command);
+    }
+}
+
+
 // Initialization steps go in here
 void setup()
 {
@@ -117,5 +157,6 @@ void loop()
     }
     if (uartReceive(Down)) {
         uartGetMessage(Down, &command);
+        processCommand(&command);
     }
 }
