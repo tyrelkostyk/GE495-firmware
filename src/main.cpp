@@ -48,7 +48,7 @@ void setup()
 
 
     doADCPowerUpSequence();
-    setADCSpeed(0);
+//    setADCSpeed(0); // ADC speed is hardwired to fast (tied high)
     Serial.println("Starting initial tare");
     delay(300);
     tareAllLoadCells();
