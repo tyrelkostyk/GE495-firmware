@@ -3,9 +3,7 @@
 
 #include "defs.h"
 
-#ifdef _ARDUINO
-#include "Arduino.h"
-#endif  // _ARDUINO
+#include <Arduino.h>
 
 
 

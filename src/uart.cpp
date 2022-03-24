@@ -63,7 +63,7 @@ struct Parser {
     }
 };
 
-Parser::data = "";
+String Parser::data = "";
 
 Mailbox mboxUp, mboxDown;
 
