@@ -28,7 +28,6 @@ void tareAllLoadCells()
 {
   for (int mux=0; mux<NUM_LOAD_CELLS; mux++)
   {
-    setADCMux(mux);
     int32_t data = getNRawMeasurements(mux, 10);
     tare(mux, data);
   }

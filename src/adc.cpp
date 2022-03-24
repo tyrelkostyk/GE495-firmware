@@ -80,6 +80,7 @@ int32_t readThreeLoadCells()
 int32_t getNRawMeasurements(uint8_t mux, int32_t N)
 {
   int64_t data_total = 0;
+  setADCMux(mux);
   for (uint8_t i=0; i<N; i++)
   {
     data_total += retrieveADCData();
