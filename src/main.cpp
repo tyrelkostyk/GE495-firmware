@@ -46,13 +46,14 @@ void setup()
     pinMode(MUX_PIN1, OUTPUT);
     Serial.println("\nSetup Started");
 
+
     doADCPowerUpSequence();
     setADCSpeed(0);
     Serial.println("Starting initial tare");
     delay(300);
     tareAllLoadCells();
     Serial.println("Done initial tare");
-    Serial.setTimeout(5000);
+    Serial.setTimeout(30000);
     Serial.println("Input mass 1:");
     String m1 = Serial.readStringUntil('\n');
     if (m1.length()) {

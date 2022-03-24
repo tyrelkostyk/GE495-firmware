@@ -63,5 +63,14 @@ void getCalMass2(double mass)
  */
 void getVoltageToMassFactor(double mass1, int32_t voltage1, double mass2, int32_t voltage2)
 {
-  voltageToMassFactor = (mass1 - mass2) / (voltage1 - voltage2);
+  double massDifference = mass1 - mass2;
+  int32_t voltageDifference = voltage1 - voltage2;
+
+  if (voltageDifference == 0)
+    voltageDifference = 1;
+  
+  voltageToMassFactor = massDifference / voltageDifference;
+
+  if (voltageToMassFactor < 0)
+    voltageToMassFactor = voltageToMassFactor * -1;
 }
