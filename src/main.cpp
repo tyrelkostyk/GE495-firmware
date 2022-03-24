@@ -2,6 +2,7 @@
 // Contains the entrypoint for the software including setup and the main loop.
 
 #include "defs.h"
+#include "uart.h"
 
 #include <Arduino.h>
 
@@ -102,32 +103,19 @@ void loop()
         prevUpdateTime = millis();
 //        updateLoadCurrentData(data * voltageToMassFactor);
 //        updateSendDownstream();
-        message_t msg = {0};
+        Update msg;
+        msg.tank = 1;
+        msg.data = data * voltageToMassFactor;
         uartSend(Down, &msg);
     }
 
-    //// Poll for commands and respond accordingly
-    //// If a command is received from downstream (ECU-side) immediately forward upstream
-    //// Then check to see if the command requires any action from this device
-    //if (cmdReceiveDownstream() == OK) {
-    //    cmdSendUpstream();
-    //    cmdParse();
-    //}
-
-    // Poll for updates and respond accordingly
-    // If an update is received from upstream, handle (e.g. provide modifications)
-    // Then forward the modified message downstream
-//    if (updateReceiveUpstream() == OK) {
-//        updateHandle();
-//        updateSendDownstream();
-//    }
-
-    message_t msg = {0};
+    Command command;
+    Update update;
 
     if (uartReceive(Up)) {
-        uartGetMessage(Up, &msg);
+        uartGetMessage(Up, &update);
     }
     if (uartReceive(Down)) {
-        uartGetMessage(Down, &msg);
+        uartGetMessage(Down, &command);
     }
 }

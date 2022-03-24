@@ -120,10 +120,14 @@ inline void packDataWithZero(uint8_t *data)
 
 #define UART_BAUDRATE 19200
 
+struct Message;
+struct Command;
+struct Update;
+
 void uartInit(void);
-uint8_t uartSend(dir_t dir, message_t *message);
+uint8_t uartSend(dir_t dir, Message *message);
 bool uartReceive(dir_t dir);
-void uartGetMessage(dir_t dir, message_t *message);
+void uartGetMessage(dir_t dir, Message *message);
 
 /****************
 * COMMAND (CMD) *

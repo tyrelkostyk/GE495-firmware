@@ -3,6 +3,7 @@
 //
 
 #include "defs.h"
+#include "uart.h"
 
 #include <Arduino.h>
 #include <AltSoftSerial.h>
@@ -49,6 +50,7 @@ struct Parser {
     static void LoadData(String str) { data = str; }
 
     static bool IsCommand() { return data.charAt(0) == '!'; }
+
     static cmd_type_t GetCommandType()
     {
         int idx;
@@ -60,6 +62,40 @@ struct Parser {
             case 'r': return Reset;
             default:  return Invalid;
         }
+    }
+
+    static uint8_t GetCalibrationStep()
+    {
+        int idx;
+        if ((idx = data.indexOf("STEP")) < 0) return -1;
+        if ((idx = data.indexOf(':', idx)) < 0) return -1;
+        String step = data.substring(idx+1, idx+2);
+        return (uint8_t)step.toInt();
+    }
+
+    static float GetData()
+    {
+        int idx;
+        if ((idx = data.indexOf("DATA")) < 0) return -1;
+        if ((idx = data.indexOf(':', idx)) < 0) return -1;
+        String sub = data.substring(idx+1);
+        return sub.toFloat();
+    }
+
+    static uint8_t GetTTL()
+    {
+        int idx;
+        if ((idx = data.indexOf("TTL")) < 0) return 0;
+        if ((idx = data.indexOf(':', idx)) < 0) return 0;
+        return (uint8_t)data.substring(idx+1).toInt();
+    }
+
+    static uint8_t GetTank()
+    {
+        int idx;
+        if ((idx = data.indexOf("TANK")) < 0) return 0;
+        if ((idx = data.indexOf(':', idx)) < 0) return 0;
+        return (uint8_t)data.substring(idx+1).toInt();
     }
 };
 
@@ -80,15 +116,40 @@ void uartInit(void)
     serDown->flush();
 }
 
-String uartSerializeMessage(message_t *message)
+String uartSerializeUpdate(Update *update)
 {
-    return R"({"Hello, world!"})";
+    String ser = "{";
+    ser += "TANK:" + String(update->tank) + ";";
+    ser += "DATA:" + String(update->data, 6) + ";";
+    ser += "}";
+    return ser;
 }
 
-uint8_t uartSend(dir_t dir, message_t *message)
+String uartSerializeCommand(Command *command)
+{
+    String ser = "{!";
+    // ttl type step data
+    ser += "TTL:" + String(command->ttl) + ";";
+    char t;
+    switch (command->type) {
+        case Tare: t = 't'; break;
+        case Calibrate: t = 'c'; break;
+        case Reset: t = 'r'; break;
+        default: t = 'x';
+    }
+    ser += "TYPE:" + String(t) + ";";
+    if (command->type == Calibrate) ser += "STEP:" + String(command->step) + ";";
+    ser += "DATA:" + String(command->data, 6) + ";";
+    ser += "}";
+    return ser;
+}
+
+uint8_t uartSend(dir_t dir, Message *message)
 {
     // TODO Changed this, make sure it works
-    String toSend = uartSerializeMessage(message);
+    String toSend = dir == Up ?
+            uartSerializeCommand((Command *)message)
+            : uartSerializeUpdate((Update *)message);
     Stream *uart = dir == Up ? static_cast<Stream *>(serUp) : static_cast<Stream *>(serDown);
     return uart->print(toSend);
 }
@@ -104,12 +165,22 @@ bool uartReceive(dir_t dir)
     return mbox->IsReady();
 }
 
-void uartGetMessage(dir_t dir, message_t *message)
+void uartGetMessage(dir_t dir, Message *message)
 {
     Mailbox *mbox = dir == Up ? &mboxUp : &mboxDown;
     Parser::LoadData(mbox->Read());
 
     if (Parser::IsCommand()) {
-        cmd_type_t type = Parser::GetCommandType();
+        Command *command = (Command *)message;
+        command->type = Parser::GetCommandType();
+        if (command->type == Calibrate) {
+            command->step = Parser::GetCalibrationStep();
+        }
+        command->data = Parser::GetData();
+        command->ttl = Parser::GetTTL();
+    } else {
+        Update *update = (Update *)message;
+        update->tank = Parser::GetTank();
+        update->data = Parser::GetData();
     }
 }
