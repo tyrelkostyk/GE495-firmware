@@ -47,15 +47,19 @@ void setup()
     pinMode(MUX_PIN1, OUTPUT);
     Serial.println("\nSetup Started");
 
+
     doADCPowerUpSequence();
-    setADCSpeed(0);
+//    setADCSpeed(0); // ADC speed is hardwired to fast (tied high)
     Serial.println("Starting initial tare");
-    delay(300);
+    delay(250);
     tareAllLoadCells();
     Serial.println("Done initial tare");
-    Serial.setTimeout(5000);
+
+    Serial.setTimeout(30000);
+    
     Serial.println("Input mass 1:");
     String m1 = Serial.readStringUntil('\n');
+    delay(250);
     if (m1.length()) {
         Serial.println(m1.toDouble());
         getCalMass1(m1.toDouble());
@@ -65,9 +69,9 @@ void setup()
     }
     while (Serial.available() > 1) Serial.read();
 
-    delay(500);
     Serial.println("Input mass 2:");
     String m2 = Serial.readStringUntil('\n');
+    delay(250);
     if (m2.length()) {
         Serial.println(m2.toDouble());
         getCalMass2(m2.toDouble());
@@ -90,7 +94,7 @@ void setup()
 void loop()
 {
     digitalWrite(LED_BUILTIN, HIGH);
-    int32_t data = getNMeasurements(5);
+    int32_t data = getNMeasurements(SAMPLE_SIZE);
 
     Serial.print("Data = ");
     Serial.println(data * voltageToMassFactor);

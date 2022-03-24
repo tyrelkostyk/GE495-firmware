@@ -14,11 +14,16 @@ void tare(uint8_t mux, int32_t offset)
   {
     case 0:
       dataOffset0 = offset;
+      break;
     case 1:
       dataOffset1 = offset;
+      break;
     case 2: 
       dataOffset2 = offset;
-  }  
+      break;
+    default:
+      break;  
+  }
 }
 
 /**
@@ -28,8 +33,7 @@ void tareAllLoadCells()
 {
   for (int mux=0; mux<NUM_LOAD_CELLS; mux++)
   {
-    setADCMux(mux);
-    int32_t data = getNRawMeasurements(mux, 10);
+    int32_t data = getNRawMeasurements(mux, SAMPLE_SIZE);
     tare(mux, data);
   }
 }
@@ -63,5 +67,14 @@ void getCalMass2(double mass)
  */
 void getVoltageToMassFactor(double mass1, int32_t voltage1, double mass2, int32_t voltage2)
 {
-  voltageToMassFactor = (mass1 - mass2) / (voltage1 - voltage2);
+  double massDifference = mass1 - mass2;
+  int32_t voltageDifference = voltage1 - voltage2;
+
+  if (voltageDifference == 0)
+    voltageDifference = 1;
+  
+  voltageToMassFactor = massDifference / voltageDifference;
+
+  if (voltageToMassFactor < 0)
+    voltageToMassFactor = voltageToMassFactor * -1;
 }

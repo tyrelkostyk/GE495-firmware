@@ -26,7 +26,7 @@ typedef can_dir_t dir_t;
 * SERIAL *
 *********/
 
-#define SER_BAUDRATE 115200
+#define SER_BAUDRATE 19200
 #define UART_BAUDRATE 19200
 
 struct Message;
@@ -58,6 +58,8 @@ typedef enum {
 /*******
 * MASS *
 *******/
+
+#define SAMPLE_SIZE  (5)
 
 extern double mass1;
 extern double mass2;
