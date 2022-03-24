@@ -3,58 +3,49 @@
 
 #include "defs.h"
 
-#ifdef _ARDUINO
-#include "Arduino.h"
-#endif  // _ARDUINO
+//#ifdef _ARDUINO
+#include <Arduino.h>
+//#endif  // _ARDUINO
 
-
+#define ADC_BIT_MASK  ((int32_t)1)         // 1 bit per reading
+#define ADC_DATA_MASK ((int32_t)0xFFFFFF)  // 24 bit readings per channel
 
 /**
  * Polls the data pin of the ADC and returns its value
  */
-int32_t pollADCDataPin()
+uint8_t pollADCDataPin()
 {
-  return digitalRead(DATA_PIN);
+  return digitalRead(DATA_PIN) & ADC_BIT_MASK;
 }
 
 /**
- * Retrieves 24-bit ADC data. 
+ * Retrieves 24-bit ADC data.
  * @return int32_t 24-bit ADC data
  */
 int32_t retrieveADCData()
 {
   int32_t data = 0;
-  int32_t offset;
   // wait for data line to go low then high then low again
   while (pollADCDataPin() == 0){};
   while (pollADCDataPin() == 1){};
-  
-  for (int i = NUM_ADC_BITS - 1; i>=0; i--)
-  {
+
+  for (int i=NUM_ADC_BITS - 1; i>=0; i--) {
     applySCLK();
-
-    // read the bit
     int32_t bit = pollADCDataPin();
-    
-    // first bit is the sign bit, so it gets subtracted
     if (i == NUM_ADC_BITS - 1)
-      offset = - ((bit << i));
-
-    // all other bits get treated normally
+      data = data - ((bit << i) & ADC_DATA_MASK); // get signed output
     else
-      offset = (bit << i);
-    data = data + offset;
+      data = data + ((bit << i) & ADC_DATA_MASK);
   }
-  
   // one additional SCLK ensures that the DRDY/DOUT line stays high after data
   // is received
   applySCLK();
-  
+
   return data;
 }
 
 /**
- * Retrieves 24-bit ADC data and calibrates the ADC. 
+ * Retrieves 24-bit ADC data and calibrates the ADC.
  * @return int32_t 24-bit ADC data
  */
 int32_t retrieveADCDataWithCal()
@@ -84,11 +75,12 @@ int32_t readThreeLoadCells()
  * Take raw measurements from one load cell and averages them
  * @param mux The laod cell to get measurements from
  * @param N the amount of measurements to make
- * @return The average of N raw voltage measurements 
+ * @return The average of N raw voltage measurements
  */
 int32_t getNRawMeasurements(uint8_t mux, int32_t N)
 {
   int64_t data_total = 0;
+  setADCMux(mux);
   for (uint8_t i=0; i<N; i++)
   {
     data_total += retrieveADCData();

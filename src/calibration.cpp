@@ -3,16 +3,6 @@
 
 #include "defs.h"
 
-extern double mass1;
-extern double mass2;
-extern int32_t voltage1;
-extern int32_t voltage2;
-extern double voltageToMassFactor; 
-
-extern int32_t dataOffset0;
-extern int32_t dataOffset1;
-extern int32_t dataOffset2;
-
 /**
  * Set the current output of a load cell to zero.
  * @param uint8_t mux Load cell to tare
@@ -24,11 +14,16 @@ void tare(uint8_t mux, int32_t offset)
   {
     case 0:
       dataOffset0 = offset;
+      break;
     case 1:
       dataOffset1 = offset;
-    case 2: 
+      break;
+    case 2:
       dataOffset2 = offset;
-  }  
+      break;
+    default:
+      break;
+  }
 }
 
 /**
@@ -38,8 +33,7 @@ void tareAllLoadCells()
 {
   for (int mux=0; mux<NUM_LOAD_CELLS; mux++)
   {
-    setADCMux(mux);
-    int32_t data = getNRawMeasurements(mux, 10);
+    int32_t data = getNRawMeasurements(mux, SAMPLE_SIZE);
     tare(mux, data);
   }
 }
@@ -71,7 +65,16 @@ void getCalMass2(double mass)
  * @param mass2 The mass value for the second point of reference for calibration
  * @param voltage2 The voltage value for the second point of reference for calibration
  */
-void getVoltageToMassFactor()
+void getVoltageToMassFactor(double mass1, int32_t voltage1, double mass2, int32_t voltage2)
 {
-  voltageToMassFactor = (mass1 - mass2) / (voltage1 - voltage2);
+  double massDifference = mass1 - mass2;
+  int32_t voltageDifference = voltage1 - voltage2;
+
+  if (voltageDifference == 0)
+    voltageDifference = 1;
+
+  voltageToMassFactor = massDifference / voltageDifference;
+
+  if (voltageToMassFactor < 0)
+    voltageToMassFactor = voltageToMassFactor * -1;
 }
