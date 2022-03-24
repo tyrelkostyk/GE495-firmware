@@ -52,7 +52,7 @@ void processCommand(Command *command)
 
 void processUpdate(Update *update)
 {
-    ++update->tank;
+    ++(update->tank);
     uartSend(Down, update);
 }
 
@@ -75,7 +75,6 @@ void setup()
     pinMode(POWER_PIN, OUTPUT);
     pinMode(MUX_PIN0, OUTPUT);
     pinMode(MUX_PIN1, OUTPUT);
-    Serial.println("\nSetup Started");
 
 
     doADCPowerUpSequence();
@@ -100,7 +99,6 @@ void loop()
 {
     digitalWrite(LED_BUILTIN, HIGH);
     int32_t data = getNMeasurements(SAMPLE_SIZE);
-    Serial.println("Measure: " + String(data));
 
     if (millis() - prevUpdateTime > UPDATE_DELAY_MS) {
         prevUpdateTime = millis();
@@ -109,7 +107,6 @@ void loop()
         Update msg;
         msg.tank = 0;
         msg.data = getCalibratedMassReading(data);
-        Serial.println("Data: " + String(msg.data));
         uartSend(Down, &msg);
     }
 

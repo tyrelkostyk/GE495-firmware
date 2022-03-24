@@ -18,7 +18,7 @@ private:
     String content;
 
 public:
-    void Push(char c)
+    bool Push(char c)
     {
         if (c == '{') {
             content = "";
@@ -26,13 +26,16 @@ public:
 
         } else if (c == '}') {
             receiving = false;
-            Serial.println("Got " + content);  // TODO remove
+            return true;
 
         } else {
             if (receiving)
                 content += c;
         }
+        return false;
     }
+
+    bool Ready() { receiving = false; }
 
     bool IsReady() const { return (!receiving) && content.length() > 0; }
 
@@ -160,11 +163,17 @@ bool uartReceive(dir_t dir)
 {
     Stream *uart = dir == Up ? static_cast<Stream *>(serUp) : static_cast<Stream *>(serDown);
     Mailbox *mbox = dir == Up ? &mboxUp : &mboxDown;
+    bool ready = false;
     while (uart->available() > 0) {
-        mbox->Push(uart->read());
+        if (mbox->Push(uart->read())) {
+            ready = true;
+            break;
+        }
     }
-    if (mbox->IsReady()) Serial.println("Ready!");
-    return mbox->IsReady();
+    if (ready) {
+        mbox->Ready();
+    }
+    return ready;
 }
 
 void uartGetMessage(dir_t dir, Message *message)
