@@ -33,7 +33,7 @@ void tareAllLoadCells()
 {
   for (int mux=0; mux<NUM_LOAD_CELLS; mux++)
   {
-    int32_t data = getNRawMeasurements(mux, 10);
+    int32_t data = getNRawMeasurements(mux, SAMPLE_SIZE);
     tare(mux, data);
   }
 }

@@ -116,7 +116,7 @@ inline void packDataWithZero(uint8_t *data)
 * SERIAL *
 *********/
 
-#define SER_BAUDRATE 115200
+#define SER_BAUDRATE 19200
 
 #define UART_BAUDRATE 19200
 
@@ -197,6 +197,8 @@ void updateLoadCurrentData(double data);
 /*******
 * MASS *
 *******/
+
+#define SAMPLE_SIZE  (5)
 
 #define MASS_NUM_BYTES (4)
 

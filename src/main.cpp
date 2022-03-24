@@ -93,7 +93,7 @@ void setup()
 void loop()
 {
     digitalWrite(LED_BUILTIN, HIGH);
-    int32_t data = getNMeasurements(5);
+    int32_t data = getNMeasurements(SAMPLE_SIZE);
 
     Serial.print("Data = ");
     Serial.println(data * voltageToMassFactor);
