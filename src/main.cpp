@@ -50,12 +50,15 @@ void setup()
     doADCPowerUpSequence();
 //    setADCSpeed(0); // ADC speed is hardwired to fast (tied high)
     Serial.println("Starting initial tare");
-    delay(300);
+    delay(250);
     tareAllLoadCells();
     Serial.println("Done initial tare");
+
     Serial.setTimeout(30000);
+    
     Serial.println("Input mass 1:");
     String m1 = Serial.readStringUntil('\n');
+    delay(250);
     if (m1.length()) {
         Serial.println(m1.toDouble());
         getCalMass1(m1.toDouble());
@@ -65,9 +68,9 @@ void setup()
     }
     while (Serial.available() > 1) Serial.read();
 
-    delay(500);
     Serial.println("Input mass 2:");
     String m2 = Serial.readStringUntil('\n');
+    delay(250);
     if (m2.length()) {
         Serial.println(m2.toDouble());
         getCalMass2(m2.toDouble());
