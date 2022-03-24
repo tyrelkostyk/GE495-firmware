@@ -42,6 +42,8 @@ typedef enum {
     Down
 } can_dir_t;
 
+typedef can_dir_t dir_t;
+
 typedef struct __attribute__ ((__packed__)) _message_t {
     uint32_t id;
     uint8_t length;
@@ -115,6 +117,12 @@ inline void packDataWithZero(uint8_t *data)
 *********/
 
 #define SER_BAUDRATE 115200
+
+#define UART_BAUDRATE 19200
+
+void uartInit(void);
+uint8_t uartSend(dir_t dir, message_t *message);
+void uartReceive(dir_t dir, message_t *message);
 
 /****************
 * COMMAND (CMD) *

@@ -67,11 +67,11 @@ uint8_t updateReceiveUpstream(void)
 {
     message_t message;
     memset(&message, 0, sizeof(message));
-    uint8_t received = canReceive(Up, &message);
-    if (received > 0) {
-        updateGetFromMessage(&message);
-        return OK;
-    }
+//    uint8_t received = canReceive(Up, &message);
+//    if (received > 0) {
+//        updateGetFromMessage(&message);
+//        return OK;
+//    }
     return NOP;
 }
 
@@ -83,8 +83,8 @@ uint8_t updateReceiveUpstream(void)
 uint8_t updateSendDownstream(void)
 {
     message_t message = updateConvertToMessage();
-    if (canSend(Down, message) != OK)
-        return ERR;
+//    if (canSend(Down, message) != OK)
+//        return ERR;
     return OK;
 }
 

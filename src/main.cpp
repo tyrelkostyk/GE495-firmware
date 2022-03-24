@@ -4,11 +4,6 @@
 #include "defs.h"
 
 #include <Arduino.h>
-#include <AltSoftSerial.h>
-#include <SoftwareSerial.h>
-
-extern SoftwareSerial serUp;
-extern AltSoftSerial serDown;
 
 uint8_t mux;
 
@@ -41,7 +36,8 @@ void setup()
     while (!Serial);
     prevUpdateTime = millis();
     prevSampleTime = millis();
-    canInit();
+    // canInit();
+    uartInit();
 
     pinMode(DATA_PIN, INPUT);
     pinMode(CLOCK_PIN, OUTPUT);
@@ -100,8 +96,10 @@ void loop()
 
     if (millis() - prevUpdateTime > UPDATE_DELAY_MS) {
         prevUpdateTime = millis();
-        updateLoadCurrentData(data * voltageToMassFactor);
-        updateSendDownstream();
+//        updateLoadCurrentData(data * voltageToMassFactor);
+//        updateSendDownstream();
+        message_t msg = {0};
+        uartSend(Down, &msg);
     }
 
     //// Poll for commands and respond accordingly
@@ -115,8 +113,13 @@ void loop()
     // Poll for updates and respond accordingly
     // If an update is received from upstream, handle (e.g. provide modifications)
     // Then forward the modified message downstream
-    if (updateReceiveUpstream() == OK) {
-        updateHandle();
-        updateSendDownstream();
-    }
+//    if (updateReceiveUpstream() == OK) {
+//        updateHandle();
+//        updateSendDownstream();
+//    }
+
+
+    message_t msg = {0};
+    uartReceive(Up, &msg);
+    uartReceive(Down, &msg);
 }
