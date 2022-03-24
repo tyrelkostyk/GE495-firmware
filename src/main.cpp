@@ -23,7 +23,6 @@ uint8_t offsetFlag = 0;
 
 // Tracker for time elapsed on a given SoftwareSerial port
 uint32_t prevUpdateTime;
-uint32_t prevSampleTime;
 
 
 void processCommand(Command *command)
@@ -83,8 +82,6 @@ void setup()
     Serial.setTimeout(250);
     while (!Serial);
     prevUpdateTime = millis();
-    prevSampleTime = millis();
-    // canInit();
     uartInit();
 
     pinMode(DATA_PIN, INPUT);
@@ -102,36 +99,9 @@ void setup()
     tareAllLoadCells();
     Serial.println("Done initial tare");
 
-    Serial.setTimeout(30000);
-    
-    Serial.println("Input mass 1:");
-    String m1 = Serial.readStringUntil('\n');
-    delay(250);
-    if (m1.length()) {
-        Serial.println(m1.toDouble());
-        getCalMass1(m1.toDouble());
-    } else {
-        Serial.println("0");
-        getCalMass1(0);
-    }
-    while (Serial.available() > 1) Serial.read();
-
-    Serial.println("Input mass 2:");
-    String m2 = Serial.readStringUntil('\n');
-    delay(250);
-    if (m2.length()) {
-        Serial.println(m2.toDouble());
-        getCalMass2(m2.toDouble());
-    } else {
-        Serial.println("0");
-        getCalMass2(0);
-    }
-    while (Serial.available() > 1) Serial.read();
     delay(500);
-    Serial.setTimeout(250);
 
-    getVoltageToMassFactor(mass1, voltage1, mass2, voltage2);
-    Serial.println(voltageToMassFactor);
+    getVoltageToMassFactor(0, voltage1, 0, voltage2);
     Serial.println("\nSetup Complete");
 
     digitalWrite(LED_BUILTIN, HIGH);
@@ -143,9 +113,6 @@ void loop()
     digitalWrite(LED_BUILTIN, HIGH);
     int32_t data = getNMeasurements(SAMPLE_SIZE);
 
-    Serial.print("Data = ");
-    Serial.println(data * voltageToMassFactor);
-
     if (millis() - prevUpdateTime > UPDATE_DELAY_MS) {
         prevUpdateTime = millis();
 //        updateLoadCurrentData(data * voltageToMassFactor);
@@ -153,6 +120,7 @@ void loop()
         Update msg;
         msg.tank = 0;
         msg.data = data * voltageToMassFactor;
+        Serial.println(millis());
         uartSend(Down, &msg);
     }
 
